@@ -9,10 +9,10 @@
 /* 
  * main.c
  *
- * Para correr el archivo 'main.c' desde la consola usar:
+ * Para correr el archivo 'main.c' desde la consola, usar:
  * ./main -c/d -s valorS inputFile outputFile
  * 
- * Ejemplo: ./main -k -c 8 "Archivo" "ArchivoComprimido"
+ * Ejemplo: ./main -c -s 10 "Archivo" "ArchivoComprimido"
  *
  * Donde:
  * -c habilita la compresión y -d la descompresión

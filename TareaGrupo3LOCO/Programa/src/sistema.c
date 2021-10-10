@@ -1,9 +1,3 @@
-/* sistema.cpp
- *
- * En este archivo se implementan las funciones comprimir y descomprimir
- * utilizando las funciones de las librerías correspondientes
- */
-
 #include "../include/sistema.h"
 #include "../include/compresor.h"
 #include "../include/descompresor.h"

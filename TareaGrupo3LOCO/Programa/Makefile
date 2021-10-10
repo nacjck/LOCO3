@@ -1,7 +1,7 @@
 # Makefile 
 # Autor:
 # 	Alexis Baladon
-#	Ignacio Fernandez
+#	Juan Ignacio Fernandez
 
 
 all: main
@@ -16,14 +16,14 @@ ODIR = obj
 CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g
 
-MODULOS = bitio coder diccionario diccionarioGrande diccionarioPequenio fabrica buffer bufferMax bufferNulo bufferNormal
-#CONST_MODULES = constantes
+MODULOS = sistema compresor descompresor auxiliaresCompresor auxiliaresDescompresor auxiliaresCompartidos
+CONST_MODULES = modalidad
 
 #lista de archivos
 HS = $(MODULOS:%=$(HDIR)/%.h)
 CPPS = $(MODULOS:%=$(CPPDIR)/%.c)
 OS = $(MODULOS:%=$(ODIR)/%.o)
-#CONST_HS = $(CONST_MODULES:%=$(HDIR)/%.h)
+CONST_HS = $(CONST_MODULES:%=$(HDIR)/%.h)
 
 MAIN=main
 EJECUTABLE=main
