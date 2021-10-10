@@ -1,6 +1,7 @@
 # Makefile 
 # Autor:
-# 	Alexis Baladon 
+# 	Alexis Baladon
+#	Ignacio Fernandez
 
 
 all: main
@@ -12,7 +13,7 @@ CPPDIR = src
 ODIR = obj
 
 #compilador
-CC = g++
+CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g
 
 MODULOS = bitio coder diccionario diccionarioGrande diccionarioPequenio fabrica buffer bufferMax bufferNulo bufferNormal
@@ -20,17 +21,17 @@ MODULOS = bitio coder diccionario diccionarioGrande diccionarioPequenio fabrica 
 
 #lista de archivos
 HS = $(MODULOS:%=$(HDIR)/%.h)
-CPPS = $(MODULOS:%=$(CPPDIR)/%.cpp)
+CPPS = $(MODULOS:%=$(CPPDIR)/%.c)
 OS = $(MODULOS:%=$(ODIR)/%.o)
 #CONST_HS = $(CONST_MODULES:%=$(HDIR)/%.h)
 
 MAIN=main
 EJECUTABLE=main
 
-$(ODIR)/$(MAIN).o: $(MAIN).cpp | objfolder
+$(ODIR)/$(MAIN).o: $(MAIN).c | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
-$(ODIR)/%.o: $(CPPDIR)/%.cpp $(HDIR)/%.h | objfolder #$(CONST_HS) | objfolder
+$(ODIR)/%.o: $(CPPDIR)/%.c $(HDIR)/%.h | objfolder #$(CONST_HS) | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 $(EJECUTABLE): $(ODIR)/$(MAIN).o $(OS)
