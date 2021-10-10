@@ -1,7 +1,7 @@
 /*
  * usoCompartido.h
  *
- * Declara funciones y declaraciones utilizadas tanto en descompresor.c como en compresor.c
+ * Declara funciones utilizadas tanto en descompresor.c como en compresor.c
  * 
  */
 
