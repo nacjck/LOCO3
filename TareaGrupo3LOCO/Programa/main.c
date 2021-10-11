@@ -26,15 +26,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 
 typedef enum { Comprimir, Descomprimir } funcionalidad_t;
 
 typedef struct {
-    char         *archivoEntrada;
-    char         *archivoSalida;
-    uint8_t      s;                 /* 0 <= s <= 10 */
-    modalidad_t  modalidad;
+    char            *archivoEntrada;
+    char            *archivoSalida;
+    int             s;                  /* 0 <= s <= 10 */
+    modalidad_t     modalidad;
 } parametros_t;
 
 
@@ -42,7 +41,7 @@ typedef struct {
  * Declaraciones para rutinas locales
  */
 void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    uint8_t s, modalidad_t modalidad );
+    int s, modalidad_t modalidad );
 void descomprimir( char* archivoEntrada, char* archivoSaluda );
 void abortar( char* mensaje );
 

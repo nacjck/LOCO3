@@ -3,10 +3,8 @@
 #include "../include/descompresor.h"
 #include "../include/modalidad.h"
 
-#include <stdint.h>
-
 void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    uint8_t s, modalidad_t modalidad ) {
+    int s, modalidad_t modalidad ) {
         /*
          * Esta es una idea mia jaja no significa que tengamos que hacerlo asi
          *

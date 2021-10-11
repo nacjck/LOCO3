@@ -8,7 +8,7 @@
 #define sistema_h
 
 void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    uint8_t s, modalidad_t modalidad );
+    int s, modalidad_t modalidad );
 
 void descomprimir( char* archivoEntrada, char* archivoSaluda );
 
