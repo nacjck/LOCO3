@@ -36,13 +36,9 @@ typedef struct {
     modalidad_t     modalidad;
 } parametros_t;
 
-
 /*
  * Declaraciones para rutinas locales
  */
-void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    int s, modalidad_t modalidad );
-void descomprimir( char* archivoEntrada, char* archivoSaluda );
 void abortar( char* mensaje );
 
 int main( int argc, char* argv[] ) {
