@@ -108,7 +108,7 @@ int main( int argc, char* argv[] ) {
     if( funcionalidad == Comprimir )
     {
         comprimir(parametros.archivoEntrada,parametros.archivoSalida,
-            parametros.modalidad,parametros.s);
+            parametros.s,parametros.modalidad);
     }
     else
     {
