@@ -21,7 +21,8 @@
  * outputFile: archivo de salida
  */
 
-#include "include/sistema.h"
+#include "include/descompresor.h"
+#include "include/compresor.h"
 #include "include/modalidad.h"
 
 #include <stdlib.h>

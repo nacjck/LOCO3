@@ -1,3 +1,7 @@
 #include "../include/descompresor.h"
-#include "../include/auxiliaresDescompresor.h"
-#include "../include/auxiliaresCompartidos.h"
+#include "../include/compartido.h"
+#include "../include/pixelio.h"
+
+void descomprimir( char* archivoEntrada, char* archivoSaluda ) {
+
+}

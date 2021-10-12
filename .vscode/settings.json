@@ -3,6 +3,7 @@
         "compresor.h": "c",
         "sistema.h": "c",
         "descompresor.h": "c",
-        "modalidad.h": "c"
+        "modalidad.h": "c",
+        "pixelio.h": "c"
     }
 }

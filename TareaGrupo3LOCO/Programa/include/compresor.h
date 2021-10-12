@@ -1,13 +1,20 @@
 /* 
  * compresor.h
  *
- * Declara funciones de alto nivel para el compresor, o sea,
- * aquellas utilizadas en el cuerpo del algoritmo principal
- * declarado en la función comprimir(...) de sistema.c
+ * Brinda las herramientas necesarias para descomprimir
+ * un archivo dados los parámetros necesarios
  * 
  */
 
 #ifndef compresor_h
 #define compresor_h
+
+/*
+ * Precondiciones: 
+ *     -archivoEntrada y archivoSalida no son nulos.
+ *     - 0 <= s <= 10
+ */
+void comprimir( char* archivoEntrada, char* archivoSaluda, 
+    int s, modalidad_t modalidad );
 
 #endif

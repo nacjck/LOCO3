@@ -1,13 +1,18 @@
 /* 
  * descompresor.h
  *
- * Declara funciones de alto nivel para el descompresor, o sea,
- * aquellas utilizadas en el cuerpo del algoritmo principal
- * declarado en la función descomprimir(...) de sistema.c
+ * Brinda las herramientas necesarias para descomprimir
+ * un archivo dados los parámetros necesarios
  * 
  */
 
 #ifndef descompresor_h
 #define descompresor_h
+
+/*
+ * Precondiciones: 
+ *     -archivoEntrada y archivoSalida no son nulos.
+ */
+void descomprimir( char* archivoEntrada, char* archivoSalida );
 
 #endif
