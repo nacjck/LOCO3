@@ -8,6 +8,6 @@
 #ifndef modalidad_h
 #define modalidad_h
 
-typedef enum { Normal, Run } modalidad_t;
+typedef enum { NORMAL, RUN } Modalidad;
 
 #endif

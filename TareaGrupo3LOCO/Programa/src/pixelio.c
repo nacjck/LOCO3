@@ -1,5 +1,8 @@
 #include "../include/pixelio.h"
 
+//EN PROGRESOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+//IGNORAR
+
 //Estructura de arreglo circular que hice para otra materia
 #define MAX_BUFFER 123456 //PROVISORIO, este valor va a ser dinámico
 
@@ -7,14 +10,14 @@ typedef struct {
     int cant;
     int ini,fin;
     unsigned char * valores;
-} cola_t;
+} Cola;
 
-cola_t crearCola(int size) {
-    cola_t res = {0,0,0,malloc(size*sizeof(unsigned char))}; 
+Cola crearCola(int size) {
+    Cola res = {0,0,0,malloc(size*sizeof(unsigned char))}; 
     return res;
 }
 
-void encolar(cola_t * cola,char elem) {
+void encolar(Cola * cola,char elem) {
     if(cola->cant != 0) {
         if(cola->ini != 0) {
             cola->ini--;
@@ -27,7 +30,7 @@ void encolar(cola_t * cola,char elem) {
     cola->cant++;
 }
 
-void destruirCola(cola_t * cola) {
+void destruirCola(Cola * cola) {
     free(cola->valores);
 }
 

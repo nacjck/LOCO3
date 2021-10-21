@@ -1,5 +1,5 @@
 # Makefile 
-# Autor:
+# Autores:
 # 	Alexis Baladon
 #	Juan Ignacio Fernandez
 
@@ -16,7 +16,7 @@ ODIR = obj
 CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g -O3
 
-MODULOS = sistema compresor descompresor compartido pixelio
+MODULOS = compresor descompresor compartido pixelio
 CONST_MODULES = modalidad
 
 #lista de archivos

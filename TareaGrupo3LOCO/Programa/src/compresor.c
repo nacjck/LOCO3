@@ -4,6 +4,6 @@
 #include "../include/modalidad.h"
 
 void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    int s, modalidad_t modalidad ) {
+    int s, Modalidad modalidad ) {
 
 }

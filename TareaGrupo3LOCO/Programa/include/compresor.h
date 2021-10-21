@@ -15,6 +15,6 @@
  *     - 0 <= s <= 10
  */
 void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    int s, modalidad_t modalidad );
+    int s, Modalidad modalidad );
 
 #endif
