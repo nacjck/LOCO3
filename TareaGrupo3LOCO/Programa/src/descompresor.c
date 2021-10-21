@@ -29,16 +29,15 @@ void descomprimir( char* archivoEntrada, char* archivoSalida ) {
     unsigned char x;
     unsigned char xPrediccion;  /* x^                               */
     int errorPrediccion;        /* e = x - x^                       */
-    Extracto * fExtracto;     /* f(C)                             */
+    Extracto * fExtracto;       /* f(C)                             */
     unsigned char a,b,c,d;      /* Contexto                         */
     int mapeoRice;
     int output;                 /* Salida al archivo descomprimido  */
     
-
     compressedFile = fopen(archivoEntrada,"rb");
     decompressedFile = fopen(archivoSalida,"wb");
 
-    _leer_cabezal(compressedFile,&s,&modalidad);
+    leerCabezal(compressedFile,&s,&modalidad);
     inicializarExtractos();
     inicializarBuffer();
     if(modalidad == RUN) {
@@ -90,18 +89,4 @@ void descomprimir( char* archivoEntrada, char* archivoSalida ) {
             imprimirSecuencia(output,decompressedFile);
         }
     }
-}
-
-/*
- * Función auxiliar encargada de obtener los parámetros 's' y
- * la modalidad (Run o Normal) enviados del lado del compresor
- * 
- * Precondición:
- *     -compressedFile ya ha sido inicializado con el archivo
- *     correspondiente.
- */
-void _leer_cabezal(FILE * compressedFile, int *s,Modalidad * modalidad) {
-    //PROVISORIO
-    *s = 0;
-    *modalidad = NORMAL;
 }
