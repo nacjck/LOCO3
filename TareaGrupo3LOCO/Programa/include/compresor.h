@@ -14,7 +14,6 @@
  *     -archivoEntrada y archivoSalida no son nulos.
  *     - 0 <= s <= 10
  */
-void comprimir( char* archivoEntrada, char* archivoSaluda, 
-    int s, Modalidad modalidad );
+void comprimir( char* archivoEntrada, char* archivoSaluda, int s, Modalidad modalidad );
 
 #endif
