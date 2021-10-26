@@ -203,21 +203,37 @@ BYTE textura(PIX a, PIX b, PIX c, PIX x) {
   return T;
 }
 
+// Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
+
+unsigned short n_act(PIX a, PIX b, PIX c, PIX x) {
+  // Devuelve el nivel de actividad X
+  unsigned short X = 0; // Máximo 10 bits
+
+  X += (c >= x) ? (c-x) : (x-c);
+  X += (b >= x) ? (b-x) : (x-b);
+  X += (a >= x) ? (a-x) : (x-a);
+
+  return X;
+}
+
 // Para test y debugg
 <<<<<<< HEAD
 =======
 int main() {
-  unsigned int a, b, c, x;
+  unsigned int a, b, c, hat_x;
   BYTE T;
+  unsigned short X;
 
   printf("Ingresar valores de contexto: a, b, c:\n");
   scanf("%u%u%u", &a, &b, &c);
   printf("a=%d, b=%d, c=%d\n", a, b, c);
 
-  x = predict(a, b, c);
-  T = textura(a, b, c, x);
+  hat_x = predict(a, b, c);
+  T = textura(a, b, c, hat_x);
+  X = n_act(a, b, c, hat_x);
 
-  printf("Prediccion: hat_x=%d\n", x);
+  printf("Prediccion: hat_x=%d\n", hat_x);
   printf("Textura: T=%x\n", T);
+  printf("Nivel de actividad: X=%u\n", X);
 }
 >>>>>>> 8509518 (Función de textura terminada.)
