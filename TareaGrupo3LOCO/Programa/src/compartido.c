@@ -2,9 +2,8 @@
 
 #include <stdio.h> // Para debugg
 
-/* Calcula la predicción del pixel dado su contexto */
 PIX predict(PIX a, PIX b, PIX c) {
-
+  /* Calcula la predicción del pixel dado su contexto */
   PIX max_ab;
   PIX min_ab;
 
@@ -31,10 +30,32 @@ PIX predict(PIX a, PIX b, PIX c) {
   }
 
   return hat_x;
+}
 
+
+BYTE textura(PIX a, PIX b, PIX c, PIX x) {
+  // Devuelve el número T con los bits de textura
+  BYTE T;
+
+  T = (c>x) << 2; // MSB
+  T += (b>x) << 1;
+  T += (a>x); // LSB
+
+  return T;
 }
 
 // Para test y debugg
 int main() {
-  printf("hat_x=%d", predict(0,11,5));
+  unsigned int a, b, c, x;
+  BYTE T;
+
+  printf("Ingresar valores de contexto: a, b, c:\n");
+  scanf("%u%u%u", &a, &b, &c);
+  printf("a=%d, b=%d, c=%d\n", a, b, c);
+
+  x = predict(a, b, c);
+  T = textura(a, b, c, x);
+
+  printf("Prediccion: hat_x=%d\n", x);
+  printf("Textura: T=%x\n", T);
 }
