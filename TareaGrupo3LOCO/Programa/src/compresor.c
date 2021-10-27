@@ -35,8 +35,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     int cantidadBitsImpresos;       /* Cantidad de bits impresos por iteración */
     int output;                     /* Salida al archivo descomprimido         */
     
-    archivoComprimido = fopen(archivoEntrada, "rb");
-    archivoDescomprimido = fopen(archivoSalida, "wb");
+    archivoComprimido = fopen(archivoSalida, "wb");
+    archivoDescomprimido = fopen(archivoEntrada, "rb");
 
     escribirCabezal(archivoComprimido, s, modalidad);
     inicializarExtractos();
