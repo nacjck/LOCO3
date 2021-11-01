@@ -40,6 +40,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
 
     escribirCabezal(archivoComprimido, s, modalidad);
     inicializarExtractos();
+    anchoImagen = determinarAnchoImagen(archivoDescomprimido);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
         while (ultimoCaracterLeido = obtenerUltimoCaracter() != EOF) {
@@ -70,8 +71,10 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                     xAnterior = x;
                     x = (unsigned char) ultimoCaracterLeido;
                 } while (ultimoCaracterLeido != EOF && x == xAnterior);
-                if (x != xAnterior) break;   /* Fin de archivo */
-                determinarGolomb(kGolomb, l, &cantidadBitsImpresos, &output);
+                if (ultimoCaracterLeido == EOF) {
+                    determinarGolomb(kGolomb, l, &cantidadBitsImpresos, &output);
+                    break;   /* Fin de archivo */
+                }
             }
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
         }
@@ -90,9 +93,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
         }
     }
+    vaciarBuffer(archivoComprimido);
     destruirBuffer();
-}
-
-void escribirCabezal(FILE * compressedFile, int s, Modalidad modalidad) {
-
+    fclose(archivoComprimido);
+    fclose(archivoDescomprimido);
 }
