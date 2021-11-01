@@ -1,35 +1,69 @@
-#include "../include/arregloCircular.h"
+#include "../include/modalidad.h"
 #include "../include/pixelio.h"
 #include "../include/compartido.h"
 
 #include <stdio.h>
 
-static unsigned char * bufferCodificado;    /* Contiene los últimos bits codificados.                 */
-static int indiceBufferCodificado;          /* Indica cual fue el último bit agregado.                */
+#define MAX_BUFFER 64
 
-static ArregloCircular * bufferImagen;      /* Contiene los últimos pixeles recibidos, los cuales.    */
-static int tamanioBufferImagen;             /* serán necesarios para obtener a,b,c y d.               */
+/*
+ * Constantes para manejo de output segun tipos de datos 
+ */
+static const int SIZE_BLOQUE_CODIFICADO =
+                 sizeof(unsigned int);
+static const int MAX_INDICE_BLOQUE =
+                 (int)((sizeof(int) << 3) - 1);
 
-static int distanciaXyBordeImagen;          /* Si vale 0 el pixel actual está en el borde izquierdo   */
-static int anchoImagen;                     /* de la imagen. El ancho ayuda a actualizar su valor     */
+/*
+ * Variables para imagen sin comprimir
+ */
+static unsigned char * bufferImagen[2];             /* Ultimas dos filas de imagen             */
+static size_t anchoImagen;                  
+static int posicionActualImagen;                    /* Si se esta en el borde izquierdo vale 0 */
+static int filaSuperior;                            /* 0 o 1                                   */
 
+/*
+ * Variables para codificacion 
+ * (SEGURAMENTE VA A IR EN OTRO ARCHIVO)
+ */
+static unsigned int bufferCodificado[MAX_BUFFER];   /* Contiene ultimos caracteres a imprimir  */
+static unsigned int * actualBloqueCodificado;       /* Puntero a siguiente bloque a imprimir   */
+static int indiceBloqueCodificado;                  /* posicion binaria                        */
+
+void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad ) {
+    //Por verse
+}
+
+int determinarAnchoImagen( FILE * archivoDescomprimido ) {
+    //Recorrer cabezal
+    return 0;
+}
 
 void inicializarBuffer( int ancho ) {
-    distanciaXyBordeImagen = 0;
-    bufferCodificado = 0x00;
+    bufferCodificado[0] = 0;
+    actualBloqueCodificado = bufferCodificado;
+    indiceBloqueCodificado = MAX_INDICE_BLOQUE;
+    filaSuperior = 0;
+    posicionActualImagen = -1;
     anchoImagen = ancho;
-    tamanioBufferImagen = ancho + 2;    /* Caracteres entre c y x */
-    bufferImagen = crearCola(tamanioBufferImagen);
+    bufferImagen[0] = bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char));
+    int i;
+    for(i = 0; i < anchoImagen; i++) {  /* Para contextos iniciales */
+        bufferImagen[filaSuperior] = 0;
+    }
 }
 
 char obtenerUltimoCaracter( FILE * archivoDescomprimido ) {
     char ultimoCaracter;
-
-    fscanf(archivoDescomprimido, &ultimoCaracter);
-    encolar(bufferImagen, (unsigned char) ultimoCaracter);
-    distanciaXyBordeImagen++;
-    if (distanciaXyBordeImagen >= anchoImagen) {
-        distanciaXyBordeImagen = 0;
+    posicionActualImagen++;
+    if (posicionActualImagen != anchoImagen) {
+        ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
+    }
+    else {
+        posicionActualImagen = 0;
+        fgets(bufferImagen[filaSuperior], anchoImagen + 1, archivoDescomprimido);
+        ultimoCaracter = bufferImagen[filaSuperior][posicionActualImagen];
+        filaSuperior = !filaSuperior;  /* filaSuperior = filaSuperior mod 2 */
     }
     return ultimoCaracter;
 }
@@ -40,26 +74,49 @@ void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c
     /* Se asume que esto solo sucede en los laterales de x (a,d)    */
     /* debido al diseño del buffer.                                 */
 
-    *a = (distanciaXyBordeImagen == 0) ? 0 : obtenerElemento(bufferImagen, tamanioBufferImagen - 2);
-    *c = obtenerElemento(bufferImagen, 0);
-    *b = obtenerElemento(bufferImagen, 1);
-    *d = (distanciaXyBordeImagen == anchoImagen - 1) ? 0 : obtenerElemento(bufferImagen, 2);
+    *a = (posicionActualImagen != 0) ? 
+         bufferImagen[!filaSuperior][posicionActualImagen - 1] : 0;
+    *b = bufferImagen[filaSuperior][posicionActualImagen - 1];
+    *c = (posicionActualImagen != 0) ? 
+         bufferImagen[filaSuperior][posicionActualImagen - 1] : 0;
+    *d = (posicionActualImagen != anchoImagen - 1) ? 
+         bufferImagen[filaSuperior][posicionActualImagen + 1] : 0;
 }
 
 void actualizarBuffer( int output, int cantidadBits, FILE * archivoComprimido ) {
-    char nuevoCaracter = 0;
+    /* Output carga los bits del mas al menos significativo */
+    /* (Little-Endian)                                      */
     int i,j;
-    int cantCaracteresAImprimir = (cantidadBits + indiceBufferCodificado) >> 3; /* a << k = a div 2^k */
-    
-    for (i = 0; i < cantCaracteresAImprimir; i++) {
-        for (j = indiceBufferCodificado; j >= 0; j--) {
-            //En esta linea se leeria el nuevo caracter (falta implementar)
+
+    int indiceFinalOutput = MAX_INDICE_BLOQUE - cantidadBits;
+    for (i = MAX_INDICE_BLOQUE; i >= indiceFinalOutput; i--) {
+        if (indiceBloqueCodificado != -1) {
+            int bitOutput = (i > indiceBloqueCodificado) ?
+                             output >> (i - indiceBloqueCodificado):
+                             output << (i - indiceBloqueCodificado);
+            int mascara = 1 << indiceBloqueCodificado;
+            *actualBloqueCodificado |= mascara & bitOutput;
+            indiceBloqueCodificado--;
         }
-        fprintf(nuevoCaracter, &nuevoCaracter);
-        encolar(bufferCodificado, (unsigned char) nuevoCaracter);
+        else {
+            *actualBloqueCodificado = 0;
+            actualBloqueCodificado++;
+            indiceBloqueCodificado = MAX_INDICE_BLOQUE;
+            if (actualBloqueCodificado == bufferCodificado + MAX_BUFFER) {
+                fwrite(bufferCodificado, SIZE_BLOQUE_CODIFICADO,
+                       MAX_BUFFER, archivoComprimido);
+                actualBloqueCodificado = bufferCodificado;
+            }
+        }
     }
 }
 
+void vaciarBuffer( FILE * archivoComprimido ) {
+    fwrite(bufferCodificado, SIZE_BLOQUE_CODIFICADO,
+          (size_t)(actualBloqueCodificado - bufferCodificado) + 1, archivoComprimido);
+}
+
 void destruirBuffer() {
-    destruirArregloCircular(bufferImagen);
+    free(bufferImagen[0]);
+    free(bufferImagen[1]);
 }
