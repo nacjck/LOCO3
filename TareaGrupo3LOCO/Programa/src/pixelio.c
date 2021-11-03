@@ -46,7 +46,8 @@ void inicializarBuffer( int ancho ) {
     filaSuperior = 0;
     posicionActualImagen = -1;
     anchoImagen = ancho;
-    bufferImagen[0] = bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char));
+    bufferImagen[0] = malloc(anchoImagen * sizeof(unsigned char));
+    bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char));
     int i;
     for(i = 0; i < anchoImagen; i++) {  /* Para contextos iniciales */
         bufferImagen[filaSuperior] = 0;
