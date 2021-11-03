@@ -93,7 +93,7 @@ void actualizarBuffer( int output, int cantidadBits, FILE * archivoComprimido ) 
         if (indiceBloqueCodificado != -1) {
             int bitOutput = (i > indiceBloqueCodificado) ?
                              output >> (i - indiceBloqueCodificado):
-                             output << (i - indiceBloqueCodificado);
+                             output << (indiceBloqueCodificado - i);
             int mascara = 1 << indiceBloqueCodificado;
             *actualBloqueCodificado |= mascara & bitOutput;
             indiceBloqueCodificado--;
