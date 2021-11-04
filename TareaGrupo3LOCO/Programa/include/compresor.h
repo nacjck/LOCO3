@@ -9,6 +9,10 @@
 #ifndef compresor_h
 #define compresor_h
 
+#include "compartido.h"
+#include "pixelio.h"
+#include "modalidad.h"
+
 /*
  * Precondiciones: 
  *     -archivoEntrada y archivoSalida no son nulos.

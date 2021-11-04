@@ -1,7 +1,4 @@
 #include "../include/compresor.h"
-#include "../include/compartido.h"
-#include "../include/pixelio.h"
-#include "../include/modalidad.h"
 
 #include <stdio.h>
 

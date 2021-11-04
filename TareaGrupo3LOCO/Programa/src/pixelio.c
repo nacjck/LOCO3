@@ -1,8 +1,6 @@
-#include "../include/modalidad.h"
-#include "../include/pixelio.h"
-#include "../include/compartido.h"
-
 #include <stdio.h>
+
+#include "../include/pixelio.h"
 
 #define MAX_BUFFER 64
 
