@@ -1,4 +1,6 @@
 #include "../include/compresor.h"
+#include "../include/compresorIO.h"
+#include "../include/pixelio.h"
 
 #include <stdio.h>
 
@@ -6,8 +8,8 @@
 void leerCabezal(FILE * compressedFile, int *s,Modalidad * modalidad, int * anchoImagen); //FUNCION AUXILIAR DESCOMPRESOR
 void inicializarExtractos(); //COMPARTIDO
 void inicializarBuffer(); //PIXELIO
-char obtenerUltimoCaracter(); //PIXELIO
-void determinarContexto(unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d); //PIXELIO
+int obtenerUltimoCaracter(); //PIXELIO
+void determinarContexto(int * a, int * b, int * c, int * d); //PIXELIO
 unsigned char predecirX(unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
 Extracto * determinarExtracto(unsigned char x, unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
 int determinarParametroGolombK(Extracto * extracto); //COMPARTIDO
@@ -40,13 +42,13 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     anchoImagen = determinarAnchoImagen(archivoDescomprimido);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
-        while (ultimoCaracterLeido = obtenerUltimoCaracter() != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
             fExtracto = determinarExtracto(xPrediccion, a, b, c);
             errorPrediccion = x - xPrediccion;
-            if (a != b || b!=c || c!=d) {    /* No es modo de run */
+            if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 kGolomb = determinarParametroGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
                 determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);

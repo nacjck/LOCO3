@@ -10,23 +10,23 @@
 #define pixelio_h
 
 #include "modalidad.h"
-#include "compartido.h"
 
-void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
+#include <stdio.h>
+#include <stdlib.h>
 
-int determinarAnchoImagen( FILE * archivoDescomprimido );
+/*
+ * Variables para buffer de pixeles
+ */
+extern unsigned char * bufferImagen[2];
+extern size_t anchoImagen;                  
+extern int posicionActualImagen;
+extern int filaSuperior;
 
-void inicializarBuffer( int tamanio );
+void inicializarBufferImagen( int tamanio );
 
-char obtenerUltimoCaracter();
-
-void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d );
+void determinarContexto(int * a, int * b, int * c, int * d );
 
 //Extracto * determinarExtracto( unsigned char x, unsigned char a, unsigned char b, unsigned char c );
-
-void actualizarBuffer( int output, int cantidadBits, FILE * decompressedFile );
-
-void vaciarBuffer( FILE * archivoComprimido );
 
 void destruirBuffer();
 
