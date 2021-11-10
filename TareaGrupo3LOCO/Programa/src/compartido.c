@@ -64,12 +64,12 @@ unsigned short extract(unsigned short X, BYTE T, BYTE s) {
   unsigned short Q, fC;
 
   Q = (X >> (10-s)); // Cuantización de X
-  fC = ((Q<<3) + T);
+  fC = ((Q<<3) + T); // f(C) = Q*8 + T
 
   return fC;
 }
 
-// Para test y debugg
+// Para test y debugging
 int main() {
   unsigned int a, b, c, hat_x, s;
   BYTE T;
