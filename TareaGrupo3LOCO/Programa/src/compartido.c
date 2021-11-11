@@ -151,12 +151,67 @@ void actualizarExtracto( Extracto * fExtracto, int error ) {
     fExtracto->N++;
 }
 
+<<<<<<< HEAD
 void liberarExtractos() {
     int i;
     for(i = 0; i < cantExtractos; i++) {
         free(extractos[i]);
     }
     free(extractos);
+=======
+unsigned short get_kvalue(unsigned int N, unsigned int A) {
+  // Calcula el parámetro k del código Golomb PO2
+
+  unsigned short k;
+
+  for ( k=0; (N << k) < A; k++ ); // La fórmula está en el artículo y en las diapos
+
+  return k
+}
+
+unsigned short NN_map(int e) {
+  // Map de los errores de predicción al rango no negativo
+
+  unsigned short M;
+
+  if e < 0 {
+    M = -2*e + 1;
+  } else {
+    M = 2*e;
+  }
+
+  return eps
+}
+
+unsigned int get_gPO2(unsigned short k, unsigned short M) {
+  // Devuelve el código de Golomb como un entero sin signo
+  // El largo del código es l = k+1 + M/2^k
+
+  unsigned int gPO2, un, bin;
+
+  bin = M & ((1<<k)-1);
+  un = M >> k;
+  gPO2 = (un << k) + bin;
+
+  return gPO2
+
+}
+
+unsigned short get_gPO2_length(unsigned short k, unsigned short M) {
+  // Devuelve el largo del código de Golomb gPO2
+
+  unsigned int l;
+
+  l = k+1 + M/(2<<k);
+
+  return l
+
+}
+
+
+/*============================================================================*/
+// Para test y debugging
+>>>>>>> c2cf1ee (Golomb)
 int main() {
   unsigned int a, b, c, hat_x, s;
   BYTE T;
