@@ -16,7 +16,7 @@ int determinarParametroGolombK(Extracto * extracto); //COMPARTIDO
 int determinarMapeoRice(int errorPrediccion, Extracto * fExtracto); //COMPARTIDO
 int determinarGolomb(int k, int elemento, int * cantidadBitsImpresos, int * output); //COMPARTIDO
 void actualizarExtracto(Extracto * fExtracto, int errorPrediccion); //COMPARTIDO
-void actualizarBuffer(int output, int cantidadBits, FILE * decompressedFile);
+void actualizarBuffer(unsigned int output, int cantidadBits, FILE * decompressedFile);
 void destruirBuffer(); //PIXELIO
 
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {

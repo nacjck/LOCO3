@@ -3,12 +3,12 @@
 /*
  * Variables para imagen sin comprimir
  */
-unsigned char * bufferImagen[2];             /* Ultimas dos filas de imagen             */
-size_t anchoImagen;                  
-int posicionActualImagen;                    /* Si se esta en el borde izquierdo vale 0 */
-int filaSuperior;                            /* 0 o 1                                   */
+static unsigned char * bufferImagen[2];             /* Ultimas dos filas de imagen             */
+static size_t anchoImagen;                  
+static int posicionActualImagen;                    /* Si se esta en el borde izquierdo vale 0 */
+static int filaSuperior;                            /* 0 o 1                                   */
 
-void inicializarBuffer( int ancho ) {
+void inicializarBuffer( int ancho) {
     filaSuperior = 0;
     posicionActualImagen = ancho + 1;
     anchoImagen = ancho;
@@ -38,6 +38,24 @@ void determinarContexto( int * a, int * b, int * c, int * d ) {
 void destruirBuffer() {
     free(bufferImagen[0]);
     free(bufferImagen[1]);
+}
+
+/* SOLO COMPRESOR */
+int obtenerUltimoCaracter( FILE * archivoOriginal ) {
+    int ultimoCaracter = EOF;
+    posicionActualImagen++;
+    if (posicionActualImagen <= anchoImagen) {
+        ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
+    }
+    else {
+        if (fgets(bufferImagen[filaSuperior] + 1, anchoImagen + 3, archivoOriginal)) {
+            posicionActualImagen = 1;
+            ultimoCaracter = bufferImagen[filaSuperior][posicionActualImagen];
+            filaSuperior = !filaSuperior;  /* filaSuperior = filaSuperior mod 2 */
+            bufferImagen[filaSuperior][anchoImagen + 1] = 0; /* Off-bounds */
+        }
+    }
+    return ultimoCaracter;
 }
 
 /*

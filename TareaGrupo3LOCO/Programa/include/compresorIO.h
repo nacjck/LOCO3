@@ -5,11 +5,9 @@ void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
 
 int determinarAnchoImagen( FILE * archivoDescomprimido );
 
-void inicializarBufferCompresion( int ancho );
+void inicializarBufferCompresion();
 
-int obtenerUltimoCaracter();
-
-void actualizarBuffer( int output, int cantidadBits, FILE * decompressedFile );
+void actualizarBuffer( unsigned int output, int cantidadBits, FILE * decompressedFile );
 
 void vaciarBuffer( FILE * archivoComprimido );
 

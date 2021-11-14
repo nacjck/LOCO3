@@ -17,10 +17,6 @@
 /*
  * Variables para buffer de pixeles
  */
-extern unsigned char * bufferImagen[2];
-extern size_t anchoImagen;                  
-extern int posicionActualImagen;
-extern int filaSuperior;
 
 void inicializarBufferImagen( int tamanio );
 
@@ -29,5 +25,8 @@ void determinarContexto(int * a, int * b, int * c, int * d );
 //Extracto * determinarExtracto( unsigned char x, unsigned char a, unsigned char b, unsigned char c );
 
 void destruirBuffer();
+
+//COMPRESOR
+int obtenerUltimoCaracter();
 
 #endif
