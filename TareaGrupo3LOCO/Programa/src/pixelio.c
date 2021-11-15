@@ -1,5 +1,7 @@
 #include "../include/pixelio.h"
 
+#include <string.h>
+
 /*
  * Variables para imagen sin comprimir
  */
@@ -16,10 +18,7 @@ void inicializarBuffer( int ancho) {
     bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char) + 2);
 
     /* Para contextos iniciales */
-    int i;
-    for(i = 0; i <= anchoImagen + 1; i++) {
-        bufferImagen[!filaSuperior][i] = 0;
-    }
+    memset(bufferImagen[!filaSuperior], 0, ancho);
     bufferImagen[filaSuperior][0] = 0;
     bufferImagen[filaSuperior][anchoImagen + 1] = 0;
 }

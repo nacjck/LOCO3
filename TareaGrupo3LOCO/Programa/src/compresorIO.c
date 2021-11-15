@@ -17,25 +17,26 @@ static const int MAX_INDICE_BLOQUE = (int)((sizeof(contenidoBuffer_t) << 3) - 1)
 /*
  * Variables para codificacion 
  */
-static contenidoBuffer_t bufferCodificado[MAX_BUFFER];   /* Contiene ultimos caracteres a imprimir */
-static contenidoBuffer_t * actualBloqueCodificado;       /* Puntero a siguiente bloque a imprimir  */
-static int indiceBitCodificado;                         /* posicion binaria                        */
+static contenidoBuffer_t bufferCodificado[MAX_BUFFER];   /* Contiene ultimos caracteres a imprimir  */
+static contenidoBuffer_t * actualBloqueCodificado;       /* Puntero a siguiente bloque a imprimir   */
+static int indiceBitCodificado;                          /* posicion binaria                        */
 
 void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad ) {
-    //Por verse
+    fprintf(archivoComprimido,"%d\n",s);
+    fprintf(archivoComprimido,"%d\n",modalidad);
 }
 
 int determinarAnchoImagen( FILE * archivoOriginal ) {
     int ancho = 0;
 
-    while(getc(archivoOriginal) != '\n');   /* P5 */
-    while (getc(archivoOriginal) == '#') {  /* Comentarios */
+    while(getc(archivoOriginal) != '\n');       /* P5                     */
+    while (getc(archivoOriginal) == '#') {      /* Comentarios            */
         while (getc(archivoOriginal) != '\n');
     }
-    fseek(archivoOriginal, -1, SEEK_CUR);   /* Se regresa un caracter */
+    fseek(archivoOriginal, -1, SEEK_CUR);       /* Se regresa un caracter */
     fscanf(archivoOriginal, "%d", &ancho);
-    while(getc(archivoOriginal) != '\n');    /* altura */
-    while(getc(archivoOriginal) != '\n');    /* Magic value */
+    while(getc(archivoOriginal) != '\n');       /* altura                 */
+    while(getc(archivoOriginal) != '\n');       /* Magic value            */
 
     return ancho;
 }
@@ -59,7 +60,7 @@ void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComp
     distanciaBits = indiceBitCodificado - cantidadBits + 1;
     /*
      *  Itera un máximo de 
-     *  ( sizeof(int) / 8*SIZE_BLOQUE_CODIFICADO ) + 1 veces.
+     *  ( sizeof(int) / SIZE_BLOQUE_CODIFICADO ) veces.
      *  Carga el buffer elemento a elemento hasta vaciar el output.
      *  En caso de llenarse el buffer, se imprimen todos los bits
      *  almacenados hasta el momento en el archivo indicado.
@@ -92,6 +93,7 @@ void vaciarBuffer( FILE * archivoComprimido ) {
           (size_t)(actualBloqueCodificado - bufferCodificado + 1), archivoComprimido);
 }
 
+/*
 int main() {
     FILE * f = fopen("testCompresion.txt","wb");
     inicializarBufferCompresion();
@@ -123,3 +125,4 @@ int main() {
     printf("fin");
     fclose(f);
 }
+*/

@@ -16,7 +16,7 @@ ODIR = obj
 CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g -O3
 
-MODULOS = compresor descompresor compartido pixelio
+MODULOS = compartido compresor compresorIO descompresor pixelio
 CONST_MODULES = modalidad
 
 #lista de archivos

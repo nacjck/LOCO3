@@ -117,8 +117,7 @@ int main( int argc, char* argv[] ) {
 /*
  * Rutina para errores
 */
-void abortar( char *mensaje )
-{
+void abortar( char *mensaje ) {
     puts( "Error: " );
     puts( mensaje );
     puts( "\n ");
