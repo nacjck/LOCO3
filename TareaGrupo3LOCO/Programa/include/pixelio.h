@@ -5,10 +5,12 @@
  * de pixeles
  *
  */
+#include <stdint.h>
 
 #ifndef pixelio_h
 #define pixelio_h
 
+<<<<<<< HEAD
 #include "modalidad.h"
 
 #include <stdio.h>
@@ -32,5 +34,11 @@ void destruirBuffer();
 
 //COMPRESOR
 int obtenerUltimoCaracter( FILE * archivoComprimido );
+=======
+// Definiciones de tipos
+
+typedef unsigned char PIX; // Alias para valores de pixel
+typedef unsigned char BYTE; // Byte sin signo
+>>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
 
 #endif

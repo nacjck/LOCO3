@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "../include/pixelio.h"
 
 #include <string.h>
@@ -119,3 +120,9 @@ int main() {
 
     void destruirBuffer();
 }*/
+=======
+#include <stdbool.h>
+#include <stdio.h>
+
+#include "../include/pixelio.h"
+>>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
