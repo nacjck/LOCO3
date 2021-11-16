@@ -95,13 +95,12 @@ uint16_t NN_map(int e) {
 
 unsigned int get_gPO2(uint16_t k, uint16_t M) {
   // Devuelve el código de Golomb como un entero sin signo
-  // El largo del código es l = k+1 + M/2^k
 
-  unsigned int gPO2, un, bin;
+  unsigned int gPO2, un_arg, bin_arg;
 
-  bin = M & ((1<<k)-1);
-  un = M >> k;
-  gPO2 = (un << k) + bin; // gPO2(i) = unary(i)binary(i)
+  bin_arg = M & ((1<<k)-1);
+  un_arg = M >> k;
+  gPO2 = (bin_arg << un_arg+1 ) + 1; // gPO2(i) = binary(M mod 2^k)unary(M / 2^k)
 
   return gPO2;
 
@@ -112,7 +111,7 @@ uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
 
   uint16_t l;
 
-  l = k+1 + M/(2<<k);
+  l = k+1 + M/(1<<k);
 
   return l;
 
@@ -122,24 +121,34 @@ uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
 /*============================================================================*/
 // Para test y debugging
 int main() {
-  unsigned int a, b, c, hat_x, s;
-  BYTE T;
-  unsigned short X, fC;
+  // unsigned int a, b, c, hat_x, s;
+  // BYTE T;
+  // unsigned short X, fC;
+  //
+  // printf("Ingresar valores de contexto: a, b, c:\n");
+  // scanf("%u%u%u", &a, &b, &c);
+  // printf("a=%d, b=%d, c=%d\n", a, b, c);
+  //
+  // hat_x = predict(a, b, c);
+  // T = textura(a, b, c, hat_x);
+  // X = n_act(a, b, c, hat_x);
+  //
+  // printf("Ingresar parámetro s:\n");
+  // scanf("%u", &s);
+  // fC = extract(X, T, s);
+  //
+  // printf("Prediccion: hat_x=%d\n", hat_x);
+  // printf("Textura: T=%x\n", T);
+  // printf("Nivel de actividad: X=%u\n", X);
+  // printf("Extracto: f(C)=%u", fC);
 
-  printf("Ingresar valores de contexto: a, b, c:\n");
-  scanf("%u%u%u", &a, &b, &c);
-  printf("a=%d, b=%d, c=%d\n", a, b, c);
+  unsigned int code;
+  uint16_t l, k;
 
-  hat_x = predict(a, b, c);
-  T = textura(a, b, c, hat_x);
-  X = n_act(a, b, c, hat_x);
-
-  printf("Ingresar parámetro s:\n");
-  scanf("%u", &s);
-  fC = extract(X, T, s);
-
-  printf("Prediccion: hat_x=%d\n", hat_x);
-  printf("Textura: T=%x\n", T);
-  printf("Nivel de actividad: X=%u\n", X);
-  printf("Extracto: f(C)=%u", fC);
+  k = 2;
+  for (int i=0; i<16; i++) {
+    code = get_gPO2(k, i);
+    l = get_gPO2_length(k, i);
+    printf("i=%u G(i)=%x l(G(i))=%u\n", i, code, l);
+  }
 }
