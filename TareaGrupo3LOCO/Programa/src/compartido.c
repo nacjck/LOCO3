@@ -184,7 +184,7 @@ uint16_t get_k(unsigned int N, unsigned int A) {
 
   for ( k=0; (N << k) < A; k++ ); // La fórmula está en el artículo y en las diapos
 
-  return k
+  return k;
 }
 
 uint16_t NN_map(int e) {
@@ -192,13 +192,13 @@ uint16_t NN_map(int e) {
 
   uint16_t M;
 
-  if e < 0 {
+  if (e < 0) {
     M = -2*e + 1;
   } else {
     M = 2*e;
   }
 
-  return eps
+  return M;
 }
 
 unsigned int get_gPO2(uint16_t k, uint16_t M) {
@@ -211,7 +211,7 @@ unsigned int get_gPO2(uint16_t k, uint16_t M) {
   un = M >> k;
   gPO2 = (un << k) + bin; // gPO2(i) = unary(i)binary(i)
 
-  return gPO2
+  return gPO2;
 
 }
 
@@ -222,7 +222,7 @@ uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
 
   l = k+1 + M/(2<<k);
 
-  return l
+  return l;
 
 }
 
