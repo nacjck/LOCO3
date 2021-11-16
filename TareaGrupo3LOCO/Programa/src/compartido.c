@@ -100,8 +100,7 @@ unsigned int get_gPO2(uint16_t k, uint16_t M) {
 
   bin_arg = M & ((1<<k)-1);
   un_arg = M >> k;
-  gPO2 = (bin_arg << un_arg+1 ) + 1; // gPO2(i) = binary(M mod 2^k)unary(M / 2^k)
-
+  gPO2 = (bin_arg << (un_arg + 1) ) + 1; // gPO2(i) = binary(M mod 2^k)unary(M / 2^k)
   return gPO2;
 
 }
@@ -111,7 +110,7 @@ uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
 
   uint16_t l;
 
-  l = k+1 + M/(1<<k);
+  l = k+1 + (M>>k);
 
   return l;
 
@@ -151,4 +150,5 @@ int main() {
     l = get_gPO2_length(k, i);
     printf("i=%u G(i)=%x l(G(i))=%u\n", i, code, l);
   }
+
 }
