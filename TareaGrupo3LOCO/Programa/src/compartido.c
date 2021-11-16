@@ -46,9 +46,9 @@ BYTE textura(PIX a, PIX b, PIX c, PIX x) {
 
 // Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
 
-unsigned short n_act(PIX a, PIX b, PIX c, PIX x) {
+uint16_t n_act(PIX a, PIX b, PIX c, PIX x) {
   // Devuelve el nivel de actividad X
-  unsigned short X = 0; // Máximo 10 bits
+  uint16_t X = 0; // Máximo 10 bits
 
   X += (c >= x) ? (c-x) : (x-c);
   X += (b >= x) ? (b-x) : (x-b);
@@ -57,11 +57,11 @@ unsigned short n_act(PIX a, PIX b, PIX c, PIX x) {
   return X;
 }
 
-unsigned short extract(unsigned short X, BYTE T, BYTE s) {
+uint16_t extract(uint16_t X, BYTE T, BYTE s) {
   // Devuelve el extracto f(C)
   // Máximo s+3 bits
 
-  unsigned short Q, fC;
+  uint16_t Q, fC;
 
   Q = (X >> (10-s)); // Cuantización de X
   fC = ((Q<<3) + T); // f(C) = Q*8 + T
@@ -69,20 +69,20 @@ unsigned short extract(unsigned short X, BYTE T, BYTE s) {
   return fC;
 }
 
-unsigned short get_kvalue(unsigned int N, unsigned int A) {
+uint16_t get_k(unsigned int N, unsigned int A) {
   // Calcula el parámetro k del código Golomb PO2
 
-  unsigned short k;
+  uint16_t k;
 
   for ( k=0; (N << k) < A; k++ ); // La fórmula está en el artículo y en las diapos
 
   return k
 }
 
-unsigned short NN_map(int e) {
+uint16_t NN_map(int e) {
   // Map de los errores de predicción al rango no negativo
 
-  unsigned short M;
+  uint16_t M;
 
   if e < 0 {
     M = -2*e + 1;
@@ -93,7 +93,7 @@ unsigned short NN_map(int e) {
   return eps
 }
 
-unsigned int get_gPO2(unsigned short k, unsigned short M) {
+unsigned int get_gPO2(uint16_t k, uint16_t M) {
   // Devuelve el código de Golomb como un entero sin signo
   // El largo del código es l = k+1 + M/2^k
 
@@ -101,16 +101,16 @@ unsigned int get_gPO2(unsigned short k, unsigned short M) {
 
   bin = M & ((1<<k)-1);
   un = M >> k;
-  gPO2 = (un << k) + bin;
+  gPO2 = (un << k) + bin; // gPO2(i) = unary(i)binary(i)
 
   return gPO2
 
 }
 
-unsigned short get_gPO2_length(unsigned short k, unsigned short M) {
-  // Devuelve el largo del código de Golomb gPO2
+uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
+  // Devuelve el largo en bits del código de Golomb PO2
 
-  unsigned int l;
+  uint16_t l;
 
   l = k+1 + M/(2<<k);
 
