@@ -126,6 +126,7 @@ int main() {
 
 #include "../include/pixelio.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
 =======
 
@@ -144,3 +145,5 @@ void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE
 
 }
 >>>>>>> c073309 (Corregidos errores de sintaxis.)
+=======
+>>>>>>> 23b498b (Test de códigos de Golomb.)
