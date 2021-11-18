@@ -20,7 +20,7 @@
 
 void inicializarBuffer( int tamanio );
 
-void determinarContexto(int * a, int * b, int * c, int * d );
+void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d );
 
 //Extracto * determinarExtracto( unsigned char x, unsigned char a, unsigned char b, unsigned char c );
 

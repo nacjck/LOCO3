@@ -23,7 +23,7 @@ void inicializarBuffer( int ancho ) {
     bufferImagen[filaSuperior][anchoImagen + 1] = 0;
 }
 
-void determinarContexto( int * a, int * b, int * c, int * d ) {
+void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
     /* Si se está fuera de los límites de la imagen se devuelve 0.  */
     /* Se asume que esto siempre sucede debido a la inicialización  */
     /* del buffer.                                                  */

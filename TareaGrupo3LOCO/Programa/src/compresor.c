@@ -9,7 +9,7 @@ void leerCabezal(FILE * compressedFile, int *s,Modalidad * modalidad, int * anch
 void inicializarExtractos(); //COMPARTIDO
 void inicializarBuffer( int ancho ); //PIXELIO
 int obtenerUltimoCaracter(); //PIXELIO
-void determinarContexto(int * a, int * b, int * c, int * d); //PIXELIO
+void determinarContexto(unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d); //PIXELIO
 unsigned char predecirX(unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
 Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s ); //COMPARTIDO
 int determinarGolombK(Extracto * extracto); //COMPARTIDO
