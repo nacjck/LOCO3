@@ -1,23 +1,22 @@
 #include "../include/compresor.h"
-#include "../include/compartido.h"
+#include "../include/compresorIO.h"
 #include "../include/pixelio.h"
-#include "../include/modalidad.h"
 
 #include <stdio.h>
 
 // Ayuda-memoria para saber donde está cada cosa
 void leerCabezal(FILE * compressedFile, int *s,Modalidad * modalidad, int * anchoImagen); //FUNCION AUXILIAR DESCOMPRESOR
 void inicializarExtractos(); //COMPARTIDO
-void inicializarBuffer(); //PIXELIO
-char obtenerUltimoCaracter(); //PIXELIO
+void inicializarBuffer( int ancho ); //PIXELIO
+int obtenerUltimoCaracter(); //PIXELIO
 void determinarContexto(unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d); //PIXELIO
 unsigned char predecirX(unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
-Extracto * determinarExtracto(unsigned char x, unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
-int determinarParametroGolombK(Extracto * extracto); //COMPARTIDO
+Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s ); //COMPARTIDO
+int determinarGolombK(Extracto * extracto); //COMPARTIDO
 int determinarMapeoRice(int errorPrediccion, Extracto * fExtracto); //COMPARTIDO
-int determinarGolomb(int k, int elemento, int * cantidadBitsImpresos, int * output); //COMPARTIDO
+void determinarGolomb(int k, int elemento, int * cantidadBitsImpresos, int * output); //COMPARTIDO
 void actualizarExtracto(Extracto * fExtracto, int errorPrediccion); //COMPARTIDO
-void actualizarBuffer(int output, int cantidadBits, FILE * decompressedFile);
+void actualizarBuffer(unsigned int output, int cantidadBits, FILE * decompressedFile);
 void destruirBuffer(); //PIXELIO
 
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
@@ -43,14 +42,14 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     anchoImagen = determinarAnchoImagen(archivoDescomprimido);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
-        while (ultimoCaracterLeido = obtenerUltimoCaracter() != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion, a, b, c);
+            fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
             errorPrediccion = x - xPrediccion;
-            if (a != b || b!=c || c!=d) {    /* No es modo de run */
-                kGolomb = determinarParametroGolombK(fExtracto);
+            if (a!=b || b!=c || c!=d) {    /* No es modo de run */
+                kGolomb = determinarGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
                 determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
                 actualizarExtracto(fExtracto,errorPrediccion);
@@ -62,7 +61,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 kGolomb = 3;
                 determinarContexto(&a, &b, &c, &d);
                 xPrediccion = predecirX(a, b, c);
-                fExtracto = determinarExtracto(xPrediccion, a, b, c);
+                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
                 do {
                     l++;
                     errorPrediccion = x - xPrediccion;
@@ -84,15 +83,16 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             x = (unsigned char)ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion,a , b, c);
+            fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
             errorPrediccion = x - xPrediccion;
-            kGolomb = determinarParametroGolombK(fExtracto);
+            kGolomb = determinarGolombK(fExtracto);
             mapeoRice = determinarMapeoRice(errorPrediccion, fExtracto);
             determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
             actualizarExtracto(fExtracto, errorPrediccion);
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
         }
     }
+    liberarExtractos();
     vaciarBuffer(archivoComprimido);
     destruirBuffer();
     fclose(archivoComprimido);
