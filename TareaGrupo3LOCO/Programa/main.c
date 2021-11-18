@@ -10,13 +10,19 @@
  * main.c
  *
  * Para correr el archivo 'main.c' desde la consola, usar:
- * ./main -c/d -s valorS inputFile outputFile
+ * ./main -d/[c modalidad] -r/n -[s valorS] inputFile outputFile
  * 
- * Ejemplo: ./main -c -s 10 "Archivo" "ArchivoComprimido"
+ * Ejemplos:
+ *   ./main -c 1 -s 10 "imagen.pgm" "imagen.bin"
+ *   ./main -d -s 10 "imagen.bin" "imagen.pgm"
  *
  * Donde:
- * -c habilita la compresión y -d la descompresión
+ * -c <number> habilita la compresión,
+ * si recibe 1 comprime en modo de run,
+ * si recibe un 0 lo hace en modo normal.
+ * -d habilita la compresión
  * -s <number>: parámetro s del sesgo
+ * -n habilita la compr
  * inputFile: archivo de entrada
  * outputFile: archivo de salida
  */
@@ -58,13 +64,25 @@ int main( int argc, char* argv[] ) {
             switch ( argv[i][1] ) {
                 case 's':
                     i++;
-                    if ( sscanf(argv[i], "%d", &parametros.s) != 1 ) {
+                    if ( sscanf(argv[i], "%d", &(parametros.s)) != 1 ) {
                         abortar("Valor de 's' invalido.");
                     }
                     i++;
                     break;
                 case 'c':
                     funcionalidad = COMPRIMIR;
+                    i++;
+                    int modalidad;
+                    if ( sscanf(argv[i], "%d", &(modalidad)) != 1 ) {
+                        parametros.modalidad = NORMAL;
+                        i--;
+                    }
+                    else if (modalidad != 0 && modalidad != 1) {
+                        abortar("Valor de modalidad inválido.");
+                    }
+                    else {
+                        parametros.modalidad = (modalidad == 1) ? RUN : NORMAL;
+                    }
                     i++;
                     break;
                 case 'd':
@@ -86,29 +104,38 @@ int main( int argc, char* argv[] ) {
                 abortar("Demasiados parametros.");
             }
         }
-
-        /*
-         * Control de precondiciones
-         */
-        if( parametros.archivoEntrada == NULL ) {
-            abortar("Ubicacion de archivo de entrada no especificada.");
-        }
-        if( parametros.archivoSalida == NULL ) {
-            abortar("Ubicacion de archivo de salida no especificada.");
-        }
-        if( parametros.s < 0 || parametros.s > 10 ) {
-            abortar("el parametro 's' debe estar entre 0 y 10'");
-        }
-
     }
     
-    if( funcionalidad == COMPRIMIR )
-    {
-        comprimir(parametros.archivoEntrada,parametros.archivoSalida,
-            parametros.s,parametros.modalidad);
+    /*
+     * Control de precondiciones
+     */
+    if( parametros.archivoEntrada == NULL ) {
+        abortar("Ubicacion de archivo de entrada no especificada.");
     }
-    else
-    {
+    else {
+        FILE * f = NULL;
+        if ((f = fopen(parametros.archivoEntrada,"rb")) == NULL) {
+            abortar("problema al abrir archivo de entrada.");
+        }
+        fclose(f);
+    }
+    if (parametros.archivoSalida == NULL) {
+        abortar("Ubicacion de archivo de salida no especificada.");
+    }
+    if (parametros.s < 0 || parametros.s > 10) {
+        abortar("el parametro 's' debe estar entre 0 y 10.");
+    }
+    
+    /*
+     * Inicio de compresión/descompresión
+     */
+    
+    puts("\n Iniciando programa...");
+    if (funcionalidad == COMPRIMIR) {
+        comprimir(parametros.archivoEntrada,parametros.archivoSalida,
+        parametros.s,parametros.modalidad);
+    }
+    else {
         descomprimir(parametros.archivoEntrada,parametros.archivoSalida);
     }
     return EXIT_SUCCESS;
@@ -118,9 +145,9 @@ int main( int argc, char* argv[] ) {
  * Rutina para errores
 */
 void abortar( char *mensaje ) {
-    puts( "Error: " );
-    puts( mensaje );
-    puts( "\n ");
-    exit( EXIT_FAILURE );
+    puts("Error: ");
+    puts(mensaje);
+    puts("\n ");
+    exit(EXIT_FAILURE);
 }
 
