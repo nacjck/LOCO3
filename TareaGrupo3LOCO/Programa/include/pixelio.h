@@ -18,7 +18,7 @@
  * Variables para buffer de pixeles
  */
 
-void inicializarBufferImagen( int tamanio );
+void inicializarBuffer( int tamanio );
 
 void determinarContexto(int * a, int * b, int * c, int * d );
 

@@ -31,7 +31,7 @@ EJECUTABLE=main
 $(ODIR)/$(MAIN).o: $(MAIN).c | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
-$(ODIR)/%.o: $(CPPDIR)/%.c $(HDIR)/%.h | objfolder $(CONST_HS) | objfolder
+$(ODIR)/%.o: $(CPPDIR)/%.c $(HDIR)/%.h $(CONST_HS) | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 $(EJECUTABLE): $(ODIR)/$(MAIN).o $(OS)

@@ -9,6 +9,8 @@
 #ifndef compartido_h
 #define compartido_h
 
+#include <stdlib.h>
+
 /*
  * Estructura para extracto f(C)
  */
@@ -36,7 +38,7 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
 /*
  * Retorna el parámetro k de Golomb dado un extracto
  */
-int determinarParametroGolombK( Extracto * extracto );
+int determinarGolombK( Extracto * extracto );
 
 /*
  * Retorna el mapeo M(e) 

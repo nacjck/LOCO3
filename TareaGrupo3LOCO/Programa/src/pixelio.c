@@ -6,11 +6,11 @@
  * Variables para imagen sin comprimir
  */
 static unsigned char * bufferImagen[2];             /* Ultimas dos filas de imagen             */
-static size_t anchoImagen;                  
+static size_t anchoImagen;
 static int posicionActualImagen;                    /* Si se esta en el borde izquierdo vale 0 */
 static int filaSuperior;                            /* 0 o 1                                   */
 
-void inicializarBuffer( int ancho) {
+void inicializarBuffer( int ancho ) {
     filaSuperior = 0;
     posicionActualImagen = ancho + 1;
     anchoImagen = ancho;
