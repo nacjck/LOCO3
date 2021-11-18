@@ -140,6 +140,7 @@ void vaciarBuffer( FILE * archivoComprimido ) {
            archivoComprimido);
 }
 
+/*
 int main() {
     FILE * f = fopen("testCompresion.txt","wb");
     inicializarBufferCompresion();
@@ -163,7 +164,7 @@ int main() {
         actualizarBuffer(0,2,f);
         actualizarBuffer(1,2,f);
     
-    }*/
+    }
     
     vaciarBuffer(f);
     fclose(f);
@@ -182,3 +183,4 @@ int main() {
     printf("fin");
     fclose(f);
 }
+*/

@@ -49,7 +49,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
             errorPrediccion = x - xPrediccion;
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
-                kGolomb = determinarParametroGolombK(fExtracto);
+                kGolomb = determinarGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
                 determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
                 actualizarExtracto(fExtracto,errorPrediccion);
@@ -85,7 +85,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             xPrediccion = predecirX(a, b, c);
             fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
             errorPrediccion = x - xPrediccion;
-            kGolomb = determinarParametroGolombK(fExtracto);
+            kGolomb = determinarGolombK(fExtracto);
             mapeoRice = determinarMapeoRice(errorPrediccion, fExtracto);
             determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
             actualizarExtracto(fExtracto, errorPrediccion);
