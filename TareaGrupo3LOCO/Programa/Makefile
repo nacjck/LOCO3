@@ -1,5 +1,5 @@
 # Makefile 
-# Autor:
+# Autores:
 # 	Alexis Baladon
 #	Juan Ignacio Fernandez
 
@@ -14,9 +14,9 @@ ODIR = obj
 
 #compilador
 CC = gcc
-CFLAGS = -Wall -Werror -I$(HDIR) -g
+CFLAGS = -Wall -Werror -I$(HDIR) -g -O3
 
-MODULOS = sistema compresor descompresor compartido pixelio
+MODULOS = compartido compresor compresorIO descompresor pixelio
 CONST_MODULES = modalidad
 
 #lista de archivos
@@ -31,7 +31,7 @@ EJECUTABLE=main
 $(ODIR)/$(MAIN).o: $(MAIN).c | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
-$(ODIR)/%.o: $(CPPDIR)/%.c $(HDIR)/%.h | objfolder #$(CONST_HS) | objfolder
+$(ODIR)/%.o: $(CPPDIR)/%.c $(HDIR)/%.h $(CONST_HS) | objfolder
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 $(EJECUTABLE): $(ODIR)/$(MAIN).o $(OS)
@@ -47,6 +47,6 @@ clean_bin:
 	rmdir $(ODIR)
 
 entrega: $(EJECUTABLE)
-	tar -cvzf tarea1CDSP.tar.gz *
-	$(info Archivo a entregar: tarea1CDSP.gz )
+	tar -cvzf tareaATIPI.tar.gz *
+	$(info Archivo a entregar: tareaATIPI.gz )
 

@@ -28,14 +28,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef enum { Comprimir, Descomprimir } funcionalidad_t;
+typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
 
 typedef struct {
     char            *archivoEntrada;
     char            *archivoSalida;
     int             s;                  /* 0 <= s <= 10 */
-    modalidad_t     modalidad;
-} parametros_t;
+    Modalidad     modalidad;
+} Parametros;
 
 /*
  * Declaraciones para rutinas locales
@@ -49,8 +49,8 @@ int main( int argc, char* argv[] ) {
      * En caso de no presentarse nombres de archivos ya sean
      * de entrada como de salida se devolverá error.
      */
-    funcionalidad_t funcionalidad = Comprimir;
-    parametros_t parametros = {NULL,NULL,0,Normal};
+    Funcionalidad funcionalidad = COMPRIMIR;
+    Parametros parametros = {NULL,NULL,0,NORMAL};
     
     int i = 1;
     while( i < argc ) {
@@ -64,11 +64,11 @@ int main( int argc, char* argv[] ) {
                     i++;
                     break;
                 case 'c':
-                    funcionalidad = Comprimir;
+                    funcionalidad = COMPRIMIR;
                     i++;
                     break;
                 case 'd':
-                    funcionalidad = Descomprimir;
+                    funcionalidad = DESCOMPRIMIR;
                     i++;
                     break;
                 default:
@@ -102,7 +102,7 @@ int main( int argc, char* argv[] ) {
 
     }
     
-    if( funcionalidad == Comprimir )
+    if( funcionalidad == COMPRIMIR )
     {
         comprimir(parametros.archivoEntrada,parametros.archivoSalida,
             parametros.s,parametros.modalidad);
@@ -117,8 +117,7 @@ int main( int argc, char* argv[] ) {
 /*
  * Rutina para errores
 */
-void abortar( char *mensaje )
-{
+void abortar( char *mensaje ) {
     puts( "Error: " );
     puts( mensaje );
     puts( "\n ");
