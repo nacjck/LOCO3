@@ -4,21 +4,6 @@
 
 #include <stdio.h>
 
-// Ayuda-memoria para saber donde está cada cosa
-void leerCabezal(FILE * compressedFile, int *s,Modalidad * modalidad, int * anchoImagen); //FUNCION AUXILIAR DESCOMPRESOR
-void inicializarExtractos(); //COMPARTIDO
-void inicializarBuffer( int ancho ); //PIXELIO
-int obtenerUltimoCaracter(); //PIXELIO
-void determinarContexto(unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d); //PIXELIO
-unsigned char predecirX(unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s ); //COMPARTIDO
-int determinarGolombK(Extracto * extracto); //COMPARTIDO
-int determinarMapeoRice(int errorPrediccion, Extracto * fExtracto); //COMPARTIDO
-void determinarGolomb(int k, int elemento, int * cantidadBitsImpresos, int * output); //COMPARTIDO
-void actualizarExtracto(Extracto * fExtracto, int errorPrediccion); //COMPARTIDO
-void actualizarBuffer(unsigned int output, int cantidadBits, FILE * decompressedFile);
-void destruirBuffer(); //PIXELIO
-
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
     FILE * archivoComprimido;
     FILE * archivoDescomprimido;
@@ -79,7 +64,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
         }
     }
     else {
-        while (ultimoCaracterLeido = obtenerUltimoCaracter() != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
             x = (unsigned char)ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
