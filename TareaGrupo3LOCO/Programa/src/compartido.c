@@ -101,7 +101,7 @@ int determinarGolombK( Extracto * extracto ) {
 /*
  * Retorna el mapeo M(e)
  */
-int determinarMapeoRice( int errorPrediccion, Extracto * extracto ) {
+int determinarMapeoRice( int errorPrediccion ) {
     // Map de los errores de predicción al rango no negativo
     unsigned short M;
 
@@ -114,31 +114,20 @@ int determinarMapeoRice( int errorPrediccion, Extracto * extracto ) {
     return M;
 }
 
-unsigned short determinarLargoGolomb(unsigned short k, unsigned short M) {
-  // Devuelve el largo del código de Golomb gPO2
-
-  unsigned int l;
-
-  l = (k+1) + (M>>k);
-
-  return l;
-}
-
 /*
  * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
  * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
  */
-void determinarGolomb( int k, int error, int * lgPO2, int * gPO2 ) {
+void determinarGolomb( int k, int M, int * lgPO2, int * gPO2 ) {
     // Devuelve el código de Golomb como un entero sin signo
   // El largo del código es l = k+1 + M/2^k
 
     unsigned int un_arg, bin_arg;
-    int M;
-    
-    M = (error<0) ? (-(error<<1) + 1) : (error<<1);
+
     bin_arg = M & ((1<<k)-1);
     un_arg = M >> k;
-    *gPO2 = (bin_arg << (un_arg+1)) & 1;    /* Golomb PO2 */
+    
+    *gPO2 = (bin_arg << (un_arg+1)) | 1;    /* Golomb PO2 */
     *lgPO2 = (k+1) + (M>>k);    /* Largo Golomb */
 }
 
@@ -159,4 +148,5 @@ void liberarExtractos() {
     for(i = 0; i < cantExtractos; i++) {
         free(extractos[i]);
     }
+    free(extractos);
 }

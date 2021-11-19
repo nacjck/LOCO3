@@ -43,7 +43,7 @@ int determinarGolombK( Extracto * extracto );
 /*
  * Retorna el mapeo M(e) 
  */
-int determinarMapeoRice( int errorPrediccion, Extracto * extracto );
+int determinarMapeoRice( int errorPrediccion );
 
 /*
  * Retorna una tira de bits conteniendo los bits a imprimir de Golomb

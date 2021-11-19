@@ -26,6 +26,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     inicializarExtractos(s);
     anchoImagen = determinarAnchoImagen(archivoOriginal);
     inicializarBuffer(anchoImagen);
+    inicializarBufferCompresion();
     if (modalidad == RUN) {
         while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
@@ -35,7 +36,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             errorPrediccion = x - xPrediccion;
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 kGolomb = determinarGolombK(fExtracto);
-                mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
+                mapeoRice = determinarMapeoRice(errorPrediccion);
                 determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
                 actualizarExtracto(fExtracto,errorPrediccion);
             }
@@ -71,16 +72,16 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
             errorPrediccion = x - xPrediccion;
             kGolomb = determinarGolombK(fExtracto);
-            mapeoRice = determinarMapeoRice(errorPrediccion, fExtracto);
+            mapeoRice = determinarMapeoRice(errorPrediccion);
             determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
             actualizarExtracto(fExtracto, errorPrediccion);
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
             
         }
     }
-    liberarExtractos();
-    vaciarBuffer(archivoComprimido);
-    destruirBuffer();
     fclose(archivoComprimido);
     fclose(archivoOriginal);
+    vaciarBuffer(archivoComprimido);
+    destruirBuffer();
+    liberarExtractos();
 }
