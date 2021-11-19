@@ -73,15 +73,18 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             errorPrediccion = x - xPrediccion;
             kGolomb = determinarGolombK(fExtracto);
             mapeoRice = determinarMapeoRice(errorPrediccion);
+            //printf("d %d %d",kGolomb,mapeoRice);
+            //puts("");
             determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
+            //printf("d %d %d",cantidadBitsImpresos,output);
+            //puts("");
             actualizarExtracto(fExtracto, errorPrediccion);
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
-            
         }
     }
-    fclose(archivoComprimido);
-    fclose(archivoOriginal);
+    liberarExtractos();
     vaciarBuffer(archivoComprimido);
     destruirBuffer();
-    liberarExtractos();
+    fclose(archivoComprimido);
+    fclose(archivoOriginal);
 }

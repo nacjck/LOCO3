@@ -114,6 +114,7 @@ int determinarMapeoRice( int errorPrediccion ) {
     return M;
 }
 
+
 /*
  * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
  * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
@@ -123,7 +124,7 @@ void determinarGolomb( int k, int M, int * lgPO2, int * gPO2 ) {
   // El largo del código es l = k+1 + M/2^k
 
     unsigned int un_arg, bin_arg;
-
+    
     bin_arg = M & ((1<<k)-1);
     un_arg = M >> k;
     
