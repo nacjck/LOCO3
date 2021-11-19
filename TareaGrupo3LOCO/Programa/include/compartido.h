@@ -22,7 +22,7 @@ typedef struct {
 /*
  * Inicializa los extractos correspondientes a cada caracter con N=1 y A=8.
  */
-void inicializarExtractos();
+void inicializarExtractos( int s );
 
 /*
  * Retorna el valor predicho para x dado el contexto (a,b,c)

@@ -4,24 +4,9 @@
 
 #include <stdio.h>
 
-// Ayuda-memoria para saber donde está cada cosa
-void leerCabezal(FILE * compressedFile, int *s,Modalidad * modalidad, int * anchoImagen); //FUNCION AUXILIAR DESCOMPRESOR
-void inicializarExtractos(); //COMPARTIDO
-void inicializarBuffer( int ancho ); //PIXELIO
-int obtenerUltimoCaracter(); //PIXELIO
-void determinarContexto(unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d); //PIXELIO
-unsigned char predecirX(unsigned char a, unsigned char b, unsigned char c); //COMPARTIDO
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s ); //COMPARTIDO
-int determinarGolombK(Extracto * extracto); //COMPARTIDO
-int determinarMapeoRice(int errorPrediccion, Extracto * fExtracto); //COMPARTIDO
-void determinarGolomb(int k, int elemento, int * cantidadBitsImpresos, int * output); //COMPARTIDO
-void actualizarExtracto(Extracto * fExtracto, int errorPrediccion); //COMPARTIDO
-void actualizarBuffer(unsigned int output, int cantidadBits, FILE * decompressedFile);
-void destruirBuffer(); //PIXELIO
-
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
     FILE * archivoComprimido;
-    FILE * archivoDescomprimido;
+    FILE * archivoOriginal;
     int anchoImagen;
     int kGolomb;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
@@ -34,15 +19,15 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     int cantidadBitsImpresos;       /* Cantidad de bits impresos por iteración */
     int output;                     /* Salida al archivo descomprimido         */
     
-    archivoComprimido = fopen(archivoEntrada, "rb");
-    archivoDescomprimido = fopen(archivoSalida, "wb");
-
+    archivoComprimido = fopen(archivoSalida, "wb");
+    archivoOriginal = fopen(archivoEntrada, "rb");
+    
     escribirCabezal(archivoComprimido, s, modalidad);
-    inicializarExtractos();
-    anchoImagen = determinarAnchoImagen(archivoDescomprimido);
+    inicializarExtractos(s);
+    anchoImagen = determinarAnchoImagen(archivoOriginal);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
-        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
@@ -66,7 +51,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                     l++;
                     errorPrediccion = x - xPrediccion;
                     actualizarExtracto(fExtracto, errorPrediccion);
-                    ultimoCaracterLeido = obtenerUltimoCaracter();
+                    ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
                     xAnterior = x;
                     x = (unsigned char) ultimoCaracterLeido;
                 } while (ultimoCaracterLeido != EOF && x == xAnterior);
@@ -79,7 +64,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
         }
     }
     else {
-        while (ultimoCaracterLeido = obtenerUltimoCaracter() != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
             x = (unsigned char)ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
@@ -90,11 +75,12 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
             actualizarExtracto(fExtracto, errorPrediccion);
             actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
+            
         }
     }
     liberarExtractos();
     vaciarBuffer(archivoComprimido);
     destruirBuffer();
     fclose(archivoComprimido);
-    fclose(archivoDescomprimido);
+    fclose(archivoOriginal);
 }

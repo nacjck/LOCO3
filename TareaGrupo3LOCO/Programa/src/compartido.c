@@ -1,20 +1,25 @@
 #include "../include/compartido.h"
 
-#define NUMERO_EXTRACTOS 10 //Hay que calcular cuantos extractos distintos se pueden hallar
+#include <stdio.h>
+
 #define R 128
 
 /*
  * Este arreglo es el que se inicializa al comienzo del programa con N=1 y A=8
  */
-static Extracto * extractos[NUMERO_EXTRACTOS];
+static Extracto ** extractos;
+static int cantExtractos; // 1 << (s + 3)
 
 /*
  * Inicializa los extractos correspondientes a cada caracter con N=1 y A=8.
  */
-void inicializarExtractos() {
+void inicializarExtractos( int s ) {
     int i;
-    for (i = 0; i < NUMERO_EXTRACTOS; i++) {
-        Extracto * ext = malloc(sizeof(Extracto));
+    
+    cantExtractos = 1 << (s + 3);
+    extractos = malloc(sizeof(Extracto) << (s + 3));
+    for (i = 0; i < cantExtractos; i++) {
+        Extracto * ext = malloc(sizeof(Extracto *));
         ext->N = 1;
         ext->A = 8;
         extractos[i] = ext;
@@ -76,8 +81,7 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
     T += (b>xPrediccion) << 1;
     T += (a>xPrediccion); // LSB
 
-    fC = (Q<<3) + T; // f(C) = Q*8 + T   //cambio (x es X???)
-
+    fC = (Q<<3) + T; // f(C) = Q*8 + T 
     return extractos[fC];
 }
 
@@ -90,7 +94,7 @@ int determinarGolombK( Extracto * extracto ) {
   unsigned short k;
 
   for ( k=0; (extracto->N << k) < extracto->A; k++ ); // La fórmula está en el artículo y en las diapos
-
+  
   return k;
 }
 
@@ -124,30 +128,35 @@ unsigned short determinarLargoGolomb(unsigned short k, unsigned short M) {
  * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
  * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
  */
-void determinarGolomb( int k, int error, int * cantidadBitsImpresos, int * output ) {
+void determinarGolomb( int k, int error, int * lgPO2, int * gPO2 ) {
     // Devuelve el código de Golomb como un entero sin signo
   // El largo del código es l = k+1 + M/2^k
 
-    unsigned int gPO2, un_arg, bin_arg;
-    int M = (error<0) ? (-(error<<1) + 1) : (error<<1);
-
+    unsigned int un_arg, bin_arg;
+    int M;
+    
+    M = (error<0) ? (-(error<<1) + 1) : (error<<1);
     bin_arg = M & ((1<<k)-1);
     un_arg = M >> k;
-    gPO2 = (bin_arg << (un_arg+1)) & 1;
-    *output = gPO2;
-    *cantidadBitsImpresos = (k+1) + (M>>k);    /* Largo Golomb */
+    *gPO2 = (bin_arg << (un_arg+1)) & 1;    /* Golomb PO2 */
+    *lgPO2 = (k+1) + (M>>k);    /* Largo Golomb */
 }
 
 /*
  * Actualiza las variables A y N del extracto
  */
-void actualizarExtracto( Extracto * fExtracto, int errorPrediccion ) {
-  //sumar 1 a N y sumar errorPrediccion a A?
+void actualizarExtracto( Extracto * fExtracto, int error ) {
+    if (fExtracto->N == R) {
+        fExtracto->N >>= 1;
+        fExtracto->A >>= 1;
+    }
+    fExtracto->A += (error < 0) ? -error : error;
+    fExtracto->N++;
 }
 
 void liberarExtractos() {
     int i;
-    for(i = 0; i < NUMERO_EXTRACTOS; i++) {
+    for(i = 0; i < cantExtractos; i++) {
         free(extractos[i]);
     }
 }
