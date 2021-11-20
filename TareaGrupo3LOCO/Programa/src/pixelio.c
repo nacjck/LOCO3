@@ -14,13 +14,10 @@ void inicializarBuffer( int ancho ) {
     filaSuperior = 0;
     posicionActualImagen = ancho + 1;
     anchoImagen = ancho;
-    bufferImagen[0] = malloc(anchoImagen * sizeof(unsigned char) + 2);
-    bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char) + 2);
-
-    /* Para contextos iniciales */
-    memset(bufferImagen[!filaSuperior], 0, ancho);
-    bufferImagen[filaSuperior][0] = 0;
-    bufferImagen[filaSuperior][anchoImagen + 1] = 0;
+    bufferImagen[0] = malloc(anchoImagen * sizeof(unsigned char) + 4);
+    bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char) + 4);
+    memset(bufferImagen[!filaSuperior], 0, ancho + 4);
+    memset(bufferImagen[ filaSuperior], 0, ancho + 4);
 }
 
 void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
@@ -47,11 +44,16 @@ int obtenerUltimoCaracter( FILE * archivoOriginal ) {
         ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
     }
     else {
-        if (fgets(bufferImagen[filaSuperior] + 1, anchoImagen + 3, archivoOriginal)) {
+        if (fgets(bufferImagen[filaSuperior] + 1, anchoImagen + 1, archivoOriginal)) {
+            /* Se reinician los punteros */
             posicionActualImagen = 1;
             ultimoCaracter = bufferImagen[filaSuperior][posicionActualImagen];
-            filaSuperior = !filaSuperior;  /* filaSuperior = filaSuperior mod 2 */
+            
+            /* Off-Bounds */
             bufferImagen[filaSuperior][anchoImagen + 1] = 0; /* Off-bounds */
+
+            /* filaSuperior = filaSuperior mod 2 */    
+            filaSuperior = !filaSuperior;
         }
     }
     return ultimoCaracter;
