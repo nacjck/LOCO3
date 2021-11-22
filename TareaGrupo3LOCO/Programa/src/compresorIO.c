@@ -51,6 +51,8 @@ void inicializarBufferCompresion() {
 /* Comprueba que el buffer no esté lleno y */
 /* en caso de estarlo lo imprime           */
 void controlarBuffer(FILE * archivoComprimido) {
+    actualBloqueCodificado++;
+    indiceBitCodificado = MAX_INDICE_BLOQUE;
     if (actualBloqueCodificado == (bufferCodificado + MAX_BUFFER)) {
         fwrite(bufferCodificado, SIZE_BLOQUE_CODIFICADO, MAX_BUFFER, archivoComprimido);
         actualBloqueCodificado = bufferCodificado;
@@ -70,38 +72,28 @@ void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComp
 
     int distanciaBits;    /* Distancia entre ultimo bit codificado y bit a imprimir */
     contenidoBuffer_t mascara;
-    
-    distanciaBits = indiceBitCodificado - cantidadBits + 1;
-    
-    /* se necesita mas de un bloque del buffer */
-    if (distanciaBits < 0) { 
-        mascara = (contenidoBuffer_t) (output >> -distanciaBits);
-         /* Itera un máximo de                              */
-         /* ( sizeof(int) / SIZE_BLOQUE_CODIFICADO ) veces. */
-        do {
-            *actualBloqueCodificado |= mascara;
-            distanciaBits += indiceBitCodificado + 1;
-            mascara = (contenidoBuffer_t) (output >> -distanciaBits - 1);
-            indiceBitCodificado = MAX_INDICE_BLOQUE;
-            actualBloqueCodificado++;
-            controlarBuffer(archivoComprimido);
-        } while (distanciaBits < 0);
-        indiceBitCodificado = distanciaBits;
-    }
-    else {
-        indiceBitCodificado = distanciaBits - 1;
-    }
-    
-    /* Enmascara ultimo bloque necesario del buffer */
-    mascara = (contenidoBuffer_t) (output << distanciaBits);
-    *actualBloqueCodificado |= mascara;
+    int bitOutput = 0;
 
-    /* Si se lleno el ultimo bloque cambiar puntero al siguiente */
-    if (indiceBitCodificado < 0) {
-        actualBloqueCodificado++;
-        indiceBitCodificado = MAX_INDICE_BLOQUE;
+    distanciaBits = indiceBitCodificado - cantidadBits + 1;
+
+    int i;
+    for(i = 0; i < cantidadBits; i++) {
+        if (distanciaBits < 0) {
+            mascara =  (output >> -distanciaBits);
+            bitOutput = mascara & (1 << -distanciaBits);
+        }
+        else {
+            mascara =  (output << distanciaBits);
+            bitOutput = mascara & (1 << distanciaBits);
+        }
+        *actualBloqueCodificado |= mascara;
+
+        distanciaBits--;
+        indiceBitCodificado--;
+        if (indiceBitCodificado < 0) {
+            controlarBuffer(archivoComprimido);
+        }
     }
-    controlarBuffer(archivoComprimido);
 }
 
 void vaciarBuffer( FILE * archivoComprimido ) {
@@ -112,18 +104,26 @@ void vaciarBuffer( FILE * archivoComprimido ) {
 
 
 int main() {
-    FILE * f = fopen("testCompresion.txt","wb");
+    FILE * f = fopen("testCompresion.bin","wb");
     inicializarBufferCompresion();
     int i;
+
+    for( i = 0; i < 8*416/32; ++i) {
+        actualizarBuffer(1,32,f);
+        /*actualizarBuffer(1,2,f);
+        actualizarBuffer(0,2,f);
+        actualizarBuffer(0,2,f);*/
+    }
+
     //actualizarBuffer(1,32,f);
-    for( i = 0; i < 16; ++i) {
-    actualizarBuffer(1,1,f);
-    actualizarBuffer(0,1,f);
+    /*for( i = 0; i < 16; ++i) {
+    actualizarBuffer(1,2,f);
+    actualizarBuffer(0,0,f);
     }
     actualizarBuffer(1,1,f);
     actualizarBuffer((1 << 31) | (1 << 17) | (1 << 15) | (1 << 9) | (1 << 8),32,f);
     printf("asda %d\n",bufferCodificado[6]);
-    actualizarBuffer(1,1,f);
+    actualizarBuffer(1,1,f);*/
     //actualizarBuffer((1 << 15) | (1 << 9) | (1 << 8),16,f);
     //actualizarBuffer(1,1,f);
     //actualizarBuffer(0xff,31,f);
@@ -139,7 +139,7 @@ int main() {
     vaciarBuffer(f);
     fclose(f);
 
-    FILE * f2 = fopen("testCompresion.txt","rb");
+    FILE * f2 = fopen("testCompresion.bin","rb");
     int c;
 
     printf("IMPRESION \n");
