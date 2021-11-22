@@ -4,20 +4,9 @@
 
 #include <stdio.h>
 
-static const size_t BITS_INT = (sizeof(int) << 3);
-
-void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido) {
-    actualizarBuffer(golombBinario, largoGolombBinario, archivoComprimido);
-    while(largoGolombUnario > BITS_INT) {
-        actualizarBuffer(0, BITS_INT, archivoComprimido);
-        largoGolombUnario -= BITS_INT;
-    }
-    actualizarBuffer(1 << (largoGolombUnario - 1), largoGolombUnario, archivoComprimido);
-}
-
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
     FILE * archivoComprimido;
-    FILE * archivoOriginal;
+    FILE * archivoDescomprimido;
     int anchoImagen;
     int kGolomb;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
@@ -27,30 +16,27 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     Extracto * fExtracto;           /* f(C)                                    */
     unsigned char a,b,c,d;          /* Contexto                                */
     int mapeoRice;
-    unsigned int golombBinario;
-    int largoGolombBinario;       /* Cantidad de bits de binary(M) */
-    int largoGolombUnario;        /* Cantidad de bits de unary (M) */
+    int cantidadBitsImpresos;       /* Cantidad de bits impresos por iteración */
+    int output;                     /* Salida al archivo descomprimido         */
     
     archivoComprimido = fopen(archivoSalida, "wb");
-    archivoOriginal = fopen(archivoEntrada, "rb");
-    
+    archivoDescomprimido = fopen(archivoEntrada, "rb");
+
     escribirCabezal(archivoComprimido, s, modalidad);
-    inicializarExtractos(s);
-    anchoImagen = determinarAnchoImagen(archivoOriginal);
+    inicializarExtractos();
+    anchoImagen = determinarAnchoImagen(archivoDescomprimido);
     inicializarBuffer(anchoImagen);
-    inicializarBufferCompresion();
     if (modalidad == RUN) {
-        while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion, a, b, c);
+            fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
             errorPrediccion = x - xPrediccion;
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 kGolomb = determinarGolombK(fExtracto);
-                mapeoRice = determinarMapeoRice(errorPrediccion);
-                //Fuera de servicio
-                //determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
+                mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
+                determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
                 actualizarExtracto(fExtracto,errorPrediccion);
             }
             else {
@@ -60,44 +46,40 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 kGolomb = 3;
                 determinarContexto(&a, &b, &c, &d);
                 xPrediccion = predecirX(a, b, c);
-                fExtracto = determinarExtracto(xPrediccion, a, b, c);
+                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
                 do {
                     l++;
                     errorPrediccion = x - xPrediccion;
                     actualizarExtracto(fExtracto, errorPrediccion);
-                    ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
+                    ultimoCaracterLeido = obtenerUltimoCaracter();
                     xAnterior = x;
                     x = (unsigned char) ultimoCaracterLeido;
                 } while (ultimoCaracterLeido != EOF && x == xAnterior);
-                //Fuera de servicio
-                //determinarGolomb(kGolomb, l, &cantidadBitsImpresos, &output);
                 if (ultimoCaracterLeido == EOF) {
+                    determinarGolomb(kGolomb, l, &cantidadBitsImpresos, &output);
                     break;   /* Fin de archivo */
                 }
             }
-            //Fuera de servicio
-            //actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
+            actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
         }
     }
     else {
-        while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
-            x = (unsigned char) ultimoCaracterLeido;
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
+            x = (unsigned char)ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion,a , b, c);
+            fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
             errorPrediccion = x - xPrediccion;
             kGolomb = determinarGolombK(fExtracto);
-            mapeoRice = determinarMapeoRice(errorPrediccion);
-            largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
-            largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
-            imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+            mapeoRice = determinarMapeoRice(errorPrediccion, fExtracto);
+            determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
             actualizarExtracto(fExtracto, errorPrediccion);
+            actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
         }
     }
     liberarExtractos();
     vaciarBuffer(archivoComprimido);
     destruirBuffer();
     fclose(archivoComprimido);
-    fclose(archivoOriginal);
+    fclose(archivoDescomprimido);
 }
-

@@ -27,6 +27,6 @@ void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c
 void destruirBuffer();
 
 //COMPRESOR
-int obtenerUltimoCaracter( FILE * archivoComprimido );
+int obtenerUltimoCaracter();
 
 #endif
