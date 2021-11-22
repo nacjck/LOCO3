@@ -101,7 +101,7 @@ void vaciarBuffer( FILE * archivoComprimido ) {
 }
 
 
-int main() {
+/*int main() {
     FILE * f = fopen("testCompresion.bin","wb");
     inicializarBufferCompresion();
     int i;
@@ -114,7 +114,7 @@ int main() {
     }*/
 
     //actualizarBuffer(1,32,f);
-    for( i = 0; i < 16; ++i) {
+    /*for( i = 0; i < 16; ++i) {
         actualizarBuffer(1,1,f);
         actualizarBuffer(0,1,f);
     }
@@ -134,7 +134,7 @@ int main() {
     
     }*/
     
-    vaciarBuffer(f);
+    /*vaciarBuffer(f);
     fclose(f);
 
     FILE * f2 = fopen("testCompresion.bin","rb");
@@ -150,5 +150,5 @@ int main() {
     printf("%d \n",determinarAnchoImagen(f));
     printf("fin");
     fclose(f);
-}
+}*/
 
