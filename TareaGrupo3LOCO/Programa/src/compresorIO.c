@@ -74,21 +74,19 @@ void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComp
     contenidoBuffer_t mascara;
     int bitOutput = 0;
 
-    distanciaBits = indiceBitCodificado - cantidadBits + 1;
-
     int i;
-    for(i = 0; i < cantidadBits; i++) {
+    for(i = cantidadBits; i > 0; i--) {
+        distanciaBits = indiceBitCodificado - i + 1;
         if (distanciaBits < 0) {
             mascara =  (output >> -distanciaBits);
-            bitOutput = mascara & (1 << -distanciaBits);
+            bitOutput = mascara & (1 << i + distanciaBits + 1);
         }
         else {
             mascara =  (output << distanciaBits);
-            bitOutput = mascara & (1 << distanciaBits);
+            bitOutput = mascara & (1 << indiceBitCodificado);
         }
         *actualBloqueCodificado |= mascara;
 
-        distanciaBits--;
         indiceBitCodificado--;
         if (indiceBitCodificado < 0) {
             controlarBuffer(archivoComprimido);
@@ -108,22 +106,22 @@ int main() {
     inicializarBufferCompresion();
     int i;
 
-    for( i = 0; i < 8*416/32; ++i) {
+    /*for( i = 0; i < 8*416/32; ++i) {
         actualizarBuffer(1,32,f);
         /*actualizarBuffer(1,2,f);
         actualizarBuffer(0,2,f);
-        actualizarBuffer(0,2,f);*/
-    }
+        actualizarBuffer(0,2,f);
+    }*/
 
     //actualizarBuffer(1,32,f);
-    /*for( i = 0; i < 16; ++i) {
-    actualizarBuffer(1,2,f);
-    actualizarBuffer(0,0,f);
+    for( i = 0; i < 16; ++i) {
+        actualizarBuffer(1,1,f);
+        actualizarBuffer(0,1,f);
     }
     actualizarBuffer(1,1,f);
     actualizarBuffer((1 << 31) | (1 << 17) | (1 << 15) | (1 << 9) | (1 << 8),32,f);
     printf("asda %d\n",bufferCodificado[6]);
-    actualizarBuffer(1,1,f);*/
+    actualizarBuffer(1,1,f);
     //actualizarBuffer((1 << 15) | (1 << 9) | (1 << 8),16,f);
     //actualizarBuffer(1,1,f);
     //actualizarBuffer(0xff,31,f);
