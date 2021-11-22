@@ -33,7 +33,7 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c );
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s );
+Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c );
 
 /*
  * Retorna el parámetro k de Golomb dado un extracto
@@ -45,12 +45,9 @@ int determinarGolombK( Extracto * extracto );
  */
 int determinarMapeoRice( int errorPrediccion );
 
-/*
- * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
- * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
- */
-void determinarGolomb( int k, int elemento, int * cantidadBitsImpresos, int * output );
+int determinarLargoBinaryGolomb( int k, int M, int * bin_arg );
 
+int determinarLargoUnaryGolomb( int k, int M );
 /*
  * Actualiza las variables A y N del extracto
  */

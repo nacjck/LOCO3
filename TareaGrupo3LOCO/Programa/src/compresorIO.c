@@ -34,7 +34,7 @@ int determinarAnchoImagen( FILE * archivoOriginal ) {
         while (getc(archivoOriginal) != '\n');
     }
     fseek(archivoOriginal, -1, SEEK_CUR);       /* Se regresa un caracter */
-    fscanf(archivoOriginal, "%d", &ancho);      /* Altura                 */
+    fscanf(archivoOriginal, "%d", &ancho);      /* Ancho                  */
     while(getc(archivoOriginal) != '\n');       /* Altura                 */
     while(getc(archivoOriginal) != '\n');       /* MAX_VALUE              */
 
@@ -110,7 +110,7 @@ void vaciarBuffer( FILE * archivoComprimido ) {
            archivoComprimido);
 }
 
-/*
+
 int main() {
     FILE * f = fopen("testCompresion.txt","wb");
     inicializarBufferCompresion();
@@ -134,7 +134,7 @@ int main() {
         actualizarBuffer(0,2,f);
         actualizarBuffer(1,2,f);
     
-    }
+    }*/
     
     vaciarBuffer(f);
     fclose(f);
@@ -153,4 +153,4 @@ int main() {
     printf("fin");
     fclose(f);
 }
-*/
+

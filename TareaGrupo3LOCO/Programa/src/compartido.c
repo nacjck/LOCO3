@@ -4,6 +4,7 @@
 
 #define R 128
 
+static int s;
 /*
  * Este arreglo es el que se inicializa al comienzo del programa con N=1 y A=8
  */
@@ -13,11 +14,12 @@ static int cantExtractos; // 1 << (s + 3)
 /*
  * Inicializa los extractos correspondientes a cada caracter con N=1 y A=8.
  */
-void inicializarExtractos( int s ) {
+void inicializarExtractos( int _s ) {
     int i;
     
-    cantExtractos = 1 << (s + 3);
-    extractos = malloc(sizeof(Extracto) << (s + 3));
+    s = _s;
+    cantExtractos = 1 << (_s + 3);
+    extractos = malloc(sizeof(Extracto) << (_s + 3));
     for (i = 0; i < cantExtractos; i++) {
         Extracto * ext = malloc(sizeof(Extracto *));
         ext->N = 1;
@@ -62,7 +64,7 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, int s) {
+Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c ) {
     // Devuelve el extracto f(C)
     // Máximo s+3 bits
     // Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
@@ -77,11 +79,12 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
 
     Q = (xPrediccion >> (10-s)); // Cuantización de X
 
-    T = (c>xPrediccion) << 2; // MSB
+    T =  (c>xPrediccion) << 2; // MSB
     T += (b>xPrediccion) << 1;
     T += (a>xPrediccion); // LSB
 
     fC = (Q<<3) + T; // f(C) = Q*8 + T 
+    
     return extractos[fC];
 }
 
@@ -91,11 +94,11 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
 int determinarGolombK( Extracto * extracto ) {
     // Calcula el parámetro k del código Golomb PO2
 
-  unsigned short k;
+    unsigned short k;
 
-  for ( k=0; (extracto->N << k) < extracto->A; k++ ); // La fórmula está en el artículo y en las diapos
+    for ( k=0; (extracto->N << k) < extracto->A; k++ ); // La fórmula está en el artículo y en las diapos
   
-  return k;
+    return k;
 }
 
 /*
@@ -114,22 +117,26 @@ int determinarMapeoRice( int errorPrediccion ) {
     return M;
 }
 
+int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
+    // Devuelve el largo de la parte binaria de Golomb_k(M)
+    // Ademas retorna bin_arg con la parte binaria.
+    // El largo del código es l = k+1
+    unsigned int bin_length;
 
-/*
- * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
- * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
- */
-void determinarGolomb( int k, int M, int * lgPO2, int * gPO2 ) {
+    *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
+    bin_length = k;               /* Largo Binary_k(M) */
+
+    return bin_length;
+}
+
+int determinarLargoUnaryGolomb( int k, int M ) {
     // Devuelve el código de Golomb como un entero sin signo
-  // El largo del código es l = k+1 + M/2^k
+    // El largo del código es l = M/2^k
+    unsigned int un_length;
 
-    unsigned int un_arg, bin_arg;
+    un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
     
-    bin_arg = M & ((1<<k)-1);
-    un_arg = M >> k;
-    
-    *gPO2 = (bin_arg << (un_arg+1)) | 1;    /* Golomb PO2 */
-    *lgPO2 = (k+1) + (M>>k);    /* Largo Golomb */
+    return un_length;
 }
 
 /*
@@ -140,7 +147,7 @@ void actualizarExtracto( Extracto * fExtracto, int error ) {
         fExtracto->N >>= 1;
         fExtracto->A >>= 1;
     }
-    fExtracto->A += (error < 0) ? -error : error;
+    fExtracto->A += (error < 0) ? -error : error; // ((error << 1) >> 1)
     fExtracto->N++;
 }
 
