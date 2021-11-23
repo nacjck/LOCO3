@@ -20,6 +20,45 @@ void inicializarBuffer( int ancho ) {
     memset(bufferImagen[ filaSuperior], 0, ancho + 2);
 }
 
+void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho) {
+    int c;
+
+    //P5
+    do {
+        c = getc(archivoInput);
+        fprintf(archivoOutput,"%c",c);
+    } while(c != '\n');
+
+    //Comentarios
+    while ((c = getc(archivoInput)) == '#') {      
+        fprintf(archivoOutput,"%c",c);
+        do {
+            c = getc(archivoInput);
+            fprintf(archivoOutput,"%c",c);
+        } while(c != '\n');
+        c = getc(archivoInput);
+    }
+
+    //Se regresa un caracter
+    fseek(archivoInput,-1,SEEK_CUR);       
+    
+    //Ancho
+    fscanf(archivoInput,"%d",ancho);      
+    fprintf(archivoOutput,"%d",*ancho);
+
+    //Altura
+    do {
+        c = getc(archivoInput);
+        fprintf(archivoOutput,"%c",c);
+    } while(c != '\n');
+
+    //MAX_VALUE
+    do {
+        c = getc(archivoInput);
+        fprintf(archivoOutput,"%c",c);
+    } while(c != '\n');
+}
+
 void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
     /* Si se está fuera de los límites de la imagen se devuelve 0.  */
     /* Se asume que esto siempre sucede debido a la inicialización  */
@@ -59,6 +98,11 @@ int obtenerUltimoCaracter( FILE * archivoOriginal ) {
     }
 
     return ultimoCaracter;
+}
+
+bool esFinDeLinea() {
+    bool esFinDeLinea = posicionActualImagen == 1;
+    return esFinDeLinea;
 }
 
 /*
