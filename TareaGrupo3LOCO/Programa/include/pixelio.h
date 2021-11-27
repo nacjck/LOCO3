@@ -16,11 +16,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+<<<<<<< HEAD
 #define bool int
 
+=======
+typedef unsigned char BYTE;
+>>>>>>> d06982d (Primer commit. Función lectora de encabezado probada.)
 /*
  * Variables para buffer de pixeles
  */
+
+ typedef struct Imagen {
+   // Parámetros de compresión
+   BYTE s;
+   Modalidad r;
+   // Parámetros de la imagen
+   unsigned int ancho;
+   unsigned int alto;
+   BYTE maxValorPixel;
+   // Valores de pixel
+   BYTE** datos;
+ } imagen;
 
 void inicializarBuffer( int tamanio );
 
