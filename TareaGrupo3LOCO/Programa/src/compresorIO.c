@@ -79,11 +79,8 @@ void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComp
             indiceBitCodificado = MAX_INDICE_BLOQUE;
             controlarBuffer(archivoComprimido);
         }
-        memset(actualBloqueCodificado, output, bytesColocados); //
-        actualBloqueCodificado += bytesColocados;
-        indiceBitCodificado -= bitsColocados;
     }
-}*/
+}
 
 void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido) {
     actualizarBuffer(golombBinario, largoGolombBinario, archivoComprimido);
@@ -100,15 +97,23 @@ void vaciarBuffer( FILE * archivoComprimido ) {
            archivoComprimido);
 }
 
-/*
-int main() {
-    FILE * f = fopen("testCompresion.txt","wb");
+
+/*int main() {
+    FILE * f = fopen("testCompresion.bin","wb");
     inicializarBufferCompresion();
     int i;
+
+    /*for( i = 0; i < 8*416/32; ++i) {
+        actualizarBuffer(1,32,f);
+        /*actualizarBuffer(1,2,f);
+        actualizarBuffer(0,2,f);
+        actualizarBuffer(0,2,f);
+    }*/
+
     //actualizarBuffer(1,32,f);
-    for( i = 0; i < 16; ++i) {
-    actualizarBuffer(1,1,f);
-    actualizarBuffer(0,1,f);
+    /*for( i = 0; i < 16; ++i) {
+        actualizarBuffer(1,1,f);
+        actualizarBuffer(0,1,f);
     }
     actualizarBuffer(1,1,f);
     actualizarBuffer((1 << 31) | (1 << 17) | (1 << 15) | (1 << 9) | (1 << 8),32,f);
@@ -124,12 +129,12 @@ int main() {
         actualizarBuffer(0,2,f);
         actualizarBuffer(1,2,f);
     
-    }
+    }*/
     
-    vaciarBuffer(f);
+    /*vaciarBuffer(f);
     fclose(f);
 
-    FILE * f2 = fopen("testCompresion.txt","rb");
+    FILE * f2 = fopen("testCompresion.bin","rb");
     int c;
 
     printf("IMPRESION \n");
@@ -142,5 +147,5 @@ int main() {
     printf("%d \n",determinarAnchoImagen(f));
     printf("fin");
     fclose(f);
-}
-*/
+}*/
+

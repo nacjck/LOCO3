@@ -31,6 +31,6 @@ bool esFinDeLinea();
 void destruirBuffer();
 
 //COMPRESOR
-int obtenerUltimoCaracter();
+int obtenerUltimoCaracter( FILE * archivoComprimido );
 
 #endif
