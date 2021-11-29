@@ -58,3 +58,4 @@ void liberarExtractos();
 #endif
 
 typedef unsigned char PIX; // Alias para valores de pixel
+typedef unsigned char BYTE; //
