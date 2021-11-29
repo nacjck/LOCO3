@@ -1,13 +1,13 @@
 #ifndef compresorIO_h
 #define compresorIO_h
 
-void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
+#include <stdio.h>
 
-int determinarAnchoImagen( FILE * archivoDescomprimido );
+void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
 
 void inicializarBufferCompresion();
 
-void actualizarBuffer( unsigned int output, int cantidadBits, FILE * decompressedFile );
+void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido);
 
 void vaciarBuffer( FILE * archivoComprimido );
 

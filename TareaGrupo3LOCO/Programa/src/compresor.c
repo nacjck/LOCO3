@@ -20,14 +20,15 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     int output;                     /* Salida al archivo descomprimido         */
     
     archivoComprimido = fopen(archivoSalida, "wb");
-    archivoDescomprimido = fopen(archivoEntrada, "rb");
-
-    escribirCabezal(archivoComprimido, s, modalidad);
-    inicializarExtractos();
-    anchoImagen = determinarAnchoImagen(archivoDescomprimido);
+    archivoOriginal = fopen(archivoEntrada, "rb");
+    
+    escribirParametrosCabezal(archivoComprimido, s, modalidad);
+    escribirCabezalPGM(archivoOriginal, archivoComprimido, &anchoImagen);
+    inicializarExtractos(s);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
-        while ((ultimoCaracterLeido = obtenerUltimoCaracter()) != EOF) {
+        ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
+        while (ultimoCaracterLeido != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
@@ -35,32 +36,27 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             errorPrediccion = x - xPrediccion;
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 kGolomb = determinarGolombK(fExtracto);
-                mapeoRice = determinarMapeoRice(errorPrediccion,fExtracto);
-                determinarGolomb(kGolomb, mapeoRice, &cantidadBitsImpresos, &output);
+                mapeoRice = determinarMapeoRice(errorPrediccion);
+                largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
+                largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
                 actualizarExtracto(fExtracto,errorPrediccion);
+                ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
             }
             else {
                 int l = -1;    /* Ocurrencias del mismo caracter */
-                unsigned char xAnterior;
-                
                 kGolomb = 3;
                 determinarContexto(&a, &b, &c, &d);
-                xPrediccion = predecirX(a, b, c);
-                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
+
                 do {
                     l++;
-                    errorPrediccion = x - xPrediccion;
                     actualizarExtracto(fExtracto, errorPrediccion);
-                    ultimoCaracterLeido = obtenerUltimoCaracter();
-                    xAnterior = x;
+                    ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
                     x = (unsigned char) ultimoCaracterLeido;
-                } while (ultimoCaracterLeido != EOF && x == xAnterior);
-                if (ultimoCaracterLeido == EOF) {
-                    determinarGolomb(kGolomb, l, &cantidadBitsImpresos, &output);
-                    break;   /* Fin de archivo */
-                }
+                } while (ultimoCaracterLeido != EOF && !esFinDeLinea() && x == a);
+                largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
+                largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
             }
-            actualizarBuffer(output, cantidadBitsImpresos, archivoComprimido);
+            imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
         }
     }
     else {

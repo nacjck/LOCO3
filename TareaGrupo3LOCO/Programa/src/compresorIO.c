@@ -11,6 +11,8 @@
 /*
  * Constantes para manejo de output segun tipos de datos 
  */
+
+static const size_t BITS_INT = (sizeof(int) << 3);
 static const int SIZE_BLOQUE_CODIFICADO = sizeof(contenidoBuffer_t);
 static const int MAX_INDICE_BLOQUE = (int)((sizeof(contenidoBuffer_t) << 3) - 1);
 
@@ -21,24 +23,9 @@ static contenidoBuffer_t bufferCodificado[MAX_BUFFER];   /* Contiene ultimos car
 static contenidoBuffer_t * actualBloqueCodificado;       /* Puntero a siguiente bloque a imprimir   */
 static int indiceBitCodificado;                          /* posicion binaria                        */
 
-void escribirCabezal( FILE * archivoComprimido, int s, Modalidad modalidad ) {
+void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modalidad ) {
     fprintf(archivoComprimido,"%d\n",s);
     fprintf(archivoComprimido,"%d\n",modalidad);
-}
-
-int determinarAnchoImagen( FILE * archivoOriginal ) {
-    int ancho = 0;
-
-    while(getc(archivoOriginal) != '\n');       /* P5                     */
-    while (getc(archivoOriginal) == '#') {      /* Comentarios            */
-        while (getc(archivoOriginal) != '\n');
-    }
-    fseek(archivoOriginal, -1, SEEK_CUR);       /* Se regresa un caracter */
-    fscanf(archivoOriginal, "%d", &ancho);
-    while(getc(archivoOriginal) != '\n');       /* altura                 */
-    while(getc(archivoOriginal) != '\n');       /* Magic value            */
-
-    return ancho;
 }
 
 void inicializarBufferCompresion() {
@@ -58,7 +45,7 @@ void controlarBuffer(FILE * archivoComprimido) {
     }
 }
 
-/*
+/* AUXILIAR
  * Carga el buffer elemento a elemento hasta vaciar el output.
  * En caso de llenarse el buffer, se imprimen todos los bits
  * almacenados hasta el momento en el archivo indicado.
@@ -67,72 +54,45 @@ void controlarBuffer(FILE * archivoComprimido) {
  *  Se asume que los bits no utilizados son ceros. 
  */     
 void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComprimido ) {
-
-    int distanciaBits = indiceBitCodificado - cantidadBits + 1;
+    int i;
+    int distanciaBits;    /* Distancia entre ultimo bit codificado y bit a imprimir */
     contenidoBuffer_t mascara;
-    if (distanciaBits < 0) {
-        mascara = (contenidoBuffer_t) (output >> -distanciaBits);
-         /*   
-         * Itera un máximo de 
-         * ( sizeof(int) / SIZE_BLOQUE_CODIFICADO ) veces.
-         */
-        do {
-            *actualBloqueCodificado |= mascara;
-            distanciaBits += indiceBitCodificado + 1;
-            mascara = (contenidoBuffer_t) (output >> -distanciaBits - 1);
-            indiceBitCodificado = MAX_INDICE_BLOQUE;
-            actualBloqueCodificado++;
-            controlarBuffer(archivoComprimido);
-        } while (distanciaBits < 0);
-        indiceBitCodificado = distanciaBits;
-    }
-    else {
-        indiceBitCodificado = distanciaBits - 1;
-    }
-    mascara = (contenidoBuffer_t) (output << distanciaBits);
-    *actualBloqueCodificado |= mascara;
-
-    /* Si se lleno el ultimo bloque cambiar puntero al siguiente */
-    if (indiceBitCodificado < 0) {
-        actualBloqueCodificado++;
-        indiceBitCodificado = MAX_INDICE_BLOQUE;
-    }
-    controlarBuffer(archivoComprimido);
-}
-
-/*void actualizarBuffer2( unsigned int output, int cantidadBits, FILE * archivoComprimido ) {
-    int distanciaBits;
-    int bitsColocados = cantidadBits;
-    int bytesTotales = 0;
-    int bytesColocados = 0;
+    int bitOutput = 0;
     
-    distanciaBits = indiceBitCodificado - cantidadBits + 1;
-    if (distanciaBits >= 0) {
-        /* Llena el bloque actual 
-        *actualBloqueCodificado |= (contenidoBuffer_t) (output << distanciaBits);
-        indiceBitCodificado = distanciaBits - 1;
-    }
-    else {
-        /* Llena el bloque actual 
-        *actualBloqueCodificado |= (contenidoBuffer_t) (output >> -distanciaBits);
-        bitsColocados = indiceBitCodificado + 1;
-        distanciaBits += bitsColocados;
-        indiceBitCodificado = -1;
-    }
-    /* Siguiente posicion del buffer 
-    if (indiceBitCodificado < 0) {
-        actualBloqueCodificado++;
-        /* Buffer lleno 
-        if (actualBloqueCodificado == bufferCodificado + MAX_BUFFER) {
-            fwrite(bufferCodificado, SIZE_BLOQUE_CODIFICADO, MAX_BUFFER, archivoComprimido);
-            memset(bufferCodificado, 0, MAX_BUFFER);
-            actualBloqueCodificado = bufferCodificado;
+    /* Coloca en el buffer cada bit uno por uno */
+    for (i = cantidadBits; i > 0; i--) {
+        distanciaBits = indiceBitCodificado - i + 1;
+        if (distanciaBits < 0) {
+            mascara =  (output >> -distanciaBits);
+            bitOutput = mascara & (1 << i + distanciaBits + 1);
+        }
+        else {
+            mascara =  (output << distanciaBits);
+            bitOutput = mascara & (1 << indiceBitCodificado);
+        }
+        *actualBloqueCodificado |= mascara;
+        indiceBitCodificado--;
+
+        /* Si no quedan bits por colocar en el bloque actual */
+        if (indiceBitCodificado < 0) {
+            actualBloqueCodificado++;
+            indiceBitCodificado = MAX_INDICE_BLOQUE;
+            controlarBuffer(archivoComprimido);
         }
         memset(actualBloqueCodificado, output, bytesColocados); //
         actualBloqueCodificado += bytesColocados;
         indiceBitCodificado -= bitsColocados;
     }
 }*/
+
+void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido) {
+    actualizarBuffer(golombBinario, largoGolombBinario, archivoComprimido);
+    while(largoGolombUnario > BITS_INT) {
+        actualizarBuffer(0, BITS_INT, archivoComprimido);
+        largoGolombUnario -= BITS_INT;
+    }
+    actualizarBuffer(1 << (largoGolombUnario - 1), largoGolombUnario, archivoComprimido);
+}
 
 void vaciarBuffer( FILE * archivoComprimido ) {
     fwrite(bufferCodificado, SIZE_BLOQUE_CODIFICADO,
