@@ -16,8 +16,11 @@ void inicializarBuffer( int ancho ) {
     anchoImagen = ancho;
     bufferImagen[0] = malloc(anchoImagen * sizeof(unsigned char) + 2);
     bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char) + 2);
-    memset(bufferImagen[!filaSuperior], 0, ancho + 2);
-    memset(bufferImagen[ filaSuperior], 0, ancho + 2);
+
+    /* Para contextos iniciales */
+    memset(bufferImagen[!filaSuperior], 0, ancho);
+    bufferImagen[filaSuperior][0] = 0;
+    bufferImagen[filaSuperior][anchoImagen + 1] = 0;
 }
 
 void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho) {
@@ -65,9 +68,9 @@ void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c
     /* del buffer.                                                  */
 
     *a = bufferImagen[!filaSuperior][posicionActualImagen - 1];
-    *b = bufferImagen[ filaSuperior][posicionActualImagen    ];
-    *c = bufferImagen[ filaSuperior][posicionActualImagen - 1];
-    *d = bufferImagen[ filaSuperior][posicionActualImagen + 1];
+    *b = bufferImagen[filaSuperior][posicionActualImagen];
+    *c = bufferImagen[filaSuperior][posicionActualImagen - 1];
+    *d = bufferImagen[filaSuperior][posicionActualImagen + 1];
 }
 
 void destruirBuffer() {
@@ -78,25 +81,18 @@ void destruirBuffer() {
 /* SOLO COMPRESOR */
 int obtenerUltimoCaracter( FILE * archivoOriginal ) {
     int ultimoCaracter = EOF;
-
     posicionActualImagen++;
-    if (posicionActualImagen > anchoImagen) {
-        int pixel;
-        if ((pixel = fgetc(archivoOriginal)) != EOF) {
-            int i;
-            fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
-            for (i = 1; i <= anchoImagen; i++) {
-                bufferImagen[filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
-            }
-            posicionActualImagen = 1;
-            filaSuperior = !filaSuperior;
-            ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
-        }
-    }
-    else {
+    if (posicionActualImagen <= anchoImagen) {
         ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
     }
-
+    else {
+        if (fgets(bufferImagen[filaSuperior] + 1, anchoImagen + 3, archivoOriginal)) {
+            posicionActualImagen = 1;
+            ultimoCaracter = bufferImagen[filaSuperior][posicionActualImagen];
+            filaSuperior = !filaSuperior;  /* filaSuperior = filaSuperior mod 2 */
+            bufferImagen[filaSuperior][anchoImagen + 1] = 0; /* Off-bounds */
+        }
+    }
     return ultimoCaracter;
 }
 
