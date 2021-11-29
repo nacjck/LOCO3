@@ -53,7 +53,7 @@ int determinarMapeoRice( int errorPrediccion, Extracto * extracto );
  * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
  */
 void determinarGolomb( int k, int elemento, int * cantidadBitsImpresos, int * output );
-
+unsigned short determinarLargoGolomb(unsigned short k, unsigned short M)
 /*
  * Actualiza las variables A y N del extracto
  */

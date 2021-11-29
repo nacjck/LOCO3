@@ -115,7 +115,7 @@ unsigned short determinarLargoGolomb(unsigned short k, unsigned short M) {
 
   unsigned int l;
 
-  l = (k+1) + (M>>k);
+  l = (k+1) + (M>>k) // k+1 + M/2^k;
 
   return l;
 }
