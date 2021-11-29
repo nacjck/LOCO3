@@ -16,10 +16,8 @@
 #include <stdlib.h>
 
 typedef unsigned char BYTE;
-/*
- * Variables para buffer de pixeles
- */
 
+// Estructura de datos para el descompresor
  typedef struct Imagen {
    // Parámetros de compresión
    BYTE s;
@@ -28,8 +26,8 @@ typedef unsigned char BYTE;
    unsigned int ancho;
    unsigned int alto;
    BYTE maxValorPixel;
-   // Valores de pixel
-   BYTE** datos;
+   // Datos descomprimidos
+   BYTE* datos;
  } imagen;
 
 void inicializarBuffer( int tamanio );

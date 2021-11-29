@@ -1,6 +1,6 @@
 #include "../include/compartido.h"
 
-#define NUMERO_EXTRACTOS 10 //Hay que calcular cuantos extractos distintos se pueden hallar
+#define NUMERO_EXTRACTOS (1 << (s+3)) //Hay que calcular cuantos extractos distintos se pueden hallar
 #define R 128
 
 /*
