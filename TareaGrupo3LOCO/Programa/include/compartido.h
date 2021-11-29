@@ -1,9 +1,9 @@
-/* 
+/*
  * compartido.h
  *
  * Aquí se hallan funciones y estructuras utilizadas
  * tanto en el compresor como en el descompresor
- * 
+ *
  */
 
 #ifndef compartido_h
@@ -56,3 +56,5 @@ void actualizarExtracto( Extracto * fExtracto, int errorPrediccion );
 void liberarExtractos();
 
 #endif
+
+typedef unsigned char PIX; // Alias para valores de pixel
