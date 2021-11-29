@@ -136,7 +136,13 @@ int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
     *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
     bin_length = k;               /* Largo Binary_k(M) */
 
+<<<<<<< HEAD
     return bin_length;
+=======
+  l = (k+1) + (M>>k) // k+1 + M/2^k;
+
+  return l;
+>>>>>>> 31439a1 (Faltaba encabezado de función de calculo de largo de código. Se agregaron comentarios.)
 }
 
 <<<<<<< HEAD
