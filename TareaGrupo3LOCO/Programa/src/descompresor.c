@@ -4,8 +4,10 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   FILE * archivoComprimido;
   FILE * archivoDescomprimido;
   imagen img; // Donde se guardan valores de pixel y parámetros de la imagen
-  BYTE a,b,c,d; // Pixeles de contexto
-  unsigned int ip; // Indice de pixel
+  BYTE a,b,c,d, x_p; // Valores de pixel
+  unsigned int ip, l, n;
+  BYTE* buffer;
+  Extracto * fC;
 
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoDescomprimido = fopen(pathArchivoSalida, "wb");
@@ -19,8 +21,14 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
       ip = i*img.ancho + j;
       contexto(&img, ip, &a,&b,&c,&d);
+      x_p = predecirX(a,b,c);
+      fC = determinarExtracto(x_p, a,b,c, img.s)
+      k = determinarGolombK(fC)
+      l = determinarLargoGolomb(k, determinarMapeoRice(x_p, fC)); // Largo del código
 
-
+      // Lee los bytes que contienen el código del archivo
+      n = l/8 + 1;
+      buffer = leerNBytes(archivoComprimido, n);
     }
   }
 
