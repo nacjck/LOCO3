@@ -21,11 +21,15 @@
 
 =======
 typedef unsigned char BYTE;
+<<<<<<< HEAD
 >>>>>>> d06982d (Primer commit. Función lectora de encabezado probada.)
 /*
  * Variables para buffer de pixeles
  */
+=======
+>>>>>>> 6590e0d (Función de lectura de datos de archivo comprimido finalizada. )
 
+// Estructura de datos para el descompresor
  typedef struct Imagen {
    // Parámetros de compresión
    BYTE s;
@@ -34,8 +38,8 @@ typedef unsigned char BYTE;
    unsigned int ancho;
    unsigned int alto;
    BYTE maxValorPixel;
-   // Valores de pixel
-   BYTE** datos;
+   // Datos descomprimidos
+   BYTE* datos;
  } imagen;
 
 void inicializarBuffer( int tamanio );

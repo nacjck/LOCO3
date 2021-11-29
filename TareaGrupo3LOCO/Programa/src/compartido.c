@@ -1,7 +1,11 @@
 #include "../include/compartido.h"
 
+<<<<<<< HEAD
 #include <stdio.h>
 
+=======
+#define NUMERO_EXTRACTOS (1 << (s+3)) //Hay que calcular cuantos extractos distintos se pueden hallar
+>>>>>>> 6590e0d (Función de lectura de datos de archivo comprimido finalizada. )
 #define R 128
 
 static int s;
