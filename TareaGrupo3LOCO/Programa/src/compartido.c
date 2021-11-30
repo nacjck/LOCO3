@@ -1,11 +1,7 @@
 #include "../include/compartido.h"
 
-<<<<<<< HEAD
 #include <stdio.h>
 
-=======
-#define NUMERO_EXTRACTOS (1 << (s+3)) //Hay que calcular cuantos extractos distintos se pueden hallar
->>>>>>> 6590e0d (Función de lectura de datos de archivo comprimido finalizada. )
 #define R 128
 
 static int s;
@@ -112,17 +108,11 @@ int determinarMapeoRice( int errorPrediccion ) {
     // Map de los errores de predicción al rango no negativo
     unsigned short M;
 
-<<<<<<< HEAD
     if (errorPrediccion < 0) {
       M = -(errorPrediccion << 1) + 1;
     } else {
       M = errorPrediccion << 1;
     }
-=======
-uint16_t n_act(PIX a, PIX b, PIX c, PIX x) {
-  // Devuelve el nivel de actividad X
-  uint16_t X = 0; // Máximo 10 bits
->>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
 
     return M;
 }
@@ -136,29 +126,15 @@ int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
     *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
     bin_length = k;               /* Largo Binary_k(M) */
 
-<<<<<<< HEAD
     return bin_length;
-=======
-  l = (k+1) + (M>>k) // k+1 + M/2^k;
-
-  return l;
->>>>>>> 31439a1 (Faltaba encabezado de función de calculo de largo de código. Se agregaron comentarios.)
 }
 
-<<<<<<< HEAD
 int determinarLargoUnaryGolomb( int k, int M ) {
     // Devuelve el código de Golomb como un entero sin signo
     // El largo del código es l = M/2^k
     unsigned int un_length;
 
     un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
-=======
-uint16_t extract(uint16_t X, BYTE T, BYTE s) {
-  // Devuelve el extracto f(C)
-  // Máximo s+3 bits
-
-  uint16_t Q, fC;
->>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
 
     return un_length;
 }
@@ -175,100 +151,10 @@ void actualizarExtracto( Extracto * fExtracto, int error ) {
     fExtracto->N++;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 void liberarExtractos() {
     int i;
     for(i = 0; i < cantExtractos; i++) {
         free(extractos[i]);
     }
     free(extractos);
-=======
-unsigned short get_kvalue(unsigned int N, unsigned int A) {
-=======
-uint16_t get_k(unsigned int N, unsigned int A) {
->>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
-  // Calcula el parámetro k del código Golomb PO2
-
-  uint16_t k;
-
-  for ( k=0; (N << k) < A; k++ ); // La fórmula está en el artículo y en las diapos
-
-  return k;
 }
-
-uint16_t NN_map(int e) {
-  // Map de los errores de predicción al rango no negativo
-
-  uint16_t M;
-
-  if (e < 0) {
-    M = -2*e + 1;
-  } else {
-    M = 2*e;
-  }
-
-  return M;
-}
-
-unsigned int get_gPO2(uint16_t k, uint16_t M) {
-  // Devuelve el código de Golomb como un entero sin signo
-
-  unsigned int gPO2, un_arg, bin_arg;
-
-  bin_arg = M & ((1<<k)-1);
-  un_arg = M >> k;
-  gPO2 = (bin_arg << (un_arg + 1) ) + 1; // gPO2(i) = binary(M mod 2^k)unary(M / 2^k)
-  return gPO2;
-
-}
-
-uint16_t get_gPO2_length(uint16_t k, uint16_t M) {
-  // Devuelve el largo en bits del código de Golomb PO2
-
-  uint16_t l;
-
-  l = k+1 + (M>>k);
-
-  return l;
-
-}
-
-
-/*============================================================================*/
-// Para test y debugging
->>>>>>> c2cf1ee (Golomb)
-int main() {
-  // unsigned int a, b, c, hat_x, s;
-  // BYTE T;
-  // unsigned short X, fC;
-  //
-  // printf("Ingresar valores de contexto: a, b, c:\n");
-  // scanf("%u%u%u", &a, &b, &c);
-  // printf("a=%d, b=%d, c=%d\n", a, b, c);
-  //
-  // hat_x = predict(a, b, c);
-  // T = textura(a, b, c, hat_x);
-  // X = n_act(a, b, c, hat_x);
-  //
-  // printf("Ingresar parámetro s:\n");
-  // scanf("%u", &s);
-  // fC = extract(X, T, s);
-  //
-  // printf("Prediccion: hat_x=%d\n", hat_x);
-  // printf("Textura: T=%x\n", T);
-  // printf("Nivel de actividad: X=%u\n", X);
-  // printf("Extracto: f(C)=%u", fC);
-
-  unsigned int code;
-  uint16_t l, k;
-
-  k = 2;
-  for (int i=0; i<16; i++) {
-    code = get_gPO2(k, i);
-    l = get_gPO2_length(k, i);
-    printf("i=%u G(i)=%x l(G(i))=%u\n", i, code, l);
-  }
-
-}
->>>>>>> 8509518 (Función de textura terminada.)

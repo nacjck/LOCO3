@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "../include/pixelio.h"
 
 #include <string.h>
@@ -31,7 +30,7 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     } while(c != '\n');
 
     //Comentarios
-    while ((c = getc(archivoInput)) == '#') {      
+    while ((c = getc(archivoInput)) == '#') {
         fprintf(archivoOutput,"%c",c);
         do {
             c = getc(archivoInput);
@@ -41,10 +40,10 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     }
 
     //Se regresa un caracter
-    fseek(archivoInput,-1,SEEK_CUR);       
-    
+    fseek(archivoInput,-1,SEEK_CUR);
+
     //Ancho
-    fscanf(archivoInput,"%d",ancho);      
+    fscanf(archivoInput,"%d",ancho);
     fprintf(archivoOutput,"%d",*ancho);
 
     //Altura
@@ -120,15 +119,6 @@ int main() {
 
     void destruirBuffer();
 }*/
-=======
-#include <stdbool.h>
-#include <stdio.h>
-
-#include "../include/pixelio.h"
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
-=======
 
 void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE &buffBits) {
   // Escribe el siguiente código en el archivo de la imagen comprimida
@@ -144,6 +134,3 @@ void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE
   }
 
 }
->>>>>>> c073309 (Corregidos errores de sintaxis.)
-=======
->>>>>>> 23b498b (Test de códigos de Golomb.)

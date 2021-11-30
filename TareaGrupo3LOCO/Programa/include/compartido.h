@@ -48,18 +48,9 @@ int determinarGolombK( Extracto * extracto );
  */
 int determinarMapeoRice( int errorPrediccion );
 
-<<<<<<< HEAD
 int determinarLargoBinaryGolomb( int k, int M, int * bin_arg );
 
 int determinarLargoUnaryGolomb( int k, int M );
-=======
-/*
- * Retorna una tira de bits conteniendo los bits a imprimir de Golomb
- * (Puse int provisorio, fijate que puede ser lo mejor para hacerlo)
- */
-void determinarGolomb( int k, int elemento, int * cantidadBitsImpresos, int * output );
-unsigned short determinarLargoGolomb(unsigned short k, unsigned short M)
->>>>>>> 31439a1 (Faltaba encabezado de función de calculo de largo de código. Se agregaron comentarios.)
 /*
  * Actualiza las variables A y N del extracto
  */

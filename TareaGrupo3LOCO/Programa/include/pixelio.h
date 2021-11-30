@@ -10,24 +10,7 @@
 #ifndef pixelio_h
 #define pixelio_h
 
-<<<<<<< HEAD
-#include "modalidad.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-
-<<<<<<< HEAD
-#define bool int
-
-=======
 typedef unsigned char BYTE;
-<<<<<<< HEAD
->>>>>>> d06982d (Primer commit. Función lectora de encabezado probada.)
-/*
- * Variables para buffer de pixeles
- */
-=======
->>>>>>> 6590e0d (Función de lectura de datos de archivo comprimido finalizada. )
 
 // Estructura de datos para el descompresor
  typedef struct Imagen {
@@ -54,11 +37,6 @@ void destruirBuffer();
 
 //COMPRESOR
 int obtenerUltimoCaracter( FILE * archivoComprimido );
-=======
-// Definiciones de tipos
 
-typedef unsigned char PIX; // Alias para valores de pixel
-typedef unsigned char BYTE; // Byte sin signo
->>>>>>> 185eb18 (Se cambiarona lagunos tipos y se terminó archivo de encabezados.)
 
 #endif
