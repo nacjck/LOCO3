@@ -56,13 +56,15 @@ void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
 unsigned int leerUnario(BYTE b, BYTE bitComienzo) {
   /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitComienzo
   del byte (código unario). Si el byte es 0 devuelve 8 */
-  if (b == 0) { return 8; };
+
+  int i;
   b <<= bitComienzo;
-  for (int i=0; i<8; i++) {
+  for (i=0; i<8-bitComienzo; i++) {
     if ((b << i) & 128) { // MSB == 1
       return i;
     }
   }
+  return i;
 }
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
