@@ -10,14 +10,11 @@
 #ifndef pixelio_h
 #define pixelio_h
 
-<<<<<<< HEAD
-=======
 #include "modalidad.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
->>>>>>> baa1db37007e2a985a1392796c629e08f2e18f46
 typedef unsigned char BYTE;
 
 // Estructura de datos para el descompresor

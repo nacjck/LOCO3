@@ -1,11 +1,7 @@
 #include "../include/compartido.h"
 
-<<<<<<< HEAD
 #include <stdio.h>
 
-=======
-#define NUMERO_EXTRACTOS (1 << (s+3)) //Hay que calcular cuantos extractos distintos se pueden hallar
->>>>>>> baa1db37007e2a985a1392796c629e08f2e18f46
 #define R 128
 
 static int s;
@@ -127,12 +123,8 @@ int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
     // El largo del código es l = k+1
     unsigned int bin_length;
 
-<<<<<<< HEAD
     *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
     bin_length = k;               /* Largo Binary_k(M) */
-=======
-  l = (k+1) + (M>>k) // k+1 + M/2^k;
->>>>>>> baa1db37007e2a985a1392796c629e08f2e18f46
 
     return bin_length;
 }

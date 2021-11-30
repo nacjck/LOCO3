@@ -119,7 +119,6 @@ int main() {
 
     void destruirBuffer();
 }*/
-<<<<<<< HEAD
 
 void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE &buffBits) {
   // Escribe el siguiente código en el archivo de la imagen comprimida
@@ -135,5 +134,3 @@ void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE
   }
 
 }
-=======
->>>>>>> baa1db37007e2a985a1392796c629e08f2e18f46

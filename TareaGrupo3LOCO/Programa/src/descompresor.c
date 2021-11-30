@@ -5,7 +5,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   FILE * archivoDescomprimido;
   imagen img; // Donde se guardan valores de pixel y parámetros de la imagen
   BYTE a,b,c,d, x_p; // Valores de pixel
-  unsigned int ip, l, n;
+  unsigned int ip, lb, lu, M, n;
   BYTE* buffer;
   Extracto * fC;
 
@@ -24,10 +24,12 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       x_p = predecirX(a,b,c);
       fC = determinarExtracto(x_p, a,b,c, img.s)
       k = determinarGolombK(fC)
-      l = determinarLargoGolomb(k, determinarMapeoRice(x_p, fC)); // Largo del código
+      M = determinarMapeoRice(x_p, fC)
+      lu = determinarLargoUnaryGolomb(k, M); // largo parte unaria
+      lb = k; // largo parte binaria
 
-      // Lee los bytes que contienen el código del archivo
-      n = l/8 + 1;
+      // Lee los bytes que contienen el código del pixel
+      n = (lu+lb)/8 + 1;
       buffer = leerNBytes(archivoComprimido, n);
     }
   }
