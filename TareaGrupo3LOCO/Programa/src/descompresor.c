@@ -53,18 +53,23 @@ void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
   *d = img->datos[ind - img->ancho];
 }
 
-unsigned int leerUnario(BYTE b, BYTE bitComienzo) {
+unsigned int leerUnario(BYTE b, BYTE bitInicio) {
   /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitComienzo
   del byte (código unario). Si el byte es 0 devuelve 8 */
 
   int i;
-  b <<= bitComienzo;
-  for (i=0; i<8-bitComienzo; i++) {
+  b <<= bitInicio;
+  for (i=0; i<8-bitInicio; i++) {
     if ((b << i) & 128) { // MSB == 1
       return i;
     }
   }
   return i;
+}
+
+unsigned int leerCadenaBinario(BYTE b, BYTE bitInicio, BYTE bitFin) {
+  /* Devuelve la sub-cadena de binarios entre bitInicio y bitFin del byte b */
+  return ( (b << bitInicio) >> (bitInicio + 8 - bitFin) );
 }
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
@@ -107,5 +112,5 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
 /*============================================================================*/
 void main( int argc, char* argv[] ) {
-  printf("%hhu", leerUnario( atoi(argv[1]), atoi(argv[2]) ));
+  printf("%hhu", leerCadenaBinario( atoi(argv[1]), atoi(argv[2]), atoi(argv[3]) ));
 }
