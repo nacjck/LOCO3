@@ -67,9 +67,41 @@ unsigned int leerUnario(BYTE b, BYTE bitInicio) {
   return i;
 }
 
-unsigned int leerCadenaBinario(BYTE b, BYTE bitInicio, BYTE bitFin) {
+BYTE leerSubBin(BYTE b, BYTE bitInicio, BYTE bitFin) {
   /* Devuelve la sub-cadena de binarios entre bitInicio y bitFin del byte b */
-  return ( (b << bitInicio) >> (bitInicio + 8 - bitFin) );
+  b <<= bitInicio;
+  b >>= bitInicio + 8 - bitFin;
+  return b;
+}
+
+unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
+                                                      FILE* archivoComprimido) {
+  /* Extrae la parte binaria del código (largo k bits). *buff* es el byte leido
+  en el paso anterior y *inBit* es el índice del primer bit aún no procesado.
+  Lee más bytes del archivo de ser necesario. */
+  unsigned int bin;
+
+  if (*indBit+k <= 8) { // Si hay suficientes bits en el buffer
+    bin = leerSubBin((*buff), (*indBit), (*indBit)+k);
+    *indBit += k;
+  }
+  else {
+    // Lee los bits que quedan sin procesar
+    bin = leerSubBin(*buff, *indBit, 8);
+    k -= 8-(*indBit); // Bits restantes por leer
+    for (int n=0; n<(k>>3); n++) { // Entra si se necesita algún byte completo
+      // Se concatena el byte entero
+      bin <<= 8;
+      bin += fgetc(archivoComprimido);
+      k -= 8;
+    }
+    // Se lee nuevo byte y se concatenan bits restantes
+    *buff = fgetc(archivoComprimido);
+    bin <<= k;
+    bin += leerSubBin(*buff, 0, k);
+    *indBit = k; // Actualización de índice
+  }
+  return bin;
 }
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
@@ -77,8 +109,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   FILE * archivoPGM;
   imagen img; // Donde se guardan valores de pixel y parámetros de la imagen
   BYTE a,b,c,d, x_p;
-  BYTE* bcodigo;
-  unsigned int ip, k, lu, bin, un;
+  BYTE bcodigo, bitInd;
+  unsigned int ip, k, nBbin, bin, unCount;
   Extracto * fC;
 
   // archivoComprimido = fopen(pathArchivoEntrada, "rb");
@@ -86,7 +118,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   //
   // crearImagen(archivoComprimido, &img); // Lee parámetros y reserva memoria
   // inicializarExtractos(img.s);
-  //
+  // bitInd = 0; // Inidce del próximo bit a procesar
   // // Para cada pixel
   // for (int fila=1; fila <= img.alto; fila++) {
   //   for (int col=1; col <= img.ancho; col++) {
@@ -96,10 +128,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   //     x_p = predecirX(a,b,c);
   //     fC = determinarExtracto(x_p, a,b,c);
   //     k = determinarGolombK(fC); // También es el largo de la parte binaria
+  //     nBbin = k/8 + 1; // Número de bytes de la parte binaria
   //
-  //     // Se leen bytes del archivo
-  //     bcodigo = leerNBytes(archivoComprimido, BUFFER_SIZE);
-  //     // Los k bits del comienzo son la parte binaria
   //
   //   }
   // }
@@ -112,5 +142,29 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
 /*============================================================================*/
 void main( int argc, char* argv[] ) {
-  printf("%hhu", leerCadenaBinario( atoi(argv[1]), atoi(argv[2]), atoi(argv[3]) ));
+  BYTE buff;
+  FILE* acomp;
+  imagen img;
+  BYTE indBit;
+
+  indBit = atoi(argv[2]);
+
+  buff = '@';
+
+  if ((acomp = fopen("test.txt", "rb")) == NULL){
+       printf("Error! opening file");
+
+       // Program exits if the file pointer returns NULL.
+       exit(1);
+   }
+
+  crearImagen(acomp, &img);
+
+  printf("Parte binaria = 0x%x", extraerParteBinaria( &buff, atoi(argv[1]), &indBit, acomp ));
+
+  printf("Byte en buffer: 0x%x\n", buff);
+  printf("Índice de bit: %d\n", indBit);
+
+  fclose(acomp);
+  free(img.datos);
 }
