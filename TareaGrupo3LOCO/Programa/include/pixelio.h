@@ -5,7 +5,7 @@
  * de pixeles
  *
  */
-#include <stdint.h>
+
 
 #ifndef pixelio_h
 #define pixelio_h
@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef unsigned char BYTE;
 
