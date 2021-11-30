@@ -17,7 +17,7 @@
 void crearImagen(FILE* archivoComprimido, imagen* img);
 BYTE* leerNBytes(FILE* archivoComprimido, unsigned int N);
 void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d);
-unsigned int leerUnario(BYTE b);
+unsigned int leerUnario(BYTE b, BYTE bitComienzo);
 void descomprimir( char* archivoEntrada, char* archivoSalida );
 
 

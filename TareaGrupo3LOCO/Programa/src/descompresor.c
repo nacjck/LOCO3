@@ -1,6 +1,7 @@
 #include "../include/descompresor.h"
 #include "../include/compartido.h"
 
+#define BUFFER_SIZE 10
 
 void crearImagen(FILE* archivoComprimido, imagen* img) {
   /* Lee la cabecera de un archivo comprimido y guarda los parámetros en un
@@ -52,10 +53,11 @@ void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
   *d = img->datos[ind - img->ancho];
 }
 
-unsigned int leerUnario(BYTE b) {
-  /* Cuenta la cantidad de 0 que preceden al primer 1 del byte (código unario) */
-  /* Si el byte es 0 devuelve 8 */
+unsigned int leerUnario(BYTE b, BYTE bitComienzo) {
+  /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitComienzo
+  del byte (código unario). Si el byte es 0 devuelve 8 */
   if (b == 0) { return 8; };
+  b <<= bitComienzo;
   for (int i=0; i<8; i++) {
     if ((b << i) & 128) { // MSB == 1
       return i;
@@ -65,11 +67,11 @@ unsigned int leerUnario(BYTE b) {
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   FILE * archivoComprimido;
-  FILE * archivoDescomprimido;
+  FILE * archivoPGM;
   imagen img; // Donde se guardan valores de pixel y parámetros de la imagen
-  BYTE a,b,c,d, x_p; // Valores de pixel
-  unsigned int ip, k, lu, M, n;
-  BYTE* buffer;
+  BYTE a,b,c,d, x_p;
+  BYTE* bcodigo;
+  unsigned int ip, k, lu, bin, un;
   Extracto * fC;
 
   // archivoComprimido = fopen(pathArchivoEntrada, "rb");
@@ -88,9 +90,14 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   //     fC = determinarExtracto(x_p, a,b,c);
   //     k = determinarGolombK(fC); // También es el largo de la parte binaria
   //
+  //     // Se leen bytes del archivo
+  //     bcodigo = leerNBytes(archivoComprimido, BUFFER_SIZE);
+  //     // Los k bits del comienzo son la parte binaria
+  //
   //   }
   // }
   //
+  // free(img.datos);
   // fclose(archivoComprimido);
   // fclose(archivoPGM);
 
@@ -98,5 +105,5 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
 /*============================================================================*/
 void main( int argc, char* argv[] ) {
-  printf("%hhu", leerUnario( atoi(argv[1]) ));
+  printf("%hhu", leerUnario( atoi(argv[1]), atoi(argv[2]) ));
 }
