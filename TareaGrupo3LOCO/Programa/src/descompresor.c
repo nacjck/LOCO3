@@ -76,6 +76,7 @@ unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoCompr
 
   // Busca primer 1 en el buffer
   un += leerSubUn(*buff, *indBit);
+
   if ( un == 8-(*indBit) ) { // Si llegó al final
     *indBit = 0;
     do {
@@ -86,7 +87,13 @@ unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoCompr
     *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final
   }
   else {
-    *indBit += un+1;
+    if ( *indBit+un==7 ) { // 1 de fin de parte unaria en el último bit
+      *buff = fgetc(archivoComprimido);
+      *indBit = 0;
+    }
+    else {
+      *indBit += un+1;
+    }
   }
   return un;
 }
@@ -212,7 +219,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 //
 //   indBit = atoi(argv[2]);
 //
-//   buff = '@';
+//   buff = 'A';
 //
 //   if ((acomp = fopen("test.txt", "rb")) == NULL){
 //        printf("Error! opening file");
@@ -230,4 +237,5 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 //
 //   fclose(acomp);
 //   free(img.datos);
+//
 // }
