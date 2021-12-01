@@ -30,7 +30,7 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     } while(c != '\n');
 
     //Comentarios
-    while ((c = getc(archivoInput)) == '#') {
+    while ((c = getc(archivoInput)) == '#') {      
         fprintf(archivoOutput,"%c",c);
         do {
             c = getc(archivoInput);
@@ -40,10 +40,10 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     }
 
     //Se regresa un caracter
-    fseek(archivoInput,-1,SEEK_CUR);
-
+    fseek(archivoInput,-1,SEEK_CUR);       
+    
     //Ancho
-    fscanf(archivoInput,"%d",ancho);
+    fscanf(archivoInput,"%d",ancho);      
     fprintf(archivoOutput,"%d",*ancho);
 
     //Altura
@@ -119,18 +119,3 @@ int main() {
 
     void destruirBuffer();
 }*/
-
-void write_code(FILE* outFile, unsigned int code, uint16_t l, BYTE &buffer, BYTE &buffBits) {
-  // Escribe el siguiente código en el archivo de la imagen comprimida
-
-  BYTE b;
-
-  if (buffBits == 0) { // Si no hay nada en el buffer
-
-    buffBits = l % 8; // Número de bits que sobran
-    buffer = code & ((1<<buffBits) - 1); // LSBs
-
-    // Escribe archivo
-  }
-
-}

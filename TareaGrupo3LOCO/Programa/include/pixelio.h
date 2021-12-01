@@ -6,7 +6,6 @@
  *
  */
 
-
 #ifndef pixelio_h
 #define pixelio_h
 
@@ -14,23 +13,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
 
-typedef unsigned char BYTE;
+#define bool int
 
-// Estructura de datos para el descompresor
- typedef struct Imagen {
-   // Parámetros de compresión
-   BYTE s;
-   Modalidad r;
-   // Parámetros de la imagen
-   unsigned int ancho;
-   unsigned int alto;
-   BYTE maxValorPixel;
-   // Datos descomprimidos
-   BYTE* datos;
- } imagen;
+/*
+ * Variables para buffer de pixeles
+ */
 
 void inicializarBuffer( int tamanio );
 
@@ -44,6 +32,5 @@ void destruirBuffer();
 
 //COMPRESOR
 int obtenerUltimoCaracter( FILE * archivoComprimido );
-
 
 #endif

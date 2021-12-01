@@ -67,7 +67,7 @@ BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
   return i;
 }
 
-unsigned int extraerParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoComprimido) {
+unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoComprimido) {
   /* Extrae la parte unaria del código de Golomb. *buff* es el byte leido
   en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
   Lee más bytes del archivo en caso de ser necesario. */
@@ -169,30 +169,30 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 }
 
 /*============================================================================*/
-void main( int argc, char* argv[] ) {
-  BYTE buff;
-  FILE* acomp;
-  imagen img;
-  BYTE indBit;
-
-  indBit = atoi(argv[2]);
-
-  buff = '@';
-
-  if ((acomp = fopen("test.txt", "rb")) == NULL){
-       printf("Error! opening file");
-
-       // Program exits if the file pointer returns NULL.
-       exit(1);
-   }
-
-  crearImagen(acomp, &img);
-
-  printf("Parte unaria = 0x%x\n", extraerParteUnaria( &buff, &indBit, acomp ));
-
-  printf("Byte en buffer: 0x%x\n", buff);
-  printf("Indice de bit: %d\n", indBit);
-
-  fclose(acomp);
-  free(img.datos);
-}
+// void main( int argc, char* argv[] ) {
+//   BYTE buff;
+//   FILE* acomp;
+//   imagen img;
+//   BYTE indBit;
+//
+//   indBit = atoi(argv[2]);
+//
+//   buff = '@';
+//
+//   if ((acomp = fopen("test.txt", "rb")) == NULL){
+//        printf("Error! opening file");
+//
+//        // Program exits if the file pointer returns NULL.
+//        exit(1);
+//    }
+//
+//   crearImagen(acomp, &img);
+//
+//   printf("Parte unaria = 0x%x\n", decodificarParteUnaria( &buff, &indBit, acomp ));
+//
+//   printf("Byte en buffer: 0x%x\n", buff);
+//   printf("Indice de bit: %d\n", indBit);
+//
+//   fclose(acomp);
+//   free(img.datos);
+// }
