@@ -53,18 +53,42 @@ void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
   *d = img->datos[ind - img->ancho];
 }
 
-unsigned int leerUnario(BYTE b, BYTE bitInicio) {
-  /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitComienzo
+BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
+  /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitInicio
   del byte (código unario). Si el byte es 0 devuelve 8 */
 
   int i;
-  b <<= bitInicio;
+  buff <<= bitInicio;
   for (i=0; i<8-bitInicio; i++) {
-    if ((b << i) & 128) { // MSB == 1
+    if ((buff << i) & 128) { // MSB == 1
       return i;
     }
   }
   return i;
+}
+
+unsigned int extraerParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoComprimido) {
+  /* Extrae la parte unaria del código de Golomb. *buff* es el byte leido
+  en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
+  Lee más bytes del archivo en caso de ser necesario. */
+  BYTE n;
+  unsigned int un = 0;
+
+  // Busca primer 1 en el buffer
+  un += leerSubUn(*buff, *indBit);
+  if ( un == 8-(*indBit) ) { // Si llegó al final
+    *indBit = 0;
+    do {
+      *buff = fgetc(archivoComprimido);
+      n = leerSubUn(*buff, *indBit);
+      un += n;
+    } while(n==8); // Mientras se recorra el byte completo
+    *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final
+  }
+  else {
+    *indBit += un+1;
+  }
+  return un;
 }
 
 BYTE leerSubBin(BYTE b, BYTE bitInicio, BYTE bitFin) {
@@ -77,8 +101,8 @@ BYTE leerSubBin(BYTE b, BYTE bitInicio, BYTE bitFin) {
 unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
                                                       FILE* archivoComprimido) {
   /* Extrae la parte binaria del código (largo k bits). *buff* es el byte leido
-  en el paso anterior y *inBit* es el índice del primer bit aún no procesado.
-  Lee más bytes del archivo de ser necesario. */
+  en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
+  Lee más bytes del archivo en caso de ser necesario. */
   unsigned int bin;
 
   if (*indBit+k <= 8) { // Si hay suficientes bits en el buffer
@@ -102,6 +126,10 @@ unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
     *indBit = k; // Actualización de índice
   }
   return bin;
+}
+
+int deshacerMapeo(unsigned int M) {
+  return (M%2==0) ? (M>>1) : -( (M-1)>>1 );
 }
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
@@ -160,10 +188,10 @@ void main( int argc, char* argv[] ) {
 
   crearImagen(acomp, &img);
 
-  printf("Parte binaria = 0x%x", extraerParteBinaria( &buff, atoi(argv[1]), &indBit, acomp ));
+  printf("Parte unaria = 0x%x\n", extraerParteUnaria( &buff, &indBit, acomp ));
 
   printf("Byte en buffer: 0x%x\n", buff);
-  printf("Índice de bit: %d\n", indBit);
+  printf("Indice de bit: %d\n", indBit);
 
   fclose(acomp);
   free(img.datos);
