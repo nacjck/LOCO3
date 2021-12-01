@@ -9,7 +9,7 @@
 #define bool int
 
 /*
- * Constantes para manejo de output segun tipos de datos 
+ * Constantes para manejo de output segun tipos de datos
  */
 
 static const size_t BITS_INT = (sizeof(int) << 3);
@@ -17,7 +17,7 @@ static const int SIZE_BLOQUE_CODIFICADO = sizeof(contenidoBuffer_t);
 static const int MAX_INDICE_BLOQUE = (int)((sizeof(contenidoBuffer_t) << 3) - 1);
 
 /*
- * Variables para codificacion 
+ * Variables para codificacion
  */
 static contenidoBuffer_t bufferCodificado[MAX_BUFFER];   /* Contiene ultimos caracteres a imprimir  */
 static contenidoBuffer_t * actualBloqueCodificado;       /* Puntero a siguiente bloque a imprimir   */
@@ -49,16 +49,16 @@ void controlarBuffer(FILE * archivoComprimido) {
  * Carga el buffer elemento a elemento hasta vaciar el output.
  * En caso de llenarse el buffer, se imprimen todos los bits
  * almacenados hasta el momento en el archivo indicado.
- * 
+ *
  *  Output carga los bits del más al menos significativo (Little-Endian).
- *  Se asume que los bits no utilizados son ceros. 
- */     
+ *  Se asume que los bits no utilizados son ceros.
+ */
 void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComprimido ) {
     int i;
     int distanciaBits;    /* Distancia entre ultimo bit codificado y bit a imprimir */
     contenidoBuffer_t mascara;
     int bitOutput = 0;
-    
+
     /* Coloca en el buffer cada bit uno por uno */
     for (i = cantidadBits; i > 0; i--) {
         distanciaBits = indiceBitCodificado - i + 1;
@@ -88,7 +88,7 @@ void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGol
         actualizarBuffer(0, BITS_INT, archivoComprimido);
         largoGolombUnario -= BITS_INT;
     }
-    actualizarBuffer(1 << (largoGolombUnario - 1), largoGolombUnario, archivoComprimido);
+    actualizarBuffer(1, largoGolombUnario, archivoComprimido);
 }
 
 void vaciarBuffer( FILE * archivoComprimido ) {
@@ -122,15 +122,15 @@ void vaciarBuffer( FILE * archivoComprimido ) {
     //actualizarBuffer((1 << 15) | (1 << 9) | (1 << 8),16,f);
     //actualizarBuffer(1,1,f);
     //actualizarBuffer(0xff,31,f);
-    
+
     /*for(i = 0; i < 5; i++) {
         printf("Iteracion: %d \n",i);
-        
+
         actualizarBuffer(0,2,f);
         actualizarBuffer(1,2,f);
-    
+
     }*/
-    
+
     /*vaciarBuffer(f);
     fclose(f);
 
@@ -142,10 +142,9 @@ void vaciarBuffer( FILE * archivoComprimido ) {
         printf("%u \n",(unsigned char)c);
     }
     fclose(f2);
-    
+
     f = fopen("tests/tools.pgm","rb");
     printf("%d \n",determinarAnchoImagen(f));
     printf("fin");
     fclose(f);
 }*/
-
