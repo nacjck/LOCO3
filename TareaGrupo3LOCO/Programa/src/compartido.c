@@ -64,7 +64,8 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c ) {
+Extracto * determinarExtracto( unsigned char xPrediccion,
+    unsigned char a, unsigned char b, unsigned char c , unsigned char s) {
     // Devuelve el extracto f(C)
     // Máximo s+3 bits
     // Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
@@ -77,6 +78,7 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
     X += (b >= xPrediccion) ? (b-xPrediccion) : (xPrediccion-b);
     X += (a >= xPrediccion) ? (a-xPrediccion) : (xPrediccion-a);
 
+    printf("%u\n", s);
     Q = (X >> (10-s)); // Cuantización de X
 
     T =  (c>xPrediccion) << 2; // MSB

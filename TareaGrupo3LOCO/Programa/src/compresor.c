@@ -19,10 +19,10 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     unsigned int golombBinario;
     int largoGolombBinario;       /* Cantidad de bits de binary(M) */
     int largoGolombUnario;        /* Cantidad de bits de unary (M) */
-    
+
     archivoComprimido = fopen(archivoSalida, "wb");
     archivoOriginal = fopen(archivoEntrada, "rb");
-    
+
     escribirParametrosCabezal(archivoComprimido, s, modalidad);
     escribirCabezalPGM(archivoOriginal, archivoComprimido, &anchoImagen);
     inicializarExtractos(s);
@@ -34,7 +34,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion, a, b, c);
+            fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
             errorPrediccion = x - xPrediccion;
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 kGolomb = determinarGolombK(fExtracto);
@@ -66,7 +66,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion,a , b, c);
+            fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
             errorPrediccion = x - xPrediccion;
             kGolomb = determinarGolombK(fExtracto);
             mapeoRice = determinarMapeoRice(errorPrediccion);
@@ -82,4 +82,3 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     fclose(archivoComprimido);
     fclose(archivoOriginal);
 }
-

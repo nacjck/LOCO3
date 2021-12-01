@@ -47,10 +47,10 @@ void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
   cuyo índice es *ind*. Se asume que la imagen tiene padding (no se chequean
   condiciones de borde). */
 
-  *a = img->datos[ind - 1];
-  *b = img->datos[ind - img->ancho - 1];
-  *c = img->datos[ind - img->ancho - 2];
-  *d = img->datos[ind - img->ancho];
+  *a = *(img->datos+ind-1);
+  *b = *(img->datos+ind-img->ancho-1);
+  *c = *(img->datos+ind-img->ancho-2);
+  *d = *(img->datos+ind-img->ancho);
 }
 
 BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
@@ -132,39 +132,73 @@ int deshacerMapeo(unsigned int M) {
   return (M%2==0) ? (M>>1) : -( (M-1)>>1 );
 }
 
+void escribirEncabezadoPGM(imagen img, FILE* archivoPGM) {
+  fprintf(archivoPGM, "P5\n");
+  fprintf(archivoPGM, "%u %u\n", img.ancho, img.alto);
+  fprintf(archivoPGM, "%hhu\n", img.maxValorPixel);
+}
+
+
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
+  /* */
+
   FILE * archivoComprimido;
   FILE * archivoPGM;
-  imagen img; // Donde se guardan valores de pixel y parámetros de la imagen
-  BYTE a,b,c,d, x_p;
-  BYTE bcodigo, bitInd;
-  unsigned int ip, k, nBbin, bin, unCount;
+  imagen img;
+  BYTE a,b,c,d, x_p, x_r ;
+  BYTE buff, indBit;
+  unsigned int ip, k, bin, unCount;
   Extracto * fC;
+  int e;
 
-  // archivoComprimido = fopen(pathArchivoEntrada, "rb");
-  // archivoPGM = fopen(pathArchivoSalida, "wb");
-  //
-  // crearImagen(archivoComprimido, &img); // Lee parámetros y reserva memoria
-  // inicializarExtractos(img.s);
-  // bitInd = 0; // Inidce del próximo bit a procesar
-  // // Para cada pixel
-  // for (int fila=1; fila <= img.alto; fila++) {
-  //   for (int col=1; col <= img.ancho; col++) {
-  //
-  //     ip = fila*img.ancho + col;
-  //     contexto(&img, ip, &a,&b,&c,&d);
-  //     x_p = predecirX(a,b,c);
-  //     fC = determinarExtracto(x_p, a,b,c);
+  archivoComprimido = fopen(pathArchivoEntrada, "rb");
+  archivoPGM = fopen(pathArchivoSalida, "wb");
+
+  printf("Descomprimiendo...\n");
+
+  crearImagen(archivoComprimido, &img); // Lee parámetros de la imagen
+  escribirEncabezadoPGM(img, archivoPGM);
+
+  inicializarExtractos(img.s);
+  indBit = 0; // Inidce del próximo bit a procesar
+  buff = fgetc(archivoComprimido); // Primer byte del archivo
+
+  // Para cada pixel
+  for (int fila=1; fila <= img.alto; fila++) {
+    for (int col=1; col <= img.ancho; col++) {
+
+      ip = fila*(img.ancho+1) + col; // Indice del pixel en 1D
+      // printf("%u\n", ip);
+      contexto(&img, ip, &a,&b,&c,&d);
+      // printf("%hhu %hhu %hhu %hhu\n", a,b,c,d);
+      x_p = predecirX(a,b,c);
+      // printf("%hhu\n", x_p);
+
+      fC = determinarExtracto(x_p, a,b,c, img.s);
+
+      printf("%u %u\n", fC->A, fC->N);
+      break;
   //     k = determinarGolombK(fC); // También es el largo de la parte binaria
-  //     nBbin = k/8 + 1; // Número de bytes de la parte binaria
   //
+  //     // Se decodifica el GPO2 del error de predicción del pixel
+  //     bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
+  //     unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
+  //     e = deshacerMapeo( (unCount<<k) + bin );
   //
-  //   }
-  // }
+  //     // Pixel recuperado
+  //     x_r = e + x_p;
+  //     *(img.datos + ip) = x_r;
+  //    // fputc(x_r, archivoPGM);
   //
-  // free(img.datos);
-  // fclose(archivoComprimido);
-  // fclose(archivoPGM);
+  //     // Actualización de estadísticas
+  //     actualizarExtracto(fC, e);
+    }
+    break;
+  }
+  liberarExtractos();
+  fclose(archivoComprimido);
+  fclose(archivoPGM);
+  free(img.datos);
 
 }
 

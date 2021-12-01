@@ -36,7 +36,7 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c );
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c );
+Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, unsigned char s );
 
 /*
  * Retorna el parámetro k de Golomb dado un extracto
