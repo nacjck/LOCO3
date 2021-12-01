@@ -78,7 +78,6 @@ Extracto * determinarExtracto( unsigned char xPrediccion,
     X += (b >= xPrediccion) ? (b-xPrediccion) : (xPrediccion-b);
     X += (a >= xPrediccion) ? (a-xPrediccion) : (xPrediccion-a);
 
-    printf("%u\n", s);
     Q = (X >> (10-s)); // Cuantización de X
 
     T =  (c>xPrediccion) << 2; // MSB

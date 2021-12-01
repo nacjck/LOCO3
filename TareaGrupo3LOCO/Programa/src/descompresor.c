@@ -176,24 +176,25 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
-      printf("%u %u\n", fC->A, fC->N);
-      break;
-  //     k = determinarGolombK(fC); // También es el largo de la parte binaria
-  //
-  //     // Se decodifica el GPO2 del error de predicción del pixel
-  //     bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
-  //     unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
-  //     e = deshacerMapeo( (unCount<<k) + bin );
-  //
-  //     // Pixel recuperado
-  //     x_r = e + x_p;
-  //     *(img.datos + ip) = x_r;
-  //    // fputc(x_r, archivoPGM);
-  //
-  //     // Actualización de estadísticas
-  //     actualizarExtracto(fC, e);
+      k = determinarGolombK(fC); // También es el largo de la parte binaria
+      // printf("%u\n", k);
+
+      // Se decodifica el GPO2 del error de predicción del pixel
+      bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
+      // printf("%hhu\n", bin);
+      unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
+      // printf("%hhu\n", unCount );
+      e = deshacerMapeo( (unCount<<k) + bin );
+      // printf("%hhu\n", e);
+
+      // Pixel recuperado
+      x_r = e + x_p;
+      *(img.datos + ip) = x_r;
+      fwrite(&x_r, 1, 1, archivoPGM);
+
+      // Actualización de estadísticas
+      actualizarExtracto(fC, e);
     }
-    break;
   }
   liberarExtractos();
   fclose(archivoComprimido);
