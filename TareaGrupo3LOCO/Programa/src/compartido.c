@@ -16,7 +16,7 @@ static int cantExtractos; // 1 << (s + 3)
  */
 void inicializarExtractos( int _s ) {
     int i;
-    
+
     s = _s;
     cantExtractos = 1 << (_s + 3);
     extractos = malloc(sizeof(Extracto) << (_s + 3));
@@ -77,14 +77,14 @@ Extracto * determinarExtracto( unsigned char xPrediccion, unsigned char a, unsig
     X += (b >= xPrediccion) ? (b-xPrediccion) : (xPrediccion-b);
     X += (a >= xPrediccion) ? (a-xPrediccion) : (xPrediccion-a);
 
-    Q = (xPrediccion >> (10-s)); // Cuantización de X
+    Q = (X >> (10-s)); // Cuantización de X
 
     T =  (c>xPrediccion) << 2; // MSB
     T += (b>xPrediccion) << 1;
     T += (a>xPrediccion); // LSB
 
-    fC = (Q<<3) + T; // f(C) = Q*8 + T 
-    
+    fC = (Q<<3) + T; // f(C) = Q*8 + T
+
     return extractos[fC];
 }
 
@@ -97,7 +97,7 @@ int determinarGolombK( Extracto * extracto ) {
     unsigned short k;
 
     for ( k=0; (extracto->N << k) < extracto->A; k++ ); // La fórmula está en el artículo y en las diapos
-  
+
     return k;
 }
 
@@ -135,7 +135,7 @@ int determinarLargoUnaryGolomb( int k, int M ) {
     unsigned int un_length;
 
     un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
-    
+
     return un_length;
 }
 
