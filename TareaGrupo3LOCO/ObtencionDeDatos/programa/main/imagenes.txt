@@ -1,0 +1,8 @@
+../../imagenes/barbara.pgm
+../../imagenes/bike.pgm
+../../imagenes/faxballsL.pgm
+../../imagenes/kodim07.pgm
+../../imagenes/kodim20.pgm
+../../imagenes/kodim24.pgm
+../../imagenes/tools.pgm
+../../imagenes/womanc.pgm

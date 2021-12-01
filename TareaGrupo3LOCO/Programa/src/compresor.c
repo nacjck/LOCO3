@@ -4,7 +4,27 @@
 
 #include <stdio.h>
 
-void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
+//RUTINAS AUXILIARES PARA LA RECOLECCION DE DATOS
+DtCompresion crearDtCompresion( FILE * archivoOriginal ) {
+    DtCompresion res;
+
+    res.tasaCompTotal = 0;
+    res.cantPixeles = - ftell(archivoOriginal);
+    res.cantComprimida = 0;
+    
+    return res;
+}
+
+void actualizarDatosCompresion( DtCompresion * dtComp, int cantidadComprimida ) {
+    dtComp->cantComprimida += cantidadComprimida;
+}
+
+void guardarDatos(DtCompresion * dtComp, FILE * archivoOriginal) {
+    dtComp->cantPixeles += ftell(archivoOriginal);
+    dtComp->tasaCompTotal = ((float)dtComp->cantComprimida) / (dtComp->cantPixeles << 3);
+}
+
+DtCompresion comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
     FILE * archivoComprimido;
     FILE * archivoOriginal;
     int anchoImagen;
@@ -28,6 +48,10 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     inicializarExtractos(s);
     inicializarBuffer(anchoImagen);
     inicializarBufferCompresion();
+    
+    //INFORMACION RETORNADA
+    DtCompresion dtComp = crearDtCompresion(archivoOriginal);
+    
     if (modalidad == RUN) {
         ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
         while (ultimoCaracterLeido != EOF) {
@@ -59,6 +83,9 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
             }
             imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+            
+            //ACTUALIZACION DATOS
+            actualizarDatosCompresion(&dtComp,largoGolombBinario + largoGolombUnario);
         }
     }
     else {
@@ -74,12 +101,19 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
             imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
             actualizarExtracto(fExtracto, errorPrediccion);
+            
+            //ACTUALIZACION DATOS
+            actualizarDatosCompresion(&dtComp,largoGolombBinario + largoGolombUnario);
         }
     }
+    
+    guardarDatos(&dtComp,archivoOriginal);
     liberarExtractos();
     vaciarBuffer(archivoComprimido);
     destruirBuffer();
     fclose(archivoComprimido);
     fclose(archivoOriginal);
+    
+    return dtComp;
 }
 

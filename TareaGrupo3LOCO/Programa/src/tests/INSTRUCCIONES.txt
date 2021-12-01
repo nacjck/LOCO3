@@ -1,5 +1,0 @@
-De las imágenes kodim??.p?m y baloons.p?m:
-- Si su proyecto implementa compresor para imágenes en colores, utilice las versiones *.ppm.
-- Si su proyecto implementa solamente compresor para imágenes de tono gris, utilice las versiones *.pgm.
-
-Las demás imágenes se utilizan en ambos tipos de proyecto. Total de imágenes de prueba para cada proyecto: 9.

@@ -62,8 +62,14 @@ void actualizarBuffer( unsigned int output, int cantidadBits, FILE * archivoComp
     /* Coloca en el buffer cada bit uno por uno */
     for (i = cantidadBits; i > 0; i--) {
         distanciaBits = indiceBitCodificado - i + 1;
-        mascara = (distanciaBits < 0) ? (output >> -distanciaBits):
-                                        (output <<  distanciaBits);
+        if (distanciaBits < 0) {
+            mascara =  (output >> -distanciaBits);
+            bitOutput = mascara & (1 << i + distanciaBits + 1);
+        }
+        else {
+            mascara =  (output << distanciaBits);
+            bitOutput = mascara & (1 << indiceBitCodificado);
+        }
         *actualBloqueCodificado |= mascara;
         indiceBitCodificado--;
 
