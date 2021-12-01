@@ -84,7 +84,9 @@ unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoCompr
       n = leerSubUn(*buff, *indBit);
       un += n;
     } while(n==8); // Mientras se recorra el byte completo
-    *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final
+    if (n==7) {*buff = fgetc(archivoComprimido); *indBit=0;}
+    else {*indBit=n+1;};
+    // *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final
   }
   else {
     if ( *indBit+un==7 ) { // 1 de fin de parte unaria en el último bit
@@ -161,7 +163,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoPGM = fopen(pathArchivoSalida, "wb");
 
-  printf("Descomprimiendo...\n");
+  // printf("Descomprimiendo...\n");
 
   crearImagen(archivoComprimido, &img); // Lee parámetros de la imagen
   escribirEncabezadoPGM(img, archivoPGM);
@@ -179,7 +181,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       contexto(&img, ip, &a,&b,&c,&d);
       // printf("%hhu %hhu %hhu %hhu\n", a,b,c,d);
       x_p = predecirX(a,b,c);
-      // printf("%hhu\n", x_p);
+      printf("Predicción: %hhu\n", x_p);
 
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
@@ -198,6 +200,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       x_r = e + x_p;
       *(img.datos + ip) = x_r;
       fwrite(&x_r, 1, 1, archivoPGM);
+
+      tp = img.ancho * img.alto
+      if (ip%20==0) {printf("Pixeles procesados %u / %u", ip, tp);};
 
       // Actualización de estadísticas
       actualizarExtracto(fC, e);
