@@ -4,7 +4,7 @@
 
 #define R 128
 
-static int s;
+// static int s;
 /*
  * Este arreglo es el que se inicializa al comienzo del programa con N=1 y A=8
  */
@@ -17,7 +17,7 @@ static int cantExtractos; // 1 << (s + 3)
 void inicializarExtractos( int _s ) {
     int i;
 
-    s = _s;
+    // s = _s; ??
     cantExtractos = 1 << (_s + 3);
     extractos = malloc(sizeof(Extracto) << (_s + 3));
     for (i = 0; i < cantExtractos; i++) {
@@ -118,10 +118,10 @@ int determinarMapeoRice( int errorPrediccion ) {
     return M;
 }
 
-int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
+unsigned int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
     // Devuelve el largo de la parte binaria de Golomb_k(M)
     // Ademas retorna bin_arg con la parte binaria.
-    // El largo del código es l = k+1
+
     unsigned int bin_length;
 
     *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
@@ -130,9 +130,8 @@ int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
     return bin_length;
 }
 
-int determinarLargoUnaryGolomb( int k, int M ) {
+unsigned int determinarLargoUnaryGolomb( int k, int M ) {
     // Devuelve el código de Golomb como un entero sin signo
-    // El largo del código es l = M/2^k
     unsigned int un_length;
 
     un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
