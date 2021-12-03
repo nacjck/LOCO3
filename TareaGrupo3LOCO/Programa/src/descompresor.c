@@ -142,11 +142,12 @@ int deshacerMapeo(unsigned int M) {
 }
 
 int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
-  /* Decodifica el código de Golomb y devuelve el error de predicción. */
+  /* Decodifica el código de Golomb y devuelve el error de predicción o
+  la cantidad de repeticiones en modo run. */
   unsigned int bin, unCount;
   bin = extraerParteBinaria(buff, k, indBit, archivoComprimido);
   unCount = decodificarParteUnaria(buff, indBit, archivoComprimido);
-  return deshacerMapeo( (unCount<<k) + bin );
+  return ( (unCount<<k) + bin );
 }
 
 void escribirEncabezadoPGM(imagen img, FILE* archivoPGM) {
@@ -166,9 +167,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   imagen img;
   BYTE a,b,c,d, x_p, x_r ;
   BYTE buff, indBit;
-  unsigned int ip, k, bin, unCount;
+  unsigned int ip, k;
   Extracto * fC;
-  int e;
+  int e, n;
 
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoPGM = fopen(pathArchivoSalida, "wb");
@@ -187,14 +188,19 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
     for (int col=1; col <= img.ancho; col++) {
 
       ip = fila*(img.ancho+1) + col; // Indice del pixel en 1D
+
       contexto(&img, ip, &a,&b,&c,&d);
       x_p = predecirX(a,b,c);
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
-      if (0) {
+      if (RUN) {
         k = 3; // Fijo
-
-        // Implementar
+        n = decodificarGPO2(&buff, k, &indBit, archivoComprimido); // Nro de repeticiones
+        fwrite(&a, 1, n, archivoPGM);
+        for (int m=0; m<n; m++) { *(img.datos + ip + m)=a; }
+        // Actualizar indices de fila y columna
+        fila += n/(img.ancho+1);
+        col += n%(img.ancho+1);
       }
       else {
         // Se decodifica el GPO2 del error de predicción del pixel
@@ -202,7 +208,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         // bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
         // unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
         // e = deshacerMapeo( (unCount<<k) + bin );
-        e = decodificarGPO2(&buff, k, &indBit, archivoComprimido);
+        e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
         // Pixel recuperado
         x_r = e + x_p;
         *(img.datos + ip) = x_r;

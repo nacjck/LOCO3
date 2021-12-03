@@ -51,7 +51,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
 
                 do {
                     l++;
-                    actualizarExtracto(fExtracto, errorPrediccion);
+                    // actualizarExtracto(fExtracto, errorPrediccion);
                     ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
                     x = (unsigned char) ultimoCaracterLeido;
                 } while (ultimoCaracterLeido != EOF && !esFinDeLinea() && x == a);

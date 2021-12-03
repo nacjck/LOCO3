@@ -48,9 +48,9 @@ int determinarGolombK( Extracto * extracto );
  */
 int determinarMapeoRice( int errorPrediccion );
 
-int determinarLargoBinaryGolomb( int k, int M, int * bin_arg );
+unsigned int determinarLargoBinaryGolomb( int k, int M, int * bin_arg );
 
-int determinarLargoUnaryGolomb( int k, int M );
+unsigned int determinarLargoUnaryGolomb( int k, int M );
 /*
  * Actualiza las variables A y N del extracto
  */
