@@ -1,7 +1,7 @@
 #include "../include/descompresor.h"
 #include "../include/compartido.h"
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 256
 
 void crearImagen(FILE* archivoComprimido, imagen* img) {
   /* Lee la cabecera de un archivo comprimido y guarda los parámetros en un
@@ -141,12 +141,22 @@ int deshacerMapeo(unsigned int M) {
   return (M%2==0) ? (M>>1) : -( (M-1)>>1 );
 }
 
+int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
+  /* Decodifica el código de Golomb y devuelve el error de predicción. */
+  unsigned int bin, unCount;
+  bin = extraerParteBinaria(buff, k, indBit, archivoComprimido);
+  unCount = decodificarParteUnaria(buff, indBit, archivoComprimido);
+  return deshacerMapeo( (unCount<<k) + bin );
+}
+
 void escribirEncabezadoPGM(imagen img, FILE* archivoPGM) {
   fprintf(archivoPGM, "P5\n");
   fprintf(archivoPGM, "%u %u\n", img.ancho, img.alto);
   fprintf(archivoPGM, "%hhu\n", img.maxValorPixel);
 }
 
+// Macro para evaluar las condiciones de entrada al modo run.
+#define RUN ( img.r && (a==b && b==c && c==d) )
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   /* */
@@ -177,35 +187,30 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
     for (int col=1; col <= img.ancho; col++) {
 
       ip = fila*(img.ancho+1) + col; // Indice del pixel en 1D
-      // printf("%u\n", ip);
       contexto(&img, ip, &a,&b,&c,&d);
-      // printf("%hhu %hhu %hhu %hhu\n", a,b,c,d);
       x_p = predecirX(a,b,c);
-      printf("Predicción: %hhu\n", x_p);
-
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
-      k = determinarGolombK(fC); // También es el largo de la parte binaria
-      // printf("%u\n", k);
+      if (0) {
+        k = 3; // Fijo
 
-      // Se decodifica el GPO2 del error de predicción del pixel
-      bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
-      // printf("%hhu\n", bin);
-      unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
-      // printf("%hhu\n", unCount );
-      e = deshacerMapeo( (unCount<<k) + bin );
-      // printf("%hhu\n", e);
+        // Implementar
+      }
+      else {
+        // Se decodifica el GPO2 del error de predicción del pixel
+        k = determinarGolombK(fC); // También es el largo de la parte binaria
+        // bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
+        // unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
+        // e = deshacerMapeo( (unCount<<k) + bin );
+        e = decodificarGPO2(&buff, k, &indBit, archivoComprimido);
+        // Pixel recuperado
+        x_r = e + x_p;
+        *(img.datos + ip) = x_r;
+        fwrite(&x_r, 1, 1, archivoPGM);
 
-      // Pixel recuperado
-      x_r = e + x_p;
-      *(img.datos + ip) = x_r;
-      fwrite(&x_r, 1, 1, archivoPGM);
-
-      tp = img.ancho * img.alto
-      if (ip%20==0) {printf("Pixeles procesados %u / %u", ip, tp);};
-
-      // Actualización de estadísticas
-      actualizarExtracto(fC, e);
+        // Actualización de estadísticas
+        actualizarExtracto(fC, e);
+      }
     }
   }
   liberarExtractos();
