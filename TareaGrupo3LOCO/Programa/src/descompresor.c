@@ -193,11 +193,14 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       x_p = predecirX(a,b,c);
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
-      if (RUN) {
-        k = 3; // Fijo
-        n = decodificarGPO2(&buff, k, &indBit, archivoComprimido); // Nro de repeticiones
-        fwrite(&a, 1, n, archivoPGM);
-        for (int m=0; m<n; m++) { *(img.datos + ip + m)=a; }
+      if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
+        // Nro de repeticiones no nulo
+        // printf("Codificando %u repeticiones en modo RUN\n");
+        // printf("(i, j) = (%u, %u)\n", fila, col);
+        for (int m=0; m<n; m++) {
+          fwrite(&a, 1, 1, archivoPGM);
+          *(img.datos + ip + m)=a;
+        }
         // Actualizar indices de fila y columna
         fila += n/(img.ancho+1);
         col += n%(img.ancho+1);
@@ -205,15 +208,11 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       else {
         // Se decodifica el GPO2 del error de predicción del pixel
         k = determinarGolombK(fC); // También es el largo de la parte binaria
-        // bin = extraerParteBinaria(&buff, k, &indBit, archivoComprimido);
-        // unCount = decodificarParteUnaria(&buff, &indBit, archivoComprimido);
-        // e = deshacerMapeo( (unCount<<k) + bin );
         e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
         // Pixel recuperado
         x_r = e + x_p;
         *(img.datos + ip) = x_r;
         fwrite(&x_r, 1, 1, archivoPGM);
-
         // Actualización de estadísticas
         actualizarExtracto(fC, e);
       }
