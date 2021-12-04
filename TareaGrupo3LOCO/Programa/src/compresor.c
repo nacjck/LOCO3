@@ -29,36 +29,48 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     inicializarBuffer(anchoImagen);
     inicializarBufferCompresion();
     if (modalidad == RUN) {
-        ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
-        while (ultimoCaracterLeido != EOF) {
+        while (( ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
-            xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
-            errorPrediccion = x - xPrediccion;
+            
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
+                xPrediccion = predecirX(a, b, c);
+                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
+                errorPrediccion = x - xPrediccion;
                 kGolomb = determinarGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion);
                 largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
                 largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
-                actualizarExtracto(fExtracto,errorPrediccion);
-                ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
             }
             else {
-                int l = -1;    /* Ocurrencias del mismo caracter */
+                int l = 0;    /* Ocurrencias del mismo caracter */
                 kGolomb = 3;
-                determinarContexto(&a, &b, &c, &d);
 
-                do {
+                //Contador de ocurrencias repetidas
+                while (ultimoCaracterLeido != EOF && !esFinDeLinea() && x == a) {
                     l++;
-                    // actualizarExtracto(fExtracto, errorPrediccion);
                     ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
                     x = (unsigned char) ultimoCaracterLeido;
-                } while (ultimoCaracterLeido != EOF && !esFinDeLinea() && x == a);
+                }
+                
+                //Impresion de largo de run
                 largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
                 largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
+                imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+                
+                //Impresion de proximo pixel al de run (provisorio)
+                determinarContexto(&a, &b, &c, &d);
+                xPrediccion = predecirX(a, b, c);
+                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
+                errorPrediccion = x - xPrediccion;
+                kGolomb = determinarGolombK(fExtracto);
+                mapeoRice = determinarMapeoRice(errorPrediccion);
+                largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
+                largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
+                
             }
             imprimirCompresion(golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+            actualizarExtracto(fExtracto,errorPrediccion);
         }
     }
     else {

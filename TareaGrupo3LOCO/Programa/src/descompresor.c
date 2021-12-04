@@ -202,8 +202,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
           *(img.datos + ip + m)=a;
         }
         // Actualizar indices de fila y columna
-        fila += n/(img.ancho+1);
-        col += n%(img.ancho+1);
+        //fila += n/(img.ancho+1);
+        //col += n%(img.ancho+1);
+        col += n-1;
       }
       else {
         // Se decodifica el GPO2 del error de predicción del pixel
