@@ -183,6 +183,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
+  //provisorio
+  int fueRun = 0;
+
   // Para cada pixel
   for (int fila=1; fila <= img.alto; fila++) {
     for (int col=1; col <= img.ancho; col++) {
@@ -193,7 +196,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       x_p = predecirX(a,b,c);
       fC = determinarExtracto(x_p, a,b,c, img.s);
 
-      if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
+      //fueRun provisorio
+      if ( !fueRun && RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
         // Nro de repeticiones no nulo
         // printf("Codificando %u repeticiones en modo RUN\n");
         // printf("(i, j) = (%u, %u)\n", fila, col);
@@ -205,6 +209,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         //fila += n/(img.ancho+1);
         //col += n%(img.ancho+1);
         col += n-1;
+
+        fueRun = 1; //provisorio
       }
       else {
         // Se decodifica el GPO2 del error de predicción del pixel
@@ -216,6 +222,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         fwrite(&x_r, 1, 1, archivoPGM);
         // Actualización de estadísticas
         actualizarExtracto(fC, e);
+
+        fueRun = 0;
       }
     }
   }
