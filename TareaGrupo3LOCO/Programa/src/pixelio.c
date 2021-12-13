@@ -22,19 +22,21 @@ void inicializarBuffer( int ancho ) {
 
 void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho) {
     int c;
+
     //P5
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
     } while(c != '\n');
+
     //Comentarios
-    while ((c = getc(archivoInput)) == '#') {
+    while ((c = getc(archivoInput)) == '#') {      
         fprintf(archivoOutput,"%c",c);
         do {
             c = getc(archivoInput);
             fprintf(archivoOutput,"%c",c);
         } while(c != '\n');
-        fprintf(archivoOutput,"%c",c);
+        c = getc(archivoInput);
     }
 
     //Se regresa un caracter
@@ -80,14 +82,13 @@ int obtenerUltimoCaracter( FILE * archivoOriginal ) {
     posicionActualImagen++;
     if (posicionActualImagen > anchoImagen) {
         int pixel;
-        posicionActualImagen = 1;
         if ((pixel = fgetc(archivoOriginal)) != EOF) {
             int i;
             fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
             for (i = 1; i <= anchoImagen; i++) {
                 bufferImagen[filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
             }
-            
+            posicionActualImagen = 1;
             filaSuperior = !filaSuperior;
             ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
         }

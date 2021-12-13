@@ -13,17 +13,11 @@
 #include "pixelio.h"
 #include "modalidad.h"
 
-typedef struct {
-    float tasaCompTotal;
-    long int cantComprimida;
-    long int cantPixeles;
-} DtCompresion;
-
 /*
  * Precondiciones: 
  *     -archivoEntrada y archivoSalida no son nulos.
  *     - 0 <= s <= 10
  */
-DtCompresion comprimir( char* archivoEntrada, char* archivoSaluda, int s, Modalidad modalidad );
+void comprimir( char* archivoEntrada, char* archivoSaluda, int s, Modalidad modalidad );
 
 #endif

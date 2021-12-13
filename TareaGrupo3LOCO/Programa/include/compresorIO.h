@@ -3,12 +3,19 @@
 
 #include <stdio.h>
 
+#define MAX_BUFFER 256
+
+//Buffer de bits que serán impresos
+typedef struct _bufferComprimido * BufferCompresion;
+
 void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
 
-void inicializarBufferCompresion();
+BufferCompresion crearBufferCompresion();
 
-void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido);
+void imprimirCompresion( BufferCompresion buf, int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido);
 
-void vaciarBuffer( FILE * archivoComprimido );
+void vaciarBuffer( BufferCompresion buf, FILE * archivoComprimido );
+
+void destruirBufferCompresion( BufferCompresion buf );
 
 #endif
