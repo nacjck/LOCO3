@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "arreglocircular": "c",
+        "initializer_list": "c",
+        "compartido.h": "c",
+        "modalidad.h": "c",
+        "pixelio.h": "c",
+        "compresorio.h": "c"
+    }
+}
