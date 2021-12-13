@@ -88,7 +88,7 @@ void imprimirCompresion( int golombBinario, int largoGolombBinario, int largoGol
         actualizarBuffer(0, BITS_INT, archivoComprimido);
         largoGolombUnario -= BITS_INT;
     }
-    actualizarBuffer(1 , largoGolombUnario, archivoComprimido);
+    actualizarBuffer(1, largoGolombUnario, archivoComprimido);
 }
 
 void vaciarBuffer( FILE * archivoComprimido ) {

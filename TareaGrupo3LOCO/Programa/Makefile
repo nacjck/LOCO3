@@ -1,4 +1,4 @@
-# Makefile 
+# Makefile
 # Autores:
 # 	Alexis Baladon
 #	Juan Ignacio Fernandez
@@ -40,7 +40,7 @@ $(EJECUTABLE): $(ODIR)/$(MAIN).o $(OS)
 	$(info Archivo ejecutable generado: $(EJECUTABLE))
 
 objfolder:
-	mkdir -p $(ODIR) 
+	mkdir $(ODIR) 
 
 clean_bin:
 	rm -f $(EJECUTABLE) $(ODIR)/$(MAIN).o $(OS)
@@ -49,4 +49,3 @@ clean_bin:
 entrega: $(EJECUTABLE)
 	tar -cvzf tareaATIPI.tar.gz *
 	$(info Archivo a entregar: tareaATIPI.gz )
-
