@@ -168,7 +168,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   BYTE a,b,c,d, x_p, x_r ;
   BYTE buff, indBit;
   unsigned int ip, k;
-  Extracto * fC;
+  Extracto fExtracto;
+  Extractos extractos;
+  int fC;
   int e, n;
 
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
@@ -176,10 +178,10 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
   // printf("Descomprimiendo...\n");
 
+  extractos = crearExtractos(img.s);
   crearImagen(archivoComprimido, &img); // Lee parámetros de la imagen
   escribirEncabezadoPGM(img, archivoPGM);
 
-  inicializarExtractos(img.s);
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
@@ -194,8 +196,9 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
       contexto(&img, ip, &a,&b,&c,&d);
       x_p = predecirX(a,b,c);
-      fC = determinarExtracto(x_p, a,b,c, img.s);
-
+      fC = determinarIndiceExtracto(x_p, a,b,c, img.s);
+      fExtracto = determinarExtracto(extractos, fC);
+      
       //fueRun provisorio
       if ( !fueRun && RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
         // Nro de repeticiones no nulo
@@ -214,20 +217,20 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       }
       else {
         // Se decodifica el GPO2 del error de predicción del pixel
-        k = determinarGolombK(fC); // También es el largo de la parte binaria
+        k = determinarGolombK(fExtracto); // También es el largo de la parte binaria
         e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
         // Pixel recuperado
         x_r = e + x_p;
         *(img.datos + ip) = x_r;
         fwrite(&x_r, 1, 1, archivoPGM);
         // Actualización de estadísticas
-        actualizarExtracto(fC, e);
+        actualizarExtracto(fExtracto, e);
 
         fueRun = 0;
       }
     }
   }
-  liberarExtractos();
+  destruirExtractos(extractos);
   fclose(archivoComprimido);
   fclose(archivoPGM);
   free(img.datos);
