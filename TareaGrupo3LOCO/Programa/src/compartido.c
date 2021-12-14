@@ -25,8 +25,9 @@ Extractos crearExtractos( int s ) {
     int cantExtractos;
     int i;
 
+    extractos = malloc(sizeof(struct _extractos));
+    extractos->extractos = malloc(sizeof(Extracto) << (s + 3));
     extractos->cantidadExtractos = 1 << s + 3;
-    extractos = malloc(sizeof(Extracto) << (s + 3));
 
     for (i = 0; i < extractos->cantidadExtractos; i++) {
         Extracto ext = malloc(sizeof(struct _extracto));
@@ -170,5 +171,6 @@ void destruirExtractos(Extractos extractos) {
     for(i = 0; i < extractos->cantidadExtractos; i++) {
         free(extractos->extractos[i]);
     }
+    free(extractos->extractos);
     free(extractos);
 }

@@ -178,8 +178,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
 
   // printf("Descomprimiendo...\n");
 
-  extractos = crearExtractos(img.s);
   crearImagen(archivoComprimido, &img); // Lee parámetros de la imagen
+  extractos = crearExtractos(img.s);
   escribirEncabezadoPGM(img, archivoPGM);
 
   indBit = 0; // Inidce del próximo bit a procesar
@@ -198,7 +198,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       x_p = predecirX(a,b,c);
       fC = determinarIndiceExtracto(x_p, a,b,c, img.s);
       fExtracto = determinarExtracto(extractos, fC);
-      
+
       //fueRun provisorio
       if ( !fueRun && RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
         // Nro de repeticiones no nulo

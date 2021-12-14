@@ -27,7 +27,6 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
 
     escribirParametrosCabezal(archivoComprimido, s, modalidad);
     escribirCabezalPGM(archivoOriginal, archivoComprimido, &anchoImagen);
-    inicializarExtractos(s);
     inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
         while (( ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
