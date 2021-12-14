@@ -2,25 +2,34 @@
 
 #include <string.h>
 
+struct _datosCabezal {
+    int altura,ancho;
+    int maxValue;
+};
+
 struct _imagen {
     unsigned char * filas[2];             /* Ultimas dos filas de imagen             */
-    int altura,ancho;
+    DatosCabezal cabezal;
     int pixelActual;                    /* Si se esta en el borde izquierdo vale 0 */
     bool filaSuperior;                            /* 0 o 1                                   */
 };
 
-Imagen crearImagen( int ancho ) {
+Imagen crearImagen( DatosCabezal dtCabezal ) {
     Imagen res = malloc(sizeof(struct _imagen));
+
     res->filaSuperior = 0;
-    res->pixelActual = ancho + 1;
-    res->ancho = ancho;
-    res->filas[0] = malloc(ancho * sizeof(unsigned char) + 2);
-    res->filas[1] = malloc(ancho * sizeof(unsigned char) + 2);
-    memset(res->filas[!res->filaSuperior], 0, ancho + 2);
-    memset(res->filas[ res->filaSuperior], 0, ancho + 2);
+    res->pixelActual = dtCabezal->ancho + 1;
+    res->cabezal = dtCabezal;
+    res->filas[0] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
+    res->filas[1] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
+    memset(res->filas[!res->filaSuperior], 0, dtCabezal->ancho + 2);
+    memset(res->filas[ res->filaSuperior], 0, dtCabezal->ancho + 2);
+
+    return res;
 }
 
-void escribirCabezalPGM( Imagen img, FILE * archivoInput, FILE * archivoOutput ) {
+DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
+    DatosCabezal res = malloc(sizeof(struct _datosCabezal));
     int c;
 
     //P5
@@ -43,10 +52,14 @@ void escribirCabezalPGM( Imagen img, FILE * archivoInput, FILE * archivoOutput )
     fseek(archivoInput,-1,SEEK_CUR);       
     
     //Ancho
-    fscanf(archivoInput,"%d",&(img->ancho));      
-    fprintf(archivoOutput,"%d",img->ancho);
+    fscanf(archivoInput,"%d",&(res->ancho));      
+    fprintf(archivoOutput,"%d ",res->altura);
 
     //Altura
+    fscanf(archivoInput,"%d",&(res->altura));      
+    fprintf(archivoOutput,"%d",res->altura);
+
+    //Resto
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
@@ -57,6 +70,20 @@ void escribirCabezalPGM( Imagen img, FILE * archivoInput, FILE * archivoOutput )
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
     } while(c != '\n');
+
+    return res;
+}
+
+int obtenerAncho( Imagen img ) {
+    return img->cabezal->ancho;
+}
+
+int obtenerAltura( Imagen img ) {
+    return img->cabezal->altura;
+}
+
+int obtenerMaxValue( Imagen img ) {
+    return img->cabezal->maxValue;
 }
 
 void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
@@ -75,17 +102,21 @@ void destruirImagen( Imagen img ) {
     free(img->filas[1]);
 }
 
+void destruirDatosCabezal( DatosCabezal dtCabezal ) {
+    free(dtCabezal);
+}
+
 /* SOLO COMPRESOR */
 int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     int ultimoCaracter = EOF;
 
     img->pixelActual++;
-    if (img->pixelActual > img->ancho) {
+    if (img->pixelActual > img->cabezal->ancho) {
         int pixel;
         if ((pixel = fgetc(archivoOriginal)) != EOF) {
             int i;
             fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
-            for (i = 1; i <= img->ancho; i++) {
+            for (i = 1; i <= img->cabezal->ancho; i++) {
                 img->filas[img->filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
             }
             img->pixelActual = 1;
@@ -98,6 +129,16 @@ int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     }
 
     return ultimoCaracter;
+}
+
+void agregarCaracter( Imagen img, unsigned char nuevoCaracter ) {
+    img->pixelActual++;
+    if (img->pixelActual > img->cabezal->ancho) {
+        int pixel;
+            img->pixelActual = 1;
+            img->filaSuperior = !img->filaSuperior;
+    }
+    img->filas[!img->filaSuperior][img->pixelActual] = nuevoCaracter;
 }
 
 bool esFinDeLinea( Imagen img ) {

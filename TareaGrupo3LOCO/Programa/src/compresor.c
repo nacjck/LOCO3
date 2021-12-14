@@ -19,19 +19,19 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     int largoGolombBinario;       /* Cantidad de bits de binary(M) */
     int largoGolombUnario;        /* Cantidad de bits de unary (M) */
 
-    BufferCompresion bufCompresion = crearBufferCompresion();
-    Extractos extractos = crearExtractos(s);
-
     archivoComprimido = fopen(archivoSalida, "wb");
     archivoOriginal = fopen(archivoEntrada, "rb");
 
+    BufferCompresion bufCompresion = crearBufferCompresion();
+    Extractos extractos = crearExtractos(s);
+    DatosCabezal dtCabezal = escribirCabezalPGM(archivoOriginal, archivoComprimido);
+    Imagen img = crearImagen(dtCabezal);
+
     escribirParametrosCabezal(archivoComprimido, s, modalidad);
-    escribirCabezalPGM(archivoOriginal, archivoComprimido, &anchoImagen);
-    inicializarBuffer(anchoImagen);
     if (modalidad == RUN) {
-        while (( ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
+        while (( ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
-            determinarContexto(&a, &b, &c, &d);
+            determinarContexto(img, &a, &b, &c, &d);
             
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 xPrediccion = predecirX(a, b, c);
@@ -48,9 +48,9 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 kGolomb = 3;
 
                 //Contador de ocurrencias repetidas
-                while (ultimoCaracterLeido != EOF && !esFinDeLinea() && x == a) {
+                while (ultimoCaracterLeido != EOF && !esFinDeLinea(img) && x == a) {
                     l++;
-                    ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal);
+                    ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                     x = (unsigned char) ultimoCaracterLeido;
                 }
                 
@@ -60,7 +60,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
                 
                 //Impresion de proximo pixel al de run (provisorio)
-                determinarContexto(&a, &b, &c, &d);
+                determinarContexto(img, &a, &b, &c, &d);
                 xPrediccion = predecirX(a, b, c);
                 fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
                 fExtracto = determinarExtracto(extractos, fC);
@@ -76,9 +76,9 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
         }
     }
     else {
-        while ((ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
+        while ((ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
-            determinarContexto(&a, &b, &c, &d);
+            determinarContexto(img, &a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
             fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
             fExtracto = determinarExtracto(extractos, fC);
@@ -95,6 +95,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     fclose(archivoComprimido);
     fclose(archivoOriginal);
     destruirExtractos(extractos);
-    destruirBuffer();
+    destruirImagen(img);
+    destruirDatosCabezal(dtCabezal);
     destruirBufferCompresion(bufCompresion);
 }

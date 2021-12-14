@@ -1,33 +1,9 @@
 #include "../include/descompresor.h"
 #include "../include/compartido.h"
 
-#define BUFFER_SIZE 256
-
-void crearImagen(FILE* archivoComprimido, imagen* img) {
-  /* Lee la cabecera de un archivo comprimido y guarda los parámetros en un
-  tipo imagen. Reserva memoria para los datos, que se inicializan en 0. Se
-  agrega una columna a la izquierda y una fila arriba para facilitar el cálculo
-  de contextos en los bordes. */
-
-  char tipo[3]; // Para verificar el tipo de imagen pgm
-
-  // Parámetros de compresión
-  fscanf(archivoComprimido, "%hhu", &(img->s)); // s
-  fscanf(archivoComprimido, "%d", &(img->r)); // Modo
-
-  // Parámetros pgm
-  fscanf(archivoComprimido, "%s", tipo); // magic-number
-  if (strcmp(tipo, "P5")) {
-    printf("Tipo de imagen no soportado.");
-    exit(1);
-  }
-  fscanf(archivoComprimido, "%u %u", &(img->ancho), &(img->alto)); // dimensiones de la imagen
-  fscanf(archivoComprimido, "%hhu\n", &(img->maxValorPixel)); // Valor máximo
-
-  // Reserva memoria para los datos + padding
-  // La imagen es cero si uno de los indices (vertial u horizontal) es cero
-  img->datos = calloc( (img->ancho+1)*(img->alto+1), sizeof(BYTE) );
-
+void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
+  fscanf(archivoComprimido, "%hhu", s); // s
+  fscanf(archivoComprimido, "%d", run); // Modo
 }
 
 BYTE* leerNBytes(FILE* archivoComprimido, unsigned int N) {
@@ -40,17 +16,6 @@ BYTE* leerNBytes(FILE* archivoComprimido, unsigned int N) {
   fread(bytesLeidos, 1, N, archivoComprimido);
   return bytesLeidos;
 
-}
-
-void contexto(imagen* img, int ind, BYTE* a, BYTE* b, BYTE* c, BYTE* d) {
-  /* Determina los valores de los pixeles del contexto del pixel de la Imagen
-  cuyo índice es *ind*. Se asume que la imagen tiene padding (no se chequean
-  condiciones de borde). */
-
-  *a = *(img->datos+ind-1);
-  *b = *(img->datos+ind-img->ancho-1);
-  *c = *(img->datos+ind-img->ancho-2);
-  *d = *(img->datos+ind-img->ancho);
 }
 
 BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
@@ -150,37 +115,47 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
   return ( (unCount<<k) + bin );
 }
 
-void escribirEncabezadoPGM(imagen img, FILE* archivoPGM) {
+void escribirEncabezadoPGM(Imagen img, FILE* archivoPGM) {
+  int ancho = obtenerAncho( img );
+  int altura = obtenerAltura( img );
+  int maxValue = obtenerMaxValue( img );
   fprintf(archivoPGM, "P5\n");
-  fprintf(archivoPGM, "%u %u\n", img.ancho, img.alto);
-  fprintf(archivoPGM, "%hhu\n", img.maxValorPixel);
+  fprintf(archivoPGM, "%u %u\n", ancho, altura);
+  fprintf(archivoPGM, "%hhu\n", maxValue);
 }
 
 // Macro para evaluar las condiciones de entrada al modo run.
-#define RUN ( img.r && (a==b && b==c && c==d) )
+#define RUN ( run && (a==b && b==c && c==d) )
 
 void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   /* */
 
   FILE * archivoComprimido;
   FILE * archivoPGM;
-  imagen img;
+  Imagen img;
   BYTE a,b,c,d, x_p, x_r ;
   BYTE buff, indBit;
-  unsigned int ip, k;
+  unsigned int k;
   Extracto fExtracto;
   Extractos extractos;
   int fC;
   int e, n;
+  bool run;
+  int s;
+  int ancho, altura, maxValue;
+  DatosCabezal dtCabezal;
 
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoPGM = fopen(pathArchivoSalida, "wb");
 
-  // printf("Descomprimiendo...\n");
+  leerParametrosCabezal(archivoComprimido, &s,&run);
+  dtCabezal = escribirCabezalPGM(archivoPGM, archivoComprimido);
+  img = crearImagen(dtCabezal);
+  extractos = crearExtractos(s);
 
-  crearImagen(archivoComprimido, &img); // Lee parámetros de la imagen
-  extractos = crearExtractos(img.s);
-  escribirEncabezadoPGM(img, archivoPGM);
+  ancho = obtenerAncho(img);
+  altura = obtenerAltura(img);
+  maxValue = obtenerMaxValue(img);
 
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
@@ -189,14 +164,12 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   int fueRun = 0;
 
   // Para cada pixel
-  for (int fila=1; fila <= img.alto; fila++) {
-    for (int col=1; col <= img.ancho; col++) {
+  for (int fila=1; fila <= altura; fila++) {
+    for (int col=1; col <= ancho; col++) {
 
-      ip = fila*(img.ancho+1) + col; // Indice del pixel en 1D
-
-      contexto(&img, ip, &a,&b,&c,&d);
+      determinarContexto(img, &a,&b,&c,&d);
       x_p = predecirX(a,b,c);
-      fC = determinarIndiceExtracto(x_p, a,b,c, img.s);
+      fC = determinarIndiceExtracto(x_p, a,b,c, s);
       fExtracto = determinarExtracto(extractos, fC);
 
       //fueRun provisorio
@@ -206,7 +179,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         // printf("(i, j) = (%u, %u)\n", fila, col);
         for (int m=0; m<n; m++) {
           fwrite(&a, 1, 1, archivoPGM);
-          *(img.datos + ip + m)=a;
+          agregarCaracter(img, a);
         }
         // Actualizar indices de fila y columna
         //fila += n/(img.ancho+1);
@@ -221,7 +194,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
         // Pixel recuperado
         x_r = e + x_p;
-        *(img.datos + ip) = x_r;
+        agregarCaracter(img, x_r);
         fwrite(&x_r, 1, 1, archivoPGM);
         // Actualización de estadísticas
         actualizarExtracto(fExtracto, e);
@@ -230,39 +203,10 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       }
     }
   }
+
   destruirExtractos(extractos);
+  destruirImagen(img);
+  destruirDatosCabezal(dtCabezal);
   fclose(archivoComprimido);
   fclose(archivoPGM);
-  free(img.datos);
-
 }
-
-/*============================================================================*/
-// void main( int argc, char* argv[] ) {
-//   BYTE buff;
-//   FILE* acomp;
-//   imagen img;
-//   BYTE indBit;
-//
-//   indBit = atoi(argv[2]);
-//
-//   buff = 'A';
-//
-//   if ((acomp = fopen("test.txt", "rb")) == NULL){
-//        printf("Error! opening file");
-//
-//        // Program exits if the file pointer returns NULL.
-//        exit(1);
-//    }
-//
-//   crearImagen(acomp, &img);
-//
-//   printf("Parte unaria = 0x%x\n", decodificarParteUnaria( &buff, &indBit, acomp ));
-//
-//   printf("Byte en buffer: 0x%x\n", buff);
-//   printf("Indice de bit: %d\n", indBit);
-//
-//   fclose(acomp);
-//   free(img.datos);
-//
-// }
