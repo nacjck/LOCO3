@@ -4,28 +4,38 @@
 
 #define R 128
 
-// static int s;
 /*
- * Este arreglo es el que se inicializa al comienzo del programa con N=1 y A=8
+ * Estructura para extracto f(C)
  */
-static Extracto ** extractos;
-static int cantExtractos; // 1 << (s + 3)
+struct _extracto {
+    int A;
+    int N;
+};
+
+struct _extractos {
+    Extracto * extractos;
+    int cantidadExtractos;  
+};
 
 /*
  * Inicializa los extractos correspondientes a cada caracter con N=1 y A=8.
  */
-void inicializarExtractos( int _s ) {
+Extractos crearExtractos( int s ) {
+    Extractos extractos;
+    int cantExtractos;
     int i;
 
-    // s = _s; ??
-    cantExtractos = 1 << (_s + 3);
-    extractos = malloc(sizeof(Extracto) << (_s + 3));
-    for (i = 0; i < cantExtractos; i++) {
-        Extracto * ext = malloc(sizeof(Extracto *));
+    extractos->cantidadExtractos = 1 << s + 3;
+    extractos = malloc(sizeof(Extracto) << (s + 3));
+
+    for (i = 0; i < extractos->cantidadExtractos; i++) {
+        Extracto ext = malloc(sizeof(struct _extracto));
         ext->N = 1;
         ext->A = 8;
-        extractos[i] = ext;
+        extractos->extractos[i] = ext;
     }
+
+    return extractos;
 }
 
 /*
@@ -33,44 +43,44 @@ void inicializarExtractos( int _s ) {
  */
 unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
     /* Calcula la predicción del pixel dado su contexto */
-    unsigned char max_ab, min_ab;
+    unsigned char maxAB, minAB;
 
     // Máximo y mínimo entre a y b
     if (a >= b) {
-      max_ab = a;
-      min_ab = b;
+      maxAB = a;
+      minAB = b;
     }
     else {
-      max_ab = b;
-      min_ab = a;
+      maxAB = b;
+      minAB = a;
     }
 
     // Fórmula para hat_x
-    unsigned char hat_x;
-    if (c >= max_ab) {
-      hat_x = min_ab;
+    unsigned char hatX;
+    if (c >= maxAB) {
+      hatX = minAB;
     }
-    else if (c <= min_ab) {
-      hat_x = max_ab;
+    else if (c <= minAB) {
+      hatX = maxAB;
     }
     else {
-      hat_x = a + b - c;
+      hatX = a + b - c;
     }
 
-    return hat_x;
+    return hatX;
 }
 
 /*
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-Extracto * determinarExtracto( unsigned char xPrediccion,
+int determinarIndiceExtracto( unsigned char xPrediccion,
     unsigned char a, unsigned char b, unsigned char c , unsigned char s) {
     // Devuelve el extracto f(C)
     // Máximo s+3 bits
     // Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
 
-    unsigned short Q, T, X, fC;
+    int Q, T, X, fC;
 
     // Devuelve el nivel de actividad X
     X = 0; // Máximo 10 bits
@@ -86,18 +96,22 @@ Extracto * determinarExtracto( unsigned char xPrediccion,
 
     fC = (Q<<3) + T; // f(C) = Q*8 + T
 
-    return extractos[fC];
+    return fC;
+}
+
+Extracto determinarExtracto( Extractos extractos, int fC ) {
+  return extractos->extractos[fC];
 }
 
 /*
  * Retorna el parámetro k de Golomb dado un extracto
  */
-int determinarGolombK( Extracto * extracto ) {
+int determinarGolombK( Extracto extracto ) {
     // Calcula el parámetro k del código Golomb PO2
 
-    unsigned short k;
+    int k;
 
-    for ( k=0; (extracto->N << k) < extracto->A; k++ ); // La fórmula está en el artículo y en las diapos
+    for ( k=0; (extracto->N << k) < extracto->A; k++ );
 
     return k;
 }
@@ -107,7 +121,7 @@ int determinarGolombK( Extracto * extracto ) {
  */
 int determinarMapeoRice( int errorPrediccion ) {
     // Map de los errores de predicción al rango no negativo
-    unsigned short M;
+    int M;
 
     if (errorPrediccion < 0) {
       M = -(errorPrediccion << 1) + 1;
@@ -142,19 +156,19 @@ unsigned int determinarLargoUnaryGolomb( int k, int M ) {
 /*
  * Actualiza las variables A y N del extracto
  */
-void actualizarExtracto( Extracto * fExtracto, int error ) {
-    if (fExtracto->N == R) {
-        fExtracto->N >>= 1;
-        fExtracto->A >>= 1;
+void actualizarExtracto( Extracto extracto, int error ) {
+    if (extracto->N == R) {
+        extracto->N >>= 1;
+        extracto->A >>= 1;
     }
-    fExtracto->A += (error < 0) ? -error : error; // ((error << 1) >> 1)
-    fExtracto->N++;
+    extracto->A += (error < 0) ? -error : error; // ((error << 1) >> 1)
+    extracto->N++;
 }
 
-void liberarExtractos() {
+void destruirExtractos(Extractos extractos) {
     int i;
-    for(i = 0; i < cantExtractos; i++) {
-        free(extractos[i]);
+    for(i = 0; i < extractos->cantidadExtractos; i++) {
+        free(extractos->extractos[i]);
     }
     free(extractos);
 }

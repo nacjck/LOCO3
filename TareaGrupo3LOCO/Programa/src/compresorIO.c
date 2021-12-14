@@ -23,8 +23,8 @@ void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modal
 }
 
 BufferCompresion crearBufferCompresion() {
-    BufferCompresion res = malloc(sizeof(BufferCompresion));
-
+    BufferCompresion res = malloc(sizeof(struct _bufferComprimido));
+    
     memset(res->buffer, 0, MAX_BUFFER);
     res->finBuffer = res->buffer;
     res->bitActual = MAX_BIT_INDEX_UCHAR;

@@ -5,15 +5,14 @@
 #include <stdio.h>
 
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
-    FILE * archivoComprimido;
-    FILE * archivoOriginal;
+    FILE * archivoComprimido, * archivoOriginal;
     int anchoImagen;
     int kGolomb;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
-    unsigned char x;
-    unsigned char xPrediccion;      /* x^                                      */
+    unsigned char x, xPrediccion;
     int errorPrediccion;            /* e = x - x^                              */
-    Extracto * fExtracto;           /* f(C)                                    */
+    int fC;
+    Extracto fExtracto;             /* f(C)                                    */
     unsigned char a,b,c,d;          /* Contexto                                */
     int mapeoRice;
     unsigned int golombBinario;
@@ -21,6 +20,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     int largoGolombUnario;        /* Cantidad de bits de unary (M) */
 
     BufferCompresion bufCompresion = crearBufferCompresion();
+    Extractos extractos = crearExtractos(s);
 
     archivoComprimido = fopen(archivoSalida, "wb");
     archivoOriginal = fopen(archivoEntrada, "rb");
@@ -29,7 +29,6 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     escribirCabezalPGM(archivoOriginal, archivoComprimido, &anchoImagen);
     inicializarExtractos(s);
     inicializarBuffer(anchoImagen);
-    inicializarBufferCompresion();
     if (modalidad == RUN) {
         while (( ultimoCaracterLeido = obtenerUltimoCaracter(archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
@@ -37,7 +36,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 xPrediccion = predecirX(a, b, c);
-                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
+                fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
+                fExtracto = determinarExtracto(extractos, fC);
                 errorPrediccion = x - xPrediccion;
                 kGolomb = determinarGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion);
@@ -63,7 +63,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 //Impresion de proximo pixel al de run (provisorio)
                 determinarContexto(&a, &b, &c, &d);
                 xPrediccion = predecirX(a, b, c);
-                fExtracto = determinarExtracto(xPrediccion, a, b, c, s);
+                fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
+                fExtracto = determinarExtracto(extractos, fC);
                 errorPrediccion = x - xPrediccion;
                 kGolomb = determinarGolombK(fExtracto);
                 mapeoRice = determinarMapeoRice(errorPrediccion);
@@ -80,7 +81,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(&a, &b, &c, &d);
             xPrediccion = predecirX(a, b, c);
-            fExtracto = determinarExtracto(xPrediccion,a , b, c, s);
+            fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
+            fExtracto = determinarExtracto(extractos, fC);
             errorPrediccion = x - xPrediccion;
             kGolomb = determinarGolombK(fExtracto);
             mapeoRice = determinarMapeoRice(errorPrediccion);
@@ -90,10 +92,10 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             actualizarExtracto(fExtracto, errorPrediccion);
         }
     }
-    liberarExtractos();
     vaciarBuffer(bufCompresion,archivoComprimido);
-    destruirBuffer();
-    destruirBufferCompresion(bufCompresion);
     fclose(archivoComprimido);
     fclose(archivoOriginal);
+    destruirExtractos(extractos);
+    destruirBuffer();
+    destruirBufferCompresion(bufCompresion);
 }
