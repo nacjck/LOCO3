@@ -2,25 +2,25 @@
 
 #include <string.h>
 
-/*
- * Variables para imagen sin comprimir
- */
-static unsigned char * bufferImagen[2];             /* Ultimas dos filas de imagen             */
-static size_t anchoImagen;
-static int posicionActualImagen;                    /* Si se esta en el borde izquierdo vale 0 */
-static int filaSuperior;                            /* 0 o 1                                   */
+struct _imagen {
+    unsigned char * filas[2];             /* Ultimas dos filas de imagen             */
+    int altura,ancho;
+    int pixelActual;                    /* Si se esta en el borde izquierdo vale 0 */
+    bool filaSuperior;                            /* 0 o 1                                   */
+};
 
-void inicializarBuffer( int ancho ) {
-    filaSuperior = 0;
-    posicionActualImagen = ancho + 1;
-    anchoImagen = ancho;
-    bufferImagen[0] = malloc(anchoImagen * sizeof(unsigned char) + 2);
-    bufferImagen[1] = malloc(anchoImagen * sizeof(unsigned char) + 2);
-    memset(bufferImagen[!filaSuperior], 0, ancho + 2);
-    memset(bufferImagen[ filaSuperior], 0, ancho + 2);
+Imagen crearImagen( int ancho ) {
+    Imagen res = malloc(sizeof(struct _imagen));
+    res->filaSuperior = 0;
+    res->pixelActual = ancho + 1;
+    res->ancho = ancho;
+    res->filas[0] = malloc(ancho * sizeof(unsigned char) + 2);
+    res->filas[1] = malloc(ancho * sizeof(unsigned char) + 2);
+    memset(res->filas[!res->filaSuperior], 0, ancho + 2);
+    memset(res->filas[ res->filaSuperior], 0, ancho + 2);
 }
 
-void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho) {
+void escribirCabezalPGM( Imagen img, FILE * archivoInput, FILE * archivoOutput ) {
     int c;
 
     //P5
@@ -43,8 +43,8 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     fseek(archivoInput,-1,SEEK_CUR);       
     
     //Ancho
-    fscanf(archivoInput,"%d",ancho);      
-    fprintf(archivoOutput,"%d",*ancho);
+    fscanf(archivoInput,"%d",&(img->ancho));      
+    fprintf(archivoOutput,"%d",img->ancho);
 
     //Altura
     do {
@@ -59,63 +59,48 @@ void escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput, int * ancho)
     } while(c != '\n');
 }
 
-void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
+void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
     /* Si se está fuera de los límites de la imagen se devuelve 0.  */
     /* Se asume que esto siempre sucede debido a la inicialización  */
     /* del buffer.                                                  */
 
-    *a = bufferImagen[!filaSuperior][posicionActualImagen - 1];
-    *b = bufferImagen[ filaSuperior][posicionActualImagen    ];
-    *c = bufferImagen[ filaSuperior][posicionActualImagen - 1];
-    *d = bufferImagen[ filaSuperior][posicionActualImagen + 1];
+    *a = img->filas[!img->filaSuperior][img->pixelActual - 1];
+    *b = img->filas[ img->filaSuperior][img->pixelActual    ];
+    *c = img->filas[ img->filaSuperior][img->pixelActual - 1];
+    *d = img->filas[ img->filaSuperior][img->pixelActual + 1];
 }
 
-void destruirBuffer() {
-    free(bufferImagen[0]);
-    free(bufferImagen[1]);
+void destruirImagen( Imagen img ) {
+    free(img->filas[0]);
+    free(img->filas[1]);
 }
 
 /* SOLO COMPRESOR */
-int obtenerUltimoCaracter( FILE * archivoOriginal ) {
+int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     int ultimoCaracter = EOF;
 
-    posicionActualImagen++;
-    if (posicionActualImagen > anchoImagen) {
+    img->pixelActual++;
+    if (img->pixelActual > img->ancho) {
         int pixel;
         if ((pixel = fgetc(archivoOriginal)) != EOF) {
             int i;
             fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
-            for (i = 1; i <= anchoImagen; i++) {
-                bufferImagen[filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
+            for (i = 1; i <= img->ancho; i++) {
+                img->filas[img->filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
             }
-            posicionActualImagen = 1;
-            filaSuperior = !filaSuperior;
-            ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
+            img->pixelActual = 1;
+            img->filaSuperior = !img->filaSuperior;
+            ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
         }
     }
     else {
-        ultimoCaracter = bufferImagen[!filaSuperior][posicionActualImagen];
+        ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
     }
 
     return ultimoCaracter;
 }
 
-bool esFinDeLinea() {
-    bool esFinDeLinea = posicionActualImagen == 1;
+bool esFinDeLinea( Imagen img ) {
+    bool esFinDeLinea = img->pixelActual == 1;
     return esFinDeLinea;
 }
-
-/*
-int main() {
-    int a,b,c,d;
-    int ch = 0;
-    FILE * f = fopen("test.txt","rb");
-
-    inicializarBuffer(4);
-    while((ch = obtenerUltimoCaracter(f)) != EOF) {
-        determinarContexto(&a,&b,&c,&d);
-        printf("%d  %d  %d \n%d  %d\n\n",c,b,d,a,ch);
-    }
-
-    void destruirBuffer();
-}*/

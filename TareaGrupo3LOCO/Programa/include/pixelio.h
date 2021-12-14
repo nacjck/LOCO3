@@ -16,21 +16,19 @@
 
 #define bool int
 
-/*
- * Variables para buffer de pixeles
- */
+typedef struct _imagen * Imagen;
 
-void inicializarBuffer( int tamanio );
+Imagen crearImagen( int tamanio );
 
-void escribirCabezalPGM( FILE * archivoDescomprimido, FILE * archivoComprimido, int * ancho );
+void escribirCabezalPGM( Imagen img, FILE * archivoDescomprimido, FILE * archivoComprimido );
 
-void determinarContexto( unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d );
+void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d );
 
-bool esFinDeLinea();
+bool esFinDeLinea( Imagen img );
 
-void destruirBuffer();
+void destruirImagen( Imagen img );
 
 //COMPRESOR
-int obtenerUltimoCaracter( FILE * archivoComprimido );
+int obtenerUltimoCaracter( Imagen img, FILE * archivoComprimido );
 
 #endif
