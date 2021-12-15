@@ -17,11 +17,6 @@ struct _bufferComprimido {
     int bitActual;                      /* posicion binaria                        */
 };
 
-void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modalidad ) {
-    fprintf(archivoComprimido,"%d\n",s);
-    fprintf(archivoComprimido,"%d\n",modalidad);
-}
-
 BufferCompresion crearBufferCompresion() {
     BufferCompresion res = malloc(sizeof(struct _bufferComprimido));
     
@@ -71,7 +66,7 @@ void actualizarBuffer( BufferCompresion buf, unsigned int output, int cantidadBi
         *(buf->finBuffer) |= mascara;
         buf->bitActual--;
 
-        /* Si no quedan bits por colocar en el bloque actual */
+        /* Si no quedan bits por colocar en el caracter actual */
         if (buf->bitActual < 0) {
             buf->finBuffer++;
             buf->bitActual = MAX_BIT_INDEX_UCHAR;

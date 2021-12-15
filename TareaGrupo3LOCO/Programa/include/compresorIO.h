@@ -8,8 +8,6 @@
 //Buffer de bits que serán impresos
 typedef struct _bufferComprimido * BufferCompresion;
 
-void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modalidad );
-
 BufferCompresion crearBufferCompresion();
 
 void imprimirCompresion( BufferCompresion buf, int golombBinario, int largoGolombBinario, int largoGolombUnario, FILE * archivoComprimido);
