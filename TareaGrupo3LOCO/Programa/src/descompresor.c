@@ -2,8 +2,8 @@
 #include "../include/compartido.h"
 
 void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
-  fscanf(archivoComprimido, "%hhu", s); // s
-  fscanf(archivoComprimido, "%d", run); // Modo
+  fscanf(archivoComprimido, "%d\n", s); // s
+  fscanf(archivoComprimido, "%d\n", run); // Modo
 }
 
 BYTE* leerNBytes(FILE* archivoComprimido, unsigned int N) {
@@ -103,7 +103,7 @@ unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
 }
 
 int deshacerMapeo(unsigned int M) {
-  return (M%2==0) ? (M>>1) : -( (M-1)>>1 );
+  return (M&1) ? -( (M-1)>>1 ) : (M>>1);
 }
 
 int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
@@ -149,14 +149,13 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   archivoPGM = fopen(pathArchivoSalida, "wb");
 
   leerParametrosCabezal(archivoComprimido, &s,&run);
-  dtCabezal = escribirCabezalPGM(archivoPGM, archivoComprimido);
+  dtCabezal = escribirCabezalPGM(archivoComprimido, archivoPGM);
   img = crearImagen(dtCabezal);
   extractos = crearExtractos(s);
 
   ancho = obtenerAncho(img);
   altura = obtenerAltura(img);
   maxValue = obtenerMaxValue(img);
-
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
@@ -180,6 +179,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         for (int m=0; m<n; m++) {
           fwrite(&a, 1, 1, archivoPGM);
           agregarCaracter(img, a);
+          avanzarPixel(img);
         }
         // Actualizar indices de fila y columna
         //fila += n/(img.ancho+1);
@@ -195,6 +195,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
         // Pixel recuperado
         x_r = e + x_p;
         agregarCaracter(img, x_r);
+        avanzarPixel(img);
         fwrite(&x_r, 1, 1, archivoPGM);
         // Actualización de estadísticas
         actualizarExtracto(fExtracto, e);

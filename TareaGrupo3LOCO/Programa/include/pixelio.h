@@ -37,6 +37,8 @@ void destruirImagen( Imagen img );
 
 void destruirDatosCabezal( DatosCabezal );
 
+void avanzarPixel( Imagen img );
+
 //COMPRESOR
 int obtenerUltimoCaracter( Imagen img, FILE * archivoComprimido );
 

@@ -24,14 +24,16 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
 
     BufferCompresion bufCompresion = crearBufferCompresion();
     Extractos extractos = crearExtractos(s);
+    
+    escribirParametrosCabezal(archivoComprimido, s, modalidad);
     DatosCabezal dtCabezal = escribirCabezalPGM(archivoOriginal, archivoComprimido);
     Imagen img = crearImagen(dtCabezal);
 
-    escribirParametrosCabezal(archivoComprimido, s, modalidad);
     if (modalidad == RUN) {
         while (( ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(img, &a, &b, &c, &d);
+            avanzarPixel(img);
             
             if (a!=b || b!=c || c!=d) {    /* No es modo de run */
                 xPrediccion = predecirX(a, b, c);
@@ -51,6 +53,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 while (ultimoCaracterLeido != EOF && !esFinDeLinea(img) && x == a) {
                     l++;
                     ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
+                    avanzarPixel(img);
                     x = (unsigned char) ultimoCaracterLeido;
                 }
                 
@@ -79,6 +82,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
         while ((ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal)) != EOF) {
             x = (unsigned char) ultimoCaracterLeido;
             determinarContexto(img, &a, &b, &c, &d);
+            avanzarPixel(img);
             xPrediccion = predecirX(a, b, c);
             fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
             fExtracto = determinarExtracto(extractos, fC);

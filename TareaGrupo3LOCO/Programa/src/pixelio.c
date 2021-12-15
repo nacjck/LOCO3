@@ -18,7 +18,7 @@ Imagen crearImagen( DatosCabezal dtCabezal ) {
     Imagen res = malloc(sizeof(struct _imagen));
 
     res->filaSuperior = 0;
-    res->pixelActual = dtCabezal->ancho + 1;
+    res->pixelActual = 1;
     res->cabezal = dtCabezal;
     res->filas[0] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
     res->filas[1] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
@@ -52,19 +52,18 @@ DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
     fseek(archivoInput,-1,SEEK_CUR);       
     
     //Ancho
-    fscanf(archivoInput,"%d",&(res->ancho));      
-    fprintf(archivoOutput,"%d ",res->altura);
-
-    //Altura
-    fscanf(archivoInput,"%d",&(res->altura));      
-    fprintf(archivoOutput,"%d",res->altura);
-
+    fscanf(archivoInput, "%d %d", &(res->ancho), &(res->altura));
+    fprintf(archivoOutput,"%d %d",res->ancho, res->altura);
     //Resto
+    
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
     } while(c != '\n');
-
+    
+    fscanf(archivoInput, "%d", &(res->maxValue));
+    fprintf(archivoOutput,"%d", res->maxValue);
+    
     //MAX_VALUE
     do {
         c = getc(archivoInput);
@@ -100,48 +99,48 @@ void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsig
 void destruirImagen( Imagen img ) {
     free(img->filas[0]);
     free(img->filas[1]);
+    free(img);
 }
 
 void destruirDatosCabezal( DatosCabezal dtCabezal ) {
     free(dtCabezal);
 }
 
+void avanzarPixel( Imagen img ) {
+    img->pixelActual++;
+    if (img->pixelActual > img->cabezal->ancho) {
+        img->pixelActual = 1;
+        img->filaSuperior = !img->filaSuperior;
+    }
+}
+
 /* SOLO COMPRESOR */
 int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     int ultimoCaracter = EOF;
 
-    img->pixelActual++;
-    if (img->pixelActual > img->cabezal->ancho) {
+    if (img->pixelActual == 1) {
         int pixel;
         if ((pixel = fgetc(archivoOriginal)) != EOF) {
             int i;
             fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
             for (i = 1; i <= img->cabezal->ancho; i++) {
-                img->filas[img->filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
+                img->filas[!img->filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
             }
-            img->pixelActual = 1;
-            img->filaSuperior = !img->filaSuperior;
             ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
         }
+        else {
+            return pixel;
+        }
     }
-    else {
-        ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
-    }
-
+    ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
     return ultimoCaracter;
 }
 
 void agregarCaracter( Imagen img, unsigned char nuevoCaracter ) {
-    img->pixelActual++;
-    if (img->pixelActual > img->cabezal->ancho) {
-        int pixel;
-            img->pixelActual = 1;
-            img->filaSuperior = !img->filaSuperior;
-    }
     img->filas[!img->filaSuperior][img->pixelActual] = nuevoCaracter;
 }
 
 bool esFinDeLinea( Imagen img ) {
-    bool esFinDeLinea = img->pixelActual == 1;
+    bool esFinDeLinea = img->pixelActual > img->cabezal->ancho;
     return esFinDeLinea;
 }
