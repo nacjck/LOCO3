@@ -9,7 +9,7 @@ void escribirParametrosCabezal( FILE * archivoComprimido, int s, Modalidad modal
     fprintf(archivoComprimido,"%d\n",modalidad);
 }
 
-void comprimirPixel( int s, unsigned char x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, FILE * archivoComprimido) {
+void comprimirNormal( int s, unsigned char x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, FILE * archivoComprimido) {
     unsigned char a,b,c,d;
     unsigned char xPrediccion;
     int fC;
@@ -32,6 +32,16 @@ void comprimirPixel( int s, unsigned char x, Imagen img, Extractos extractos, Bu
     largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
     imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
     actualizarExtracto(fExtracto, errorPrediccion);
+}
+
+void comprimirRun(unsigned char x, int l, Imagen img, BufferCompresion bufCompresion, FILE * archivoComprimido) {
+    int kGolomb = 3;
+    int largoGolombBinario, largoGolombUnario;
+    int golombBinario;
+
+    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
+    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
+    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
 }
 
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad modalidad ) {
@@ -65,27 +75,20 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
                 x = (unsigned char) ultimoCaracterLeido;
                 determinarContexto(img, &a, &b, &c, &d);
 
-                if (a!=b || b!=c || c!=d) {    /* No es modo de run */
-                    comprimirPixel(s,x,img,extractos,bufCompresion,archivoComprimido);
+                if (a!=b || b!=c || c!=d) {
+                    comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
                 }
                 else {
-                    int l = 0;    /* Ocurrencias del mismo caracter */
-                    int kGolomb = 3;
-                    int largoGolombBinario, largoGolombUnario, golombBinario;
-                    /* Contador de ocurrencias repetidas     */
-                    while (ultimoCaracterLeido != EOF && !esFinDeLinea(img) && x == a) {
+                    int l = 0;
+                    /* Contador de ocurrencias repetidas */
+                    while (x == a && !esFinDeLinea(img)) {
                         l++;
                         avanzarPixel(img);
                         ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                         x = (unsigned char) ultimoCaracterLeido;
                     }
-                    /* Impresion de largo de run            */
-                    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
-                    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
-                    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
-                    
-                    /* Impresion de proximo pixel al de run */
-                    comprimirPixel(s,x,img,extractos,bufCompresion,archivoComprimido);
+                    comprimirRun(l,x,img,bufCompresion,archivoComprimido);
+                    comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
 
                     col+=l-1;
                 }
@@ -97,7 +100,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
             for(col = 0; col < anchoImagen; col++) {
                 ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                 x = (unsigned char) ultimoCaracterLeido;
-                comprimirPixel(s,x,img,extractos,bufCompresion,archivoComprimido);
+                comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
             }
         }
     }
