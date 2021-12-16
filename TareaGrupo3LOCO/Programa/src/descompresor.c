@@ -111,7 +111,7 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
 }
 
 void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run );
-void descomprimirNormal(int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido);
+void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido);
 void descomprimirRun(int n, int s, Imagen img, Extractos extractos, FILE * archivoPGM);
 
 // Macro para evaluar las condiciones de entrada al modo run.
@@ -157,13 +157,13 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       // Nro de repeticiones no nulo
       if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
         descomprimirRun(n, s, img, extractos, archivoPGM);
-        descomprimirNormal(s, img, extractos, archivoPGM,archivoComprimido);
+        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
 
         // Actualizar indice de columna
         col += n-1;
       }
       else {
-        descomprimirNormal(s, img, extractos, archivoPGM,archivoComprimido);
+        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
       }
     }
   }
@@ -199,21 +199,20 @@ void descomprimirRun(int n, int s, Imagen img, Extractos extractos, FILE * archi
   }
 }
 
-void descomprimirNormal(int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido) {
+void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido) {
   unsigned char x_p, x_r;
   unsigned char a,b,c,d;
   int fC;
   Extracto fExtracto;
   int k;
   int e;
-  unsigned char buff, indBit;
 
   determinarContexto(img, &a,&b,&c,&d);
   x_p = predecirX(a,b,c);
   fC = determinarIndiceExtracto(x_p, a,b,c, s);
   fExtracto = determinarExtracto(extractos, fC);
   k = determinarGolombK(fExtracto); // También es el largo de la parte binaria
-  e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
+  e = deshacerMapeo(decodificarGPO2(buff, k, indBit, archivoComprimido));
   // Pixel recuperado
   x_r = e + x_p;
   agregarCaracter(img, x_r);
