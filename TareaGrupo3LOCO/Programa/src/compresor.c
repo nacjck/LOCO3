@@ -15,8 +15,8 @@ void comprimirNormal( int s, unsigned char x, Imagen img, Extractos extractos, B
     int fC;
     Extracto fExtracto;
     int errorPrediccion;
-    int kGolomb;
     int mapeoRice;
+    int kGolomb;
     int golombBinario;
     int largoGolombBinario, largoGolombUnario;
 
@@ -34,10 +34,10 @@ void comprimirNormal( int s, unsigned char x, Imagen img, Extractos extractos, B
     actualizarExtracto(fExtracto, errorPrediccion);
 }
 
-void comprimirRun(unsigned char x, int l, Imagen img, BufferCompresion bufCompresion, FILE * archivoComprimido) {
+void comprimirRun(int l, unsigned char x, Imagen img, BufferCompresion bufCompresion, FILE * archivoComprimido) {
     int kGolomb = 3;
-    int largoGolombBinario, largoGolombUnario;
     int golombBinario;
+    int largoGolombBinario, largoGolombUnario;
 
     largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
     largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
