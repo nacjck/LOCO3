@@ -24,9 +24,7 @@ Imagen crearImagen( DatosCabezal dtCabezal );
 DatosCabezal escribirCabezalPGM( FILE * archivoDescomprimido, FILE * archivoComprimido );
 
 int obtenerAncho( Imagen img );
-
 int obtenerAltura( Imagen img );
-
 int obtenerMaxValue( Imagen img );
 
 void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d );

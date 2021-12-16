@@ -1,11 +1,6 @@
 #include "../include/descompresor.h"
 #include "../include/compartido.h"
 
-void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
-  fscanf(archivoComprimido, "%d\n", s); // s
-  fscanf(archivoComprimido, "%d\n", run); // Modo
-}
-
 BYTE* leerNBytes(FILE* archivoComprimido, unsigned int N) {
   /* Lee N bytes del archivo comprimido. Devuelve un puntero a un arreglo. */
 
@@ -115,14 +110,9 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
   return ( (unCount<<k) + bin );
 }
 
-void escribirEncabezadoPGM(Imagen img, FILE* archivoPGM) {
-  int ancho = obtenerAncho( img );
-  int altura = obtenerAltura( img );
-  int maxValue = obtenerMaxValue( img );
-  fprintf(archivoPGM, "P5\n");
-  fprintf(archivoPGM, "%u %u\n", ancho, altura);
-  fprintf(archivoPGM, "%hhu\n", maxValue);
-}
+void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run );
+void descomprimirNormal(int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido);
+void descomprimirRun(int n, int s, Imagen img, Extractos extractos, FILE * archivoPGM);
 
 // Macro para evaluar las condiciones de entrada al modo run.
 #define RUN ( run && (a==b && b==c && c==d) )
@@ -159,48 +149,21 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
-  //provisorio
-  int fueRun = 0;
-
   // Para cada pixel
   for (int fila=1; fila <= altura; fila++) {
     for (int col=1; col <= ancho; col++) {
 
       determinarContexto(img, &a,&b,&c,&d);
-      x_p = predecirX(a,b,c);
-      fC = determinarIndiceExtracto(x_p, a,b,c, s);
-      fExtracto = determinarExtracto(extractos, fC);
+      // Nro de repeticiones no nulo
+      if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
+        descomprimirRun(n, s, img, extractos, archivoPGM);
+        descomprimirNormal(s, img, extractos, archivoPGM,archivoComprimido);
 
-      //fueRun provisorio
-      if ( !fueRun && RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
-        // Nro de repeticiones no nulo
-        // printf("Codificando %u repeticiones en modo RUN\n");
-        // printf("(i, j) = (%u, %u)\n", fila, col);
-        for (int m=0; m<n; m++) {
-          fwrite(&a, 1, 1, archivoPGM);
-          agregarCaracter(img, a);
-          avanzarPixel(img);
-        }
-        // Actualizar indices de fila y columna
-        //fila += n/(img.ancho+1);
-        //col += n%(img.ancho+1);
+        // Actualizar indice de columna
         col += n-1;
-
-        fueRun = 1; //provisorio
       }
       else {
-        // Se decodifica el GPO2 del error de predicción del pixel
-        k = determinarGolombK(fExtracto); // También es el largo de la parte binaria
-        e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
-        // Pixel recuperado
-        x_r = e + x_p;
-        agregarCaracter(img, x_r);
-        avanzarPixel(img);
-        fwrite(&x_r, 1, 1, archivoPGM);
-        // Actualización de estadísticas
-        actualizarExtracto(fExtracto, e);
-
-        fueRun = 0;
+        descomprimirNormal(s, img, extractos, archivoPGM,archivoComprimido);
       }
     }
   }
@@ -210,4 +173,52 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   destruirDatosCabezal(dtCabezal);
   fclose(archivoComprimido);
   fclose(archivoPGM);
+}
+
+void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
+  fscanf(archivoComprimido, "%d\n", s); // s
+  fscanf(archivoComprimido, "%d\n", run); // Modo
+}
+
+void descomprimirRun(int n, int s, Imagen img, Extractos extractos, FILE * archivoPGM) {
+  unsigned char x_p;
+  unsigned char a,b,c,d;
+  int fC;
+  Extracto fExtracto;
+  int k;
+
+  determinarContexto(img, &a,&b,&c,&d);
+  x_p = predecirX(a,b,c);
+  fC = determinarIndiceExtracto(x_p, a,b,c, s);
+  fExtracto = determinarExtracto(extractos, fC);
+
+  for (int m=0; m<n; m++) {
+    fwrite(&a, 1, 1, archivoPGM);
+    agregarCaracter(img, a);
+    avanzarPixel(img);
+  }
+}
+
+void descomprimirNormal(int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido) {
+  unsigned char x_p, x_r;
+  unsigned char a,b,c,d;
+  int fC;
+  Extracto fExtracto;
+  int k;
+  int e;
+  unsigned char buff, indBit;
+
+  determinarContexto(img, &a,&b,&c,&d);
+  x_p = predecirX(a,b,c);
+  fC = determinarIndiceExtracto(x_p, a,b,c, s);
+  fExtracto = determinarExtracto(extractos, fC);
+  k = determinarGolombK(fExtracto); // También es el largo de la parte binaria
+  e = deshacerMapeo(decodificarGPO2(&buff, k, &indBit, archivoComprimido));
+  // Pixel recuperado
+  x_r = e + x_p;
+  agregarCaracter(img, x_r);
+  avanzarPixel(img);
+  fwrite(&x_r, 1, 1, archivoPGM);
+  // Actualización de estadísticas
+  actualizarExtracto(fExtracto, e);
 }

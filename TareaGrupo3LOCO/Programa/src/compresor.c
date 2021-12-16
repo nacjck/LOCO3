@@ -13,7 +13,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, Modalidad moda
     FILE * archivoComprimido, * archivoOriginal;
     int anchoImagen, alturaImagen;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
-    unsigned char x, xPrediccion;
+    unsigned char x;
     unsigned char a,b,c,d;          /* Contexto                                */
     BufferCompresion bufCompresion;
     Extractos extractos;
