@@ -118,25 +118,6 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
   return ( (unCount<<k) + bin );
 }
 
-void descomprimirRun(int n, int s, Imagen img, Extractos extractos, FILE * archivoPGM) {
-  unsigned char x_p;
-  unsigned char a,b,c,d;
-  int fC;
-  Extracto fExtracto;
-  int k;
-
-  determinarContexto(img, &a,&b,&c,&d);
-  x_p = predecirX(a,b,c);
-  fC = determinarIndiceExtracto(x_p, a,b,c, s);
-  fExtracto = determinarExtracto(extractos, fC);
-
-  for (int m=0; m<n; m++) {
-    fwrite(&a, 1, 1, archivoPGM);
-    agregarCaracter(img, a);
-    avanzarPixel(img);
-  }
-}
-
 void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido) {
   unsigned char x_p, x_r;
   unsigned char a,b,c,d;
@@ -154,7 +135,6 @@ void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos
   // Pixel recuperado
   x_r = e + x_p;
   agregarCaracter(img, x_r);
-  avanzarPixel(img);
   fwrite(&x_r, 1, 1, archivoPGM);
   // Actualización de estadísticas
   actualizarExtracto(fExtracto, e);
@@ -175,7 +155,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   Extracto fExtracto;
   Extractos extractos;
   int fC;
-  int e, n;
+  int e;
   bool run;
   int s;
   int ancho, altura, maxValue;
@@ -196,24 +176,27 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
   // Para cada pixel
+  avanzarPixel(img);
   for (int fila=1; fila <= altura; fila++) {
     for (int col=1; col <= ancho; col++) {
-
       determinarContexto(img, &a,&b,&c,&d);
       // Nro de repeticiones no nulo
-      if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
-        descomprimirRun(n, s, img, extractos, archivoPGM);
-        col += n-1;
-        
-        if(col != ancho) {
-          descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
-          col++;
+      if ( RUN ) {
+        int n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)
+        for (int m=0; m<n; m++) {
+            fwrite(&a, 1, 1, archivoPGM);
+            agregarCaracter(img, a);
+            avanzarPixel(img);
         }
-
-        // Actualizar indice de columna
+        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+        avanzarPixel(img);
+        
+        //Se actualizan columnas
+        col+=n;
       }
       else {
         descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+        avanzarPixel(img);
       }
     }
   }

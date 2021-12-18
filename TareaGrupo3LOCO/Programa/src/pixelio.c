@@ -18,7 +18,7 @@ Imagen crearImagen( DatosCabezal dtCabezal ) {
     Imagen res = malloc(sizeof(struct _imagen));
 
     res->filaSuperior = 0;
-    res->pixelActual = 1;
+    res->pixelActual = 0;
     res->cabezal = dtCabezal;
     res->filas[0] = malloc(dtCabezal->ancho * sizeof(PIX) + 2);
     res->filas[1] = malloc(dtCabezal->ancho * sizeof(PIX) + 2);
@@ -125,7 +125,6 @@ int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
         }
     }
     ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
-
     return ultimoCaracter;
 }
 
@@ -134,6 +133,6 @@ void agregarCaracter( Imagen img, PIX nuevoCaracter ) {
 }
 
 bool esFinDeLinea( Imagen img ) {
-    bool esFinDeLinea = img->pixelActual > img->cabezal->ancho;
+    bool esFinDeLinea = img->pixelActual == img->cabezal->ancho;
     return esFinDeLinea;
 }

@@ -17,7 +17,7 @@ CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g -O3
 
 MODULOS = compartido compresor compresorIO descompresor pixelio
-CONST_MODULES = modalidad
+CONST_MODULES =
 
 #lista de archivos
 HS = $(MODULOS:%=$(HDIR)/%.h)
