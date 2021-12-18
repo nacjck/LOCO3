@@ -1,15 +1,16 @@
 #include "../include/compresor.h"
 #include "../include/compresorIO.h"
 #include "../include/pixelio.h"
+#include "../include/datosCompresion.h"
 
 #include <stdio.h>
 
 /* Rutinas auxiliares */
 void escribirParametrosCabezal( FILE * archivoComprimido, int s, bool run );
-void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, FILE * archivoComprimido);
-void comprimirRun(int l, BYTE x, BufferCompresion bufCompresion, FILE * archivoComprimido);
+void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido);
+void comprimirRun(int l, BYTE x, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido);
 
-void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
+DatosCompresion comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     FILE * archivoComprimido, * archivoOriginal;
     int ancho, altura;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
@@ -17,8 +18,9 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     PIX a,b,c,d;          /* Contexto                                */
     BufferCompresion bufCompresion;
     Extractos extractos;
-    DatosCabezal dtCabezal;
+    DatosCabezal datosCabezal;
     Imagen img;
+    DatosCompresion datosCompresion;
 
     archivoComprimido = fopen(archivoSalida, "wb");
     archivoOriginal = fopen(archivoEntrada, "rb");
@@ -26,10 +28,11 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     bufCompresion = crearBufferCompresion();
     extractos = crearExtractos(s);
     escribirParametrosCabezal(archivoComprimido, s, run);
-    dtCabezal = escribirCabezalPGM(archivoOriginal, archivoComprimido);
-    img = crearImagen(dtCabezal);
+    datosCabezal = escribirCabezalPGM(archivoOriginal, archivoComprimido);
+    img = crearImagen(datosCabezal);
     altura = obtenerAltura(img);
     ancho = obtenerAncho(img);
+    datosCompresion = crearDatosCompresion(altura*ancho);
     
     int fila,col;
     if (run) {
@@ -41,7 +44,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
                 determinarContexto(img, &a, &b, &c, &d);
 
                 if (a!=b || b!=c || c!=d) {
-                    comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
+                    comprimirNormal(s,x,img,extractos,bufCompresion,datosCompresion,archivoComprimido);
                     avanzarPixel(img);
                 }
                 else {
@@ -53,8 +56,8 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
                         ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                         x = (PIX) ultimoCaracterLeido;
                     }
-                    comprimirRun(l,x,bufCompresion,archivoComprimido);
-                    comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
+                    comprimirRun(l,x,bufCompresion,datosCompresion,archivoComprimido);
+                    comprimirNormal(s,x,img,extractos,bufCompresion,datosCompresion,archivoComprimido);
                     avanzarPixel(img);
                     col += l;
                 }
@@ -67,7 +70,7 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
                 avanzarPixel(img);
                 ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                 x = (PIX) ultimoCaracterLeido;
-                comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
+                comprimirNormal(s,x,img,extractos,bufCompresion,datosCompresion,archivoComprimido);
             }
         }
     }
@@ -76,8 +79,10 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     fclose(archivoOriginal);
     destruirExtractos(extractos);
     destruirImagen(img);
-    destruirDatosCabezal(dtCabezal);
+    destruirDatosCabezal(datosCabezal);
     destruirBufferCompresion(bufCompresion);
+    
+    return datosCompresion;
 }
 
 /* Rutinas auxiliares */
@@ -87,7 +92,7 @@ void escribirParametrosCabezal( FILE * archivoComprimido, int s, bool run ) {
     fprintf(archivoComprimido,"%d\n",run);
 }
 
-void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, FILE * archivoComprimido) {
+void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
     PIX a,b,c,d;
     PIX xPrediccion;
     int fC;
@@ -109,9 +114,10 @@ void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompr
     largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
     imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
     actualizarExtracto(fExtracto, errorPrediccion);
+    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
 }
 
-void comprimirRun(int l, PIX x, BufferCompresion bufCompresion, FILE * archivoComprimido) {
+void comprimirRun(int l, PIX x, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
     int kGolomb = 3;
     int golombBinario;
     int largoGolombBinario, largoGolombUnario;
@@ -119,4 +125,5 @@ void comprimirRun(int l, PIX x, BufferCompresion bufCompresion, FILE * archivoCo
     largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
     largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
     imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
 }

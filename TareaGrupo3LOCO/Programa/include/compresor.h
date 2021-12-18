@@ -17,6 +17,6 @@
  *     -archivoEntrada y archivoSalida no son nulos.
  *     - 0 <= s <= 10
  */
-void comprimir( char* archivoEntrada, char* archivoSaluda, int s, bool run );
+DatosCompresion comprimir( char* archivoEntrada, char* archivoSaluda, int s, bool run );
 
 #endif

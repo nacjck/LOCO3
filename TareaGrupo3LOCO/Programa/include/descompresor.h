@@ -9,6 +9,6 @@
 #ifndef descompresor_h
 #define descompresor_h
 
-void descomprimir( char* archivoEntrada, char* archivoSalida );
+DatosCompresion descomprimir( char* archivoEntrada, char* archivoSalida );
 
 #endif

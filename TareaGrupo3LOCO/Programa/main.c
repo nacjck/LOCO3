@@ -29,6 +29,7 @@
 
 #include "include/descompresor.h"
 #include "include/compresor.h"
+#include "include/datosCompresion.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -133,14 +134,27 @@ int main( int argc, char* argv[] ) {
      * Inicio de compresión/descompresión
      */
     
-    puts("\n Iniciando programa...");
+    DatosCompresion datosCompresion;
+    puts("\nIniciando programa...");
     if (funcionalidad == COMPRIMIR) {
-        comprimir(parametros.archivoEntrada,parametros.archivoSalida,
-        parametros.s,parametros.run);
+        datosCompresion = comprimir(parametros.archivoEntrada,
+            parametros.archivoSalida,parametros.s,parametros.run);
     }
     else {
-        descomprimir(parametros.archivoEntrada,parametros.archivoSalida);
+        datosCompresion = descomprimir(parametros.archivoEntrada,
+            parametros.archivoSalida);
     }
+    int cantidadPixeles = obtenerCantidadPixeles(datosCompresion);
+    int cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
+    int tasaCompresion = obtenerTasaCompresion(datosCompresion);
+
+    puts("\nEjecucion finalizada.");
+    puts("\nResumen:");
+    printf("Cantidad de pixeles en archivo original: %ld\n",cantidadPixeles);
+    printf("Cantidad de bytes en archivo comprimido: %ld\n",cantidadComprimida >> 3);
+    printf("Tasa de compresion: %f\n",tasaCompresion);
+    puts("");
+
     return EXIT_SUCCESS;
 }
 

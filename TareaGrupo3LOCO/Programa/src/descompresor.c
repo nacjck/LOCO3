@@ -1,6 +1,7 @@
 #include "../include/descompresor.h"
 #include "../include/compartido.h"
 #include "../include/pixelio.h"
+#include "../include/datosCompresion.h"
 
 #include <string.h>
 
@@ -143,7 +144,7 @@ void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos
 // Macro para evaluar las condiciones de entrada al modo run.
 #define RUN ( run && (a==b && b==c && c==d) )
 
-void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
+DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   /* */
 
   FILE * archivoComprimido;
@@ -160,6 +161,7 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   int s;
   int ancho, altura, maxValue;
   DatosCabezal dtCabezal;
+  DatosCompresion datosCompresion;
 
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoPGM = fopen(pathArchivoSalida, "wb");
@@ -172,6 +174,8 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
   ancho = obtenerAncho(img);
   altura = obtenerAltura(img);
   maxValue = obtenerMaxValue(img);
+
+  datosCompresion = crearDatosCompresion(ancho*altura);
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
@@ -182,13 +186,14 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       determinarContexto(img, &a,&b,&c,&d);
       // Nro de repeticiones no nulo
       if ( RUN ) {
-        int n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)
+        int n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido);
         for (int m=0; m<n; m++) {
             fwrite(&a, 1, 1, archivoPGM);
             agregarCaracter(img, a);
             avanzarPixel(img);
         }
         descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+        actualizarDatosCompresion(datosCompresion,n+1);
         avanzarPixel(img);
         
         //Se actualizan columnas
@@ -197,13 +202,17 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       else {
         descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
         avanzarPixel(img);
+        actualizarDatosCompresion(datosCompresion,1);
       }
     }
   }
 
+  guardarDatos(datosCompresion);
   destruirExtractos(extractos);
   destruirImagen(img);
   destruirDatosCabezal(dtCabezal);
   fclose(archivoComprimido);
   fclose(archivoPGM);
+
+  return datosCompresion;
 }
