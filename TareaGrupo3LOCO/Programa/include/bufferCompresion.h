@@ -1,5 +1,5 @@
-#ifndef compresorIO_h
-#define compresorIO_h
+#ifndef bufferCompresion_h
+#define bufferCompresion_h
 
 #include <stdio.h>
 

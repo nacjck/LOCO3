@@ -1,4 +1,4 @@
-#include "../include/compartido.h"
+#include "../include/extractos.h"
 
 #include <stdlib.h>
 #include <stdio.h>

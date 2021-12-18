@@ -1,5 +1,5 @@
-#include "../include/pixelio.h"
-#include "../include/compresorIO.h"
+#include "../include/imagen.h"
+#include "../include/bufferCompresion.h"
 
 #include <string.h>
 #include <stdio.h>

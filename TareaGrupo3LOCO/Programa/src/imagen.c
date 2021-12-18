@@ -1,4 +1,4 @@
-#include "../include/pixelio.h"
+#include "../include/imagen.h"
 
 #include <string.h>
 

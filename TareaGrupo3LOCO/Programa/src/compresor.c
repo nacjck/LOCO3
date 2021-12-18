@@ -1,6 +1,6 @@
 #include "../include/compresor.h"
-#include "../include/compresorIO.h"
-#include "../include/pixelio.h"
+#include "../include/bufferCompresion.h"
+#include "../include/imagen.h"
 #include "../include/datosCompresion.h"
 
 #include <stdio.h>

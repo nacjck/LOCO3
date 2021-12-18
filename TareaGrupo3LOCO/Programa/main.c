@@ -148,12 +148,16 @@ int main( int argc, char* argv[] ) {
     long cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
     float tasaCompresion = obtenerTasaCompresion(datosCompresion);
 
-    puts("\nEjecucion finalizada.");
-    puts("\nResumen:");
+    puts("Ejecucion finalizada.\n");
+    puts("-------------------------------------------------");
+    puts("Resumen:");
     printf("Cantidad de pixeles en archivo original: %ld\n",cantidadPixeles);
     printf("Cantidad de bytes en archivo comprimido: %ld\n",cantidadComprimida >> 3);
     printf("Tasa de compresion: %f\n",tasaCompresion);
+    puts("-------------------------------------------------");
     puts("");
+
+    destruirDatosCompresion(datosCompresion);
 
     return EXIT_SUCCESS;
 }

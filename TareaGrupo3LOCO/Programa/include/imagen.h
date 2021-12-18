@@ -1,13 +1,13 @@
 /*
- * pixelio.h
+ * imagen.h
  *
  * Aquí se encuentran funciones encargadas de la entrada y salida
  * de pixeles
  *
  */
 
-#ifndef pixelio_h
-#define pixelio_h
+#ifndef imagen_h
+#define imagen_h
 
 #include <stdio.h>
 #include <stdlib.h>

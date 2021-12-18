@@ -1,6 +1,6 @@
 #include "../include/descompresor.h"
-#include "../include/compartido.h"
-#include "../include/pixelio.h"
+#include "../include/extractos.h"
+#include "../include/imagen.h"
 #include "../include/datosCompresion.h"
 
 #include <string.h>

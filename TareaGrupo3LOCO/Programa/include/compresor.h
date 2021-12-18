@@ -9,8 +9,8 @@
 #ifndef compresor_h
 #define compresor_h
 
-#include "compartido.h"
-#include "pixelio.h"
+#include "extractos.h"
+#include "imagen.h"
 #include "datosCompresion.h"
 
 /*
