@@ -11,7 +11,7 @@ void comprimirRun(int l, BYTE x, Imagen img, BufferCompresion bufCompresion, FIL
 
 void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     FILE * archivoComprimido, * archivoOriginal;
-    int anchoImagen, alturaImagen;
+    int ancho, altura;
     int ultimoCaracterLeido;        /* Promoción temporal de x a entero        */
     PIX x;
     PIX a,b,c,d;          /* Contexto                                */
@@ -28,13 +28,13 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     escribirParametrosCabezal(archivoComprimido, s, run);
     dtCabezal = escribirCabezalPGM(archivoOriginal, archivoComprimido);
     img = crearImagen(dtCabezal);
-    alturaImagen = obtenerAltura(img);
-    anchoImagen = obtenerAncho(img);
+    altura = obtenerAltura(img);
+    ancho = obtenerAncho(img);
     
     int fila,col;
     if (run) {
-        for(fila = 0; fila < alturaImagen; fila++) {
-            for(col = 0; col < anchoImagen; col++) {
+        for(fila = 1; fila <= altura; fila++) {
+            for(col = 1; col <= ancho; col++) {
 
                 ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                 x = (PIX) ultimoCaracterLeido;
@@ -53,16 +53,19 @@ void comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
                         x = (PIX) ultimoCaracterLeido;
                     }
                     comprimirRun(l,x,img,bufCompresion,archivoComprimido);
-                    comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
-
                     col+=l-1;
+
+                    if (col != ancho) {
+                        comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);
+                        col++;
+                    }
                 }
             }
         }
     }
     else {
-        for(fila = 0; fila < alturaImagen; fila++) {
-            for(col = 0; col < anchoImagen; col++) {
+        for(fila = 0; fila < altura; fila++) {
+            for(col = 0; col < ancho; col++) {
                 ultimoCaracterLeido = obtenerUltimoCaracter(img, archivoOriginal);
                 x = (PIX) ultimoCaracterLeido;
                 comprimirNormal(s,x,img,extractos,bufCompresion,archivoComprimido);

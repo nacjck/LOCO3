@@ -4,6 +4,11 @@
 
 #include <string.h>
 
+void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
+  fscanf(archivoComprimido, "%d\n", s); // s
+  fscanf(archivoComprimido, "%d\n", run); // Modo
+}
+
 BYTE* leerNBytes(FILE* archivoComprimido, int N) {
   /* Lee N bytes del archivo comprimido. Devuelve un puntero a un arreglo. */
 
@@ -198,10 +203,14 @@ void descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
       // Nro de repeticiones no nulo
       if ( RUN && (n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido)) ) {
         descomprimirRun(n, s, img, extractos, archivoPGM);
-        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+        col += n-1;
+        
+        if(col != ancho) {
+          descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+          col++;
+        }
 
         // Actualizar indice de columna
-        col += n-1;
       }
       else {
         descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);

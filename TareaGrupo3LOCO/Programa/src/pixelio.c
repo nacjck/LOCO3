@@ -116,23 +116,16 @@ void avanzarPixel( Imagen img ) {
 
 /* SOLO COMPRESOR */
 int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
-    int ultimoCaracter = EOF;
+    int ultimoCaracter;
 
     if (img->pixelActual == 1) {
-        int pixel;
-        if ((pixel = fgetc(archivoOriginal)) != EOF) {
-            int i;
-            fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
-            for (i = 1; i <= img->cabezal->ancho; i++) {
-                img->filas[!img->filaSuperior][i] = (PIX) fgetc(archivoOriginal);
-            }
-            ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
-        }
-        else {
-            return pixel;
+        int i;
+        for (i = 1; i <= img->cabezal->ancho; i++) {
+            img->filas[!img->filaSuperior][i] = (PIX) fgetc(archivoOriginal);
         }
     }
     ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
+
     return ultimoCaracter;
 }
 
