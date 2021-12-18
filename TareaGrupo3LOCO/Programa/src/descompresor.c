@@ -110,16 +110,19 @@ int deshacerMapeo(unsigned int M) {
   return (M&1) ? -( (M-1)>>1 ) : (M>>1);
 }
 
-int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, FILE* archivoComprimido) {
+int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, DatosCompresion datosCompresion, FILE* archivoComprimido) {
   /* Decodifica el código de Golomb y devuelve el error de predicción o
   la cantidad de repeticiones en modo run. */
   unsigned int bin, unCount;
+  
   bin = extraerParteBinaria(buff, k, indBit, archivoComprimido);
   unCount = decodificarParteUnaria(buff, indBit, archivoComprimido);
+  actualizarDatosCompresion(datosCompresion, k + unCount);
+
   return ( (unCount<<k) + bin );
 }
 
-void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, FILE * archivoPGM, FILE * archivoComprimido) {
+void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, DatosCompresion datosCompresion, FILE * archivoPGM, FILE * archivoComprimido) {
   unsigned char x_p, x_r;
   unsigned char a,b,c,d;
   int fC;
@@ -132,7 +135,7 @@ void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos
   fC = determinarIndiceExtracto(x_p, a,b,c, s);
   fExtracto = determinarExtracto(extractos, fC);
   k = determinarGolombK(fExtracto); // También es el largo de la parte binaria
-  e = deshacerMapeo(decodificarGPO2(buff, k, indBit, archivoComprimido));
+  e = deshacerMapeo(decodificarGPO2(buff, k, indBit, datosCompresion, archivoComprimido));
   // Pixel recuperado
   x_r = e + x_p;
   agregarCaracter(img, x_r);
@@ -186,23 +189,21 @@ DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida 
       determinarContexto(img, &a,&b,&c,&d);
       // Nro de repeticiones no nulo
       if ( RUN ) {
-        int n = decodificarGPO2(&buff, 3, &indBit, archivoComprimido);
+        int n = decodificarGPO2(&buff, 3, &indBit, datosCompresion, archivoComprimido);
         for (int m=0; m<n; m++) {
             fwrite(&a, 1, 1, archivoPGM);
             agregarCaracter(img, a);
             avanzarPixel(img);
         }
-        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
-        actualizarDatosCompresion(datosCompresion,n+1);
+        descomprimirNormal(&buff, &indBit, s, img, extractos, datosCompresion, archivoPGM,archivoComprimido);
         avanzarPixel(img);
         
         //Se actualizan columnas
         col+=n;
       }
       else {
-        descomprimirNormal(&buff, &indBit, s, img, extractos, archivoPGM,archivoComprimido);
+        descomprimirNormal(&buff, &indBit, s, img, extractos, datosCompresion, archivoPGM, archivoComprimido);
         avanzarPixel(img);
-        actualizarDatosCompresion(datosCompresion,1);
       }
     }
   }

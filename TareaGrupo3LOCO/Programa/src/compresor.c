@@ -75,6 +75,7 @@ DatosCompresion comprimir( char* archivoEntrada, char* archivoSalida, int s, boo
         }
     }
     vaciarBuffer(bufCompresion,archivoComprimido);
+    guardarDatos(datosCompresion);
     fclose(archivoComprimido);
     fclose(archivoOriginal);
     destruirExtractos(extractos);

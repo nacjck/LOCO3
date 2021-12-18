@@ -1,5 +1,7 @@
 #include "../include/datosCompresion.h"
 
+#include <stdlib.h>
+
 struct _dtCompresion {
     float tasaCompresion;
     long bitsComprimidos;
@@ -34,10 +36,10 @@ float obtenerTasaCompresion(DatosCompresion dc) {
     return dc->tasaCompresion;
 }
 
-float obtenerBitsComprimidos(DatosCompresion dc) {
+long obtenerBitsComprimidos(DatosCompresion dc) {
     return dc->bitsComprimidos;
 }
 
-float obtenerCantidadPixeles(DatosCompresion dc) {
+long obtenerCantidadPixeles(DatosCompresion dc) {
     return dc->cantidadPixeles;
 }

@@ -9,6 +9,8 @@
 #ifndef descompresor_h
 #define descompresor_h
 
+#include "datosCompresion.h"
+
 DatosCompresion descomprimir( char* archivoEntrada, char* archivoSalida );
 
 #endif

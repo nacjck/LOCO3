@@ -144,9 +144,9 @@ int main( int argc, char* argv[] ) {
         datosCompresion = descomprimir(parametros.archivoEntrada,
             parametros.archivoSalida);
     }
-    int cantidadPixeles = obtenerCantidadPixeles(datosCompresion);
-    int cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
-    int tasaCompresion = obtenerTasaCompresion(datosCompresion);
+    long cantidadPixeles = obtenerCantidadPixeles(datosCompresion);
+    long cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
+    float tasaCompresion = obtenerTasaCompresion(datosCompresion);
 
     puts("\nEjecucion finalizada.");
     puts("\nResumen:");
