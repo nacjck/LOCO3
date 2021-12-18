@@ -6,13 +6,18 @@
  *
  */
 
-#include <stdint.h>
-#include "../include/pixelio.h"
-
 #ifndef compartido_h
 #define compartido_h
 
 #include <stdlib.h>
+
+#ifndef BYTE
+  #define BYTE unsigned char
+#endif
+
+#ifndef PIX
+  #define PIX unsigned char
+#endif
 
 typedef struct _extracto* Extracto;
 typedef struct _extractos* Extractos;
@@ -25,13 +30,13 @@ Extractos crearExtractos( int s );
 /*
  * Retorna el valor predicho para x dado el contexto (a,b,c)
  */
-unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c );
+PIX predecirX( PIX a, PIX b, PIX c );
 
 /*
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-int determinarIndiceExtracto( unsigned char xPrediccion, unsigned char a, unsigned char b, unsigned char c, unsigned char s );
+int determinarIndiceExtracto( PIX xPrediccion, PIX a, PIX b, PIX c, int s );
 
 Extracto determinarExtracto( Extractos extractos, int fC );
 /*

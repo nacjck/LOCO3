@@ -29,10 +29,13 @@
 
 #include "include/descompresor.h"
 #include "include/compresor.h"
-#include "include/modalidad.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+
+#ifndef bool
+    #define bool char
+#endif
 
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
 
@@ -40,7 +43,7 @@ typedef struct {
     char            *archivoEntrada;
     char            *archivoSalida;
     int             s;                  /* 0 <= s <= 10 */
-    Modalidad     modalidad;
+    bool            run;
 } Parametros;
 
 /*
@@ -51,12 +54,12 @@ void abortar( char* mensaje );
 int main( int argc, char* argv[] ) {
     /*
      * Por defecto los parámetros del programa son los siguientes:
-     *     (funcionalidad,s,modalidad) = (Comprimir,0,Normal)
+     *     (funcionalidad,s,run) = (Comprimir,0,false)
      * En caso de no presentarse nombres de archivos ya sean
      * de entrada como de salida se devolverá error.
      */
     Funcionalidad funcionalidad = COMPRIMIR;
-    Parametros parametros = {NULL,NULL,0,NORMAL};
+    Parametros parametros = {NULL,NULL,0,0};
     
     int i = 1;
     while( i < argc ) {
@@ -72,16 +75,16 @@ int main( int argc, char* argv[] ) {
                 case 'c':
                     funcionalidad = COMPRIMIR;
                     i++;
-                    int modalidad;
-                    if ( sscanf(argv[i], "%d", &(modalidad)) != 1 ) {
-                        parametros.modalidad = NORMAL;
+                    int run;
+                    if ( sscanf(argv[i], "%d", &(run)) != 1 ) {
+                        parametros.run = 0;
                         i--;
                     }
-                    else if (modalidad != 0 && modalidad != 1) {
+                    else if (run != 0 && run != 1) {
                         abortar("Valor de modalidad inválido.");
                     }
                     else {
-                        parametros.modalidad = (modalidad == 1) ? RUN : NORMAL;
+                        parametros.run = run;
                     }
                     i++;
                     break;
@@ -133,7 +136,7 @@ int main( int argc, char* argv[] ) {
     puts("\n Iniciando programa...");
     if (funcionalidad == COMPRIMIR) {
         comprimir(parametros.archivoEntrada,parametros.archivoSalida,
-        parametros.s,parametros.modalidad);
+        parametros.s,parametros.run);
     }
     else {
         descomprimir(parametros.archivoEntrada,parametros.archivoSalida);

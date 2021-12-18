@@ -1,5 +1,10 @@
 {
     "files.associations": {
-        "compresorio.h": "c"
+        "compresorio.h": "c",
+        "cstdio": "c",
+        "descompresor.h": "c",
+        "compartido.h": "c",
+        "pixelio.h": "c",
+        "compresor.h": "c"
     }
 }

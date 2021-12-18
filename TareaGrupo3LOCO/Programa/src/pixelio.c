@@ -8,7 +8,7 @@ struct _datosCabezal {
 };
 
 struct _imagen {
-    unsigned char * filas[2];             /* Ultimas dos filas de imagen             */
+    PIX * filas[2];             /* Ultimas dos filas de imagen             */
     DatosCabezal cabezal;
     int pixelActual;                    /* Si se esta en el borde izquierdo vale 0 */
     bool filaSuperior;                            /* 0 o 1                                   */
@@ -20,8 +20,8 @@ Imagen crearImagen( DatosCabezal dtCabezal ) {
     res->filaSuperior = 0;
     res->pixelActual = 1;
     res->cabezal = dtCabezal;
-    res->filas[0] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
-    res->filas[1] = malloc(dtCabezal->ancho * sizeof(unsigned char) + 2);
+    res->filas[0] = malloc(dtCabezal->ancho * sizeof(PIX) + 2);
+    res->filas[1] = malloc(dtCabezal->ancho * sizeof(PIX) + 2);
     memset(res->filas[!res->filaSuperior], 0, dtCabezal->ancho + 2);
     memset(res->filas[ res->filaSuperior], 0, dtCabezal->ancho + 2);
 
@@ -85,7 +85,7 @@ int obtenerMaxValue( Imagen img ) {
     return img->cabezal->maxValue;
 }
 
-void determinarContexto( Imagen img, unsigned char * a, unsigned char * b, unsigned char * c, unsigned char * d ) {
+void determinarContexto( Imagen img, PIX * a, PIX * b, PIX * c, PIX * d ) {
     /* Si se está fuera de los límites de la imagen se devuelve 0.  */
     /* Se asume que esto siempre sucede debido a la inicialización  */
     /* del buffer.                                                  */
@@ -124,7 +124,7 @@ int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
             int i;
             fseek(archivoOriginal, -1, SEEK_CUR);    /*Regresa un caracter */
             for (i = 1; i <= img->cabezal->ancho; i++) {
-                img->filas[!img->filaSuperior][i] = (unsigned char) fgetc(archivoOriginal);
+                img->filas[!img->filaSuperior][i] = (PIX) fgetc(archivoOriginal);
             }
             ultimoCaracter = img->filas[!img->filaSuperior][img->pixelActual];
         }
@@ -136,7 +136,7 @@ int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     return ultimoCaracter;
 }
 
-void agregarCaracter( Imagen img, unsigned char nuevoCaracter ) {
+void agregarCaracter( Imagen img, PIX nuevoCaracter ) {
     img->filas[!img->filaSuperior][img->pixelActual] = nuevoCaracter;
 }
 

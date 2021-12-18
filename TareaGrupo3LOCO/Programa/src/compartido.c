@@ -42,9 +42,9 @@ Extractos crearExtractos( int s ) {
 /*
  * Retorna el valor predicho para x dado el contexto (a,b,c)
  */
-unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
+PIX predecirX( PIX a, PIX b, PIX c ) {
     /* Calcula la predicción del pixel dado su contexto */
-    unsigned char maxAB, minAB;
+    PIX maxAB, minAB;
 
     // Máximo y mínimo entre a y b
     if (a >= b) {
@@ -57,7 +57,7 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
     }
 
     // Fórmula para hat_x
-    unsigned char hatX;
+    PIX hatX;
     if (c >= maxAB) {
       hatX = minAB;
     }
@@ -75,8 +75,7 @@ unsigned char predecirX( unsigned char a, unsigned char b, unsigned char c ) {
  * Retorna el extracto correspondiente al x predicho dado
  * el contexto (a,b,c)
  */
-int determinarIndiceExtracto( unsigned char xPrediccion,
-    unsigned char a, unsigned char b, unsigned char c , unsigned char s) {
+int determinarIndiceExtracto( PIX xPrediccion, PIX a, PIX b, PIX c , int s) {
     // Devuelve el extracto f(C)
     // Máximo s+3 bits
     // Nota: La textura y el nivel de actividad se pueden calcular al mismo tiempo
@@ -162,7 +161,7 @@ void actualizarExtracto( Extracto extracto, int error ) {
         extracto->N >>= 1;
         extracto->A >>= 1;
     }
-    extracto->A += (error < 0) ? -error : error; // ((error << 1) >> 1)
+    extracto->A += (error < 0) ? -error : error;
     extracto->N++;
 }
 
