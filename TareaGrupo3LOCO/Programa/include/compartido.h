@@ -9,8 +9,6 @@
 #ifndef compartido_h
 #define compartido_h
 
-#include <stdlib.h>
-
 #ifndef BYTE
   #define BYTE unsigned char
 #endif
@@ -43,15 +41,6 @@ Extracto determinarExtracto( Extractos extractos, int fC );
  * Retorna el parámetro k de Golomb dado un extracto
  */
 int determinarGolombK( Extracto extracto );
-
-/*
- * Retorna el mapeo M(e)
- */
-int determinarMapeoRice( int errorPrediccion );
-
-unsigned int determinarLargoBinaryGolomb( int k, int M, int * bin_arg );
-
-unsigned int determinarLargoUnaryGolomb( int k, int M );
 
 /*
  * Actualiza las variables A y N del extracto

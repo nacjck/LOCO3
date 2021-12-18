@@ -117,7 +117,7 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, DatosCompresion datosCompre
   
   bin = extraerParteBinaria(buff, k, indBit, archivoComprimido);
   unCount = decodificarParteUnaria(buff, indBit, archivoComprimido);
-  actualizarDatosCompresion(datosCompresion, k + unCount);
+  actualizarDatosCompresion(datosCompresion, k + unCount+1);
 
   return ( (unCount<<k) + bin );
 }

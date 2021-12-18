@@ -6,9 +6,84 @@
 #include <stdio.h>
 
 /* Rutinas auxiliares */
-void escribirParametrosCabezal( FILE * archivoComprimido, int s, bool run );
-void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido);
-void comprimirRun(int l, BYTE x, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido);
+
+void escribirParametrosCabezal( FILE * archivoComprimido, int s, bool run ) {
+    fprintf(archivoComprimido,"%d\n",s);
+    fprintf(archivoComprimido,"%d\n",run);
+}
+
+/*
+ * Retorna el mapeo M(e)
+ */
+int determinarMapeoRice( int errorPrediccion ) {
+    // Map de los errores de predicción al rango no negativo
+    int M;
+
+    if (errorPrediccion < 0) {
+      M = -(errorPrediccion << 1) + 1;
+    } else {
+      M = errorPrediccion << 1;
+    }
+
+    return M;
+}
+
+unsigned int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
+    // Devuelve el largo de la parte binaria de Golomb_k(M)
+    // Ademas retorna bin_arg con la parte binaria.
+
+    unsigned int bin_length;
+
+    *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
+    bin_length = k;               /* Largo Binary_k(M) */
+
+    return bin_length;
+}
+
+unsigned int determinarLargoUnaryGolomb( int k, int M ) {
+    // Devuelve el código de Golomb como un entero sin signo
+    unsigned int un_length;
+
+    un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
+
+    return un_length;
+}
+
+void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
+    PIX a,b,c,d;
+    PIX xPrediccion;
+    int fC;
+    Extracto fExtracto;
+    int errorPrediccion;
+    int mapeoRice;
+    int kGolomb;
+    int golombBinario;
+    int largoGolombBinario, largoGolombUnario;
+
+    determinarContexto(img, &a, &b, &c, &d);
+    xPrediccion = predecirX(a, b, c);
+    fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
+    fExtracto = determinarExtracto(extractos, fC);
+    errorPrediccion = x - xPrediccion;
+    kGolomb = determinarGolombK(fExtracto);
+    mapeoRice = determinarMapeoRice(errorPrediccion);
+    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
+    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
+    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+    actualizarExtracto(fExtracto, errorPrediccion);
+    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
+}
+
+void comprimirRun(int l, PIX x, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
+    int kGolomb = 3;
+    int golombBinario;
+    int largoGolombBinario, largoGolombUnario;
+
+    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
+    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
+    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
+    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
+}
 
 DatosCompresion comprimir( char* archivoEntrada, char* archivoSalida, int s, bool run ) {
     FILE * archivoComprimido, * archivoOriginal;
@@ -84,47 +159,4 @@ DatosCompresion comprimir( char* archivoEntrada, char* archivoSalida, int s, boo
     destruirBufferCompresion(bufCompresion);
     
     return datosCompresion;
-}
-
-/* Rutinas auxiliares */
-
-void escribirParametrosCabezal( FILE * archivoComprimido, int s, bool run ) {
-    fprintf(archivoComprimido,"%d\n",s);
-    fprintf(archivoComprimido,"%d\n",run);
-}
-
-void comprimirNormal( int s, PIX x, Imagen img, Extractos extractos, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
-    PIX a,b,c,d;
-    PIX xPrediccion;
-    int fC;
-    Extracto fExtracto;
-    int errorPrediccion;
-    int mapeoRice;
-    int kGolomb;
-    int golombBinario;
-    int largoGolombBinario, largoGolombUnario;
-
-    determinarContexto(img, &a, &b, &c, &d);
-    xPrediccion = predecirX(a, b, c);
-    fC = determinarIndiceExtracto(xPrediccion, a, b, c, s);
-    fExtracto = determinarExtracto(extractos, fC);
-    errorPrediccion = x - xPrediccion;
-    kGolomb = determinarGolombK(fExtracto);
-    mapeoRice = determinarMapeoRice(errorPrediccion);
-    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, mapeoRice, &golombBinario);
-    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, mapeoRice);
-    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
-    actualizarExtracto(fExtracto, errorPrediccion);
-    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
-}
-
-void comprimirRun(int l, PIX x, BufferCompresion bufCompresion, DatosCompresion datosCompresion, FILE * archivoComprimido) {
-    int kGolomb = 3;
-    int golombBinario;
-    int largoGolombBinario, largoGolombUnario;
-
-    largoGolombBinario = determinarLargoBinaryGolomb(kGolomb, l, &golombBinario);
-    largoGolombUnario = determinarLargoUnaryGolomb(kGolomb, l);
-    imprimirCompresion(bufCompresion,golombBinario,largoGolombBinario,largoGolombUnario,archivoComprimido);
-    actualizarDatosCompresion(datosCompresion,largoGolombBinario + largoGolombUnario);
 }

@@ -11,6 +11,7 @@
 
 #include "compartido.h"
 #include "pixelio.h"
+#include "datosCompresion.h"
 
 /*
  * Precondiciones: 

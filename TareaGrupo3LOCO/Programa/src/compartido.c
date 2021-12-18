@@ -1,5 +1,6 @@
 #include "../include/compartido.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #define R 128
@@ -114,43 +115,6 @@ int determinarGolombK( Extracto extracto ) {
     for ( k=0; (extracto->N << k) < extracto->A; k++ );
 
     return k;
-}
-
-/*
- * Retorna el mapeo M(e)
- */
-int determinarMapeoRice( int errorPrediccion ) {
-    // Map de los errores de predicción al rango no negativo
-    int M;
-
-    if (errorPrediccion < 0) {
-      M = -(errorPrediccion << 1) + 1;
-    } else {
-      M = errorPrediccion << 1;
-    }
-
-    return M;
-}
-
-unsigned int determinarLargoBinaryGolomb( int k, int M, int * bin_arg ) {
-    // Devuelve el largo de la parte binaria de Golomb_k(M)
-    // Ademas retorna bin_arg con la parte binaria.
-
-    unsigned int bin_length;
-
-    *bin_arg = M & ((1<<k)-1);    /* Binary_k(M)       */
-    bin_length = k;               /* Largo Binary_k(M) */
-
-    return bin_length;
-}
-
-unsigned int determinarLargoUnaryGolomb( int k, int M ) {
-    // Devuelve el código de Golomb como un entero sin signo
-    unsigned int un_length;
-
-    un_length = (M>>k) + 1;    /* Largo Unary_k(M) */
-
-    return un_length;
 }
 
 /*
