@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define MAX_BUFFER 256
+
 /*
  * Constantes para manejo de output segun tipos de datos
  */

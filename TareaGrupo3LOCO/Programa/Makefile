@@ -16,7 +16,7 @@ ODIR = obj
 CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -g -O3
 
-MODULOS = compartido compresor compresorIO descompresor pixelio datosCompresion
+MODULOS = extractos compresor bufferCompresion descompresor imagen datosCompresion
 CONST_MODULES =
 
 #lista de archivos
@@ -40,10 +40,10 @@ $(EJECUTABLE): $(ODIR)/$(MAIN).o $(OS)
 	$(info Archivo ejecutable generado: $(EJECUTABLE))
 
 objfolder:
-	mkdir $(ODIR) 
+	mkdir -p $(ODIR) 
 
 clean_bin:
-	rm -f $(EJECUTABLE) $(ODIR)/$(MAIN).o $(OS)
+	rm -rf $(EJECUTABLE) $(ODIR)/$(MAIN).o $(OS)
 	rmdir $(ODIR)
 
 entrega: $(EJECUTABLE)

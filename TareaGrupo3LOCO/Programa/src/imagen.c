@@ -45,7 +45,6 @@ DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
             c = getc(archivoInput);
             fprintf(archivoOutput,"%c",c);
         } while(c != '\n');
-        c = getc(archivoInput);
     }
 
     //Se regresa un caracter
