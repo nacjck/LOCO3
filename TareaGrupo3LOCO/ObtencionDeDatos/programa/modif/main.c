@@ -26,10 +26,10 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
     
     puts("Esto podria tardar un tiempo...");
     
-    //TASA DE COMPRESION VARIANDO S,ARCHIVO Y MODALIDAD
+    //Tasa de compresion variando s, archivo y modalidad
     int i,s;
     float tasaCompresion = 0;
-    float promedioTasaCompresion[10] = {0};
+    float promedioTasaCompresion[11] = {0};
     int cantidadImagenes = 0;
 
     for(i = 0; i <= 1; i++) {
@@ -60,16 +60,15 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
         }
         fprintf(archivoResultados,"\n");
         fseek(listadoImagenes,0,SEEK_SET);
-
-        //Modo de run
-        if (i == 1) promedioTasaCompresion[s] /= cantidadImagenes;
     }
 
-    fprintf(archivoResultados,"\n");
-    fprintf(archivoResultados,"Tasa de compresion promedio",tasaCompresion);
-    for (s = 0; s <= 10; s++) {
+    //Promedios de modo de run
+    fprintf(archivoResultados,"TasaCompresion ");
+    for(s = 0; s <= 10; s++) {
+        if (cantidadImagenes > 0) promedioTasaCompresion[s] /= cantidadImagenes;
         fprintf(archivoResultados,"%f ",promedioTasaCompresion[s]);
     }
+    
 }
 
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
