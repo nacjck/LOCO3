@@ -31,8 +31,15 @@ Imagen crearImagen( DatosCabezal dtCabezal ) {
 DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
     DatosCabezal res = malloc(sizeof(struct _datosCabezal));
     int c;
-
+    char tipo[2];
+    
     //P5
+    fscanf(archivoInput, "%s", tipo);
+    if (strcmp(tipo, "P5")) {
+        puts("Tipo de imagen no soportado.");
+        exit(1);
+    }
+
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
@@ -50,20 +57,19 @@ DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
     //Se regresa un caracter
     fseek(archivoInput,-1,SEEK_CUR);       
     
-    //Ancho
+    //Ancho y altura
     fscanf(archivoInput, "%d %d", &(res->ancho), &(res->altura));
     fprintf(archivoOutput,"%d %d",res->ancho, res->altura);
-    //Resto
     
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);
     } while(c != '\n');
     
+    //MaxValue
     fscanf(archivoInput, "%d", &(res->maxValue));
     fprintf(archivoOutput,"%d", res->maxValue);
     
-    //MAX_VALUE
     do {
         c = getc(archivoInput);
         fprintf(archivoOutput,"%c",c);

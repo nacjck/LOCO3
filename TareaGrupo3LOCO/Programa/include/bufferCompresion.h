@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-#define MAX_BUFFER 256
-
 //Buffer de bits que serán impresos
 typedef struct _bufferComprimido * BufferCompresion;
 

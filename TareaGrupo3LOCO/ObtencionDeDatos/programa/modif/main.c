@@ -20,14 +20,18 @@
 
 void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionArchivoResultados ) {
     //obtener nombres de archivos ena rreglo
-    FILE * listadoImagenes = fopen(direccionArchivoImagenes,"r");
+    FILE * listadoImagenes   = fopen(direccionArchivoImagenes,"r");
     FILE * archivoResultados = fopen(direccionArchivoResultados,"w");
-    char archivoImagen[100] = {0};
+    char archivoImagen[100]  = {0};
     
     puts("Esto podria tardar un tiempo...");
     
     //TASA DE COMPRESION VARIANDO S,ARCHIVO Y MODALIDAD
     int i,s;
+    float tasaCompresion = 0;
+    float promedioTasaCompresion[10] = {0};
+    int cantidadImagenes = 0;
+
     for(i = 0; i <= 1; i++) {
         
         //Nombre de columnas
@@ -43,12 +47,28 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
             fprintf(archivoResultados,"%s ",archivoImagen);
             for(s = 0; s <= 10; s++) {
                 DatosCompresion datosComprimidos = comprimir(archivoImagen,"prueba.bin",s,i);
-                fprintf(archivoResultados,"%f ",obtenerTasaCompresion(datosComprimidos));
+                tasaCompresion = obtenerTasaCompresion(datosComprimidos);
+                fprintf(archivoResultados,"%f ",tasaCompresion);
+
+                //Modo de run
+                if (i == 1) promedioTasaCompresion[s] += tasaCompresion;
             }
             fprintf(archivoResultados,"\n");
+
+            //Modo de run
+            if (i == 1) cantidadImagenes++;
         }
         fprintf(archivoResultados,"\n");
         fseek(listadoImagenes,0,SEEK_SET);
+
+        //Modo de run
+        if (i == 1) promedioTasaCompresion[s] /= cantidadImagenes;
+    }
+
+    fprintf(archivoResultados,"\n");
+    fprintf(archivoResultados,"Tasa de compresion promedio",tasaCompresion);
+    for (s = 0; s <= 10; s++) {
+        fprintf(archivoResultados,"%f ",promedioTasaCompresion[s]);
     }
 }
 

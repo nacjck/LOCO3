@@ -153,13 +153,9 @@ DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida 
   FILE * archivoComprimido;
   FILE * archivoPGM;
   Imagen img;
-  BYTE a,b,c,d, x_p, x_r ;
+  BYTE a,b,c,d;
   BYTE buff, indBit;
-  unsigned int k;
-  Extracto fExtracto;
   Extractos extractos;
-  int fC;
-  int e;
   bool run;
   int s;
   int ancho, altura, maxValue;
