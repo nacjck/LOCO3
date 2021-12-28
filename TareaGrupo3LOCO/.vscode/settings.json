@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "auxiliarescompartidos.h": "c",
+        "auxiliarescompresor.h": "c",
+        "auxiliaresdescompresor.h": "c"
+    }
+}
