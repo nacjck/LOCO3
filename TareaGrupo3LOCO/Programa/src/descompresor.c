@@ -5,27 +5,33 @@
 
 #include <string.h>
 
+/* AUXILIAR
+ * Se reciben parametros de compresión 
+ * antes almacenados en el archivo comprimido.
+ */
 void leerParametrosCabezal( FILE* archivoComprimido, int * s, int * run ) {
-  fscanf(archivoComprimido, "%d\n", s); // s
-  fscanf(archivoComprimido, "%d\n", run); // Modo
+  fscanf(archivoComprimido, "%d\n", s);   /* s    */
+  fscanf(archivoComprimido, "%d\n", run); /* Modo */
 }
 
+/* AUXILIAR
+ * Lee N bytes del archivo comprimido. Devuelve un puntero a un arreglo.
+ */
 BYTE* leerNBytes(FILE* archivoComprimido, int N) {
-  /* Lee N bytes del archivo comprimido. Devuelve un puntero a un arreglo. */
 
   BYTE* bytesLeidos;
 
   bytesLeidos = malloc(N * sizeof(BYTE));
-
   fread(bytesLeidos, 1, N, archivoComprimido);
-  return bytesLeidos;
 
+  return bytesLeidos;
 }
 
+/* AUXILIAR
+ * Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitInicio
+ * del byte (código unario). Si el byte es 0 devuelve 8
+ */
 BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
-  /* Cuenta la cantidad de 0 que preceden al primer 1 desde el bit bitInicio
-  del byte (código unario). Si el byte es 0 devuelve 8 */
-
   int i;
   buff <<= bitInicio;
   for (i=0; i<8-bitInicio; i++) {
@@ -36,29 +42,31 @@ BYTE leerSubUn(BYTE buff, BYTE bitInicio) {
   return i;
 }
 
+/* AUXILIAR
+ * Extrae la parte unaria del código de Golomb. *buff* es el byte leido
+ * en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
+ * Lee más bytes del archivo en caso de ser necesario. 
+ */
 unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoComprimido) {
-  /* Extrae la parte unaria del código de Golomb. *buff* es el byte leido
-  en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
-  Lee más bytes del archivo en caso de ser necesario. */
   BYTE n;
   unsigned int un = 0;
 
   // Busca primer 1 en el buffer
   un += leerSubUn(*buff, *indBit);
 
-  if ( un == 8-(*indBit) ) { // Si llegó al final
+  if ( un == 8-(*indBit) ) { /* Si llegó al final */
     *indBit = 0;
     do {
       *buff = fgetc(archivoComprimido);
       n = leerSubUn(*buff, *indBit);
       un += n;
-    } while(n==8); // Mientras se recorra el byte completo
+    } while(n==8); /* Mientras se recorra el byte completo */
     if (n==7) {*buff = fgetc(archivoComprimido); *indBit=0;}
     else {*indBit=n+1;};
-    // *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final
+    /* *indBit = n==7 ? 0 : n+1; // Se suma 1 por el 1 del final */
   }
   else {
-    if ( *indBit+un==7 ) { // 1 de fin de parte unaria en el último bit
+    if ( *indBit+un==7 ) { /* 1 de fin de parte unaria en el último bit */
       *buff = fgetc(archivoComprimido);
       *indBit = 0;
     }
@@ -69,18 +77,23 @@ unsigned int decodificarParteUnaria(BYTE* buff, BYTE* indBit, FILE* archivoCompr
   return un;
 }
 
+/* AUXILIAR
+ * Devuelve la sub-cadena de binarios entre bitInicio y bitFin del byte b
+ */
 BYTE leerSubBin(BYTE b, BYTE bitInicio, BYTE bitFin) {
-  /* Devuelve la sub-cadena de binarios entre bitInicio y bitFin del byte b */
   b <<= bitInicio;
   b >>= bitInicio + 8 - bitFin;
   return b;
 }
 
+
+/* AUXILIAR
+ * Extrae la parte binaria del código (largo k bits). *buff* es el byte leido
+ * en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
+ * Lee más bytes del archivo en caso de ser necesario.
+ */
 unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
                                                       FILE* archivoComprimido) {
-  /* Extrae la parte binaria del código (largo k bits). *buff* es el byte leido
-  en el paso anterior y *indBit* es el índice del primer bit aún no procesado.
-  Lee más bytes del archivo en caso de ser necesario. */
   unsigned int bin;
 
   if (*indBit+k <= 8) { // Si hay suficientes bits en el buffer
@@ -106,13 +119,19 @@ unsigned int extraerParteBinaria(BYTE* buff, int k, BYTE* indBit,
   return bin;
 }
 
+/*
+ * AUXILIAR
+ */
 int deshacerMapeo(unsigned int M) {
   return (M&1) ? -( (M-1)>>1 ) : (M>>1);
 }
 
+
+/* AUXILIAR
+ * Decodifica el código de Golomb y devuelve el error de predicción o
+ * la cantidad de repeticiones en modo run. 
+ */
 int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, DatosCompresion datosCompresion, FILE* archivoComprimido) {
-  /* Decodifica el código de Golomb y devuelve el error de predicción o
-  la cantidad de repeticiones en modo run. */
   unsigned int bin, unCount;
   
   bin = extraerParteBinaria(buff, k, indBit, archivoComprimido);
@@ -122,6 +141,9 @@ int decodificarGPO2(BYTE* buff, int k, BYTE* indBit, DatosCompresion datosCompre
   return ( (unCount<<k) + bin );
 }
 
+/* AUXILIAR
+ * Descomprime sin modo de run
+ */
 void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos extractos, DatosCompresion datosCompresion, FILE * archivoPGM, FILE * archivoComprimido) {
   unsigned char x_p, x_r;
   unsigned char a,b,c,d;
@@ -148,8 +170,6 @@ void descomprimirNormal(BYTE * buff, BYTE * indBit, int s, Imagen img, Extractos
 #define RUN ( run && (a==b && b==c && c==d) )
 
 DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida ) {
-  /* */
-
   FILE * archivoComprimido;
   FILE * archivoPGM;
   Imagen img;
@@ -162,6 +182,7 @@ DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida 
   DatosCabezal dtCabezal;
   DatosCompresion datosCompresion;
 
+  // Inicialización de estructuras
   archivoComprimido = fopen(pathArchivoEntrada, "rb");
   archivoPGM = fopen(pathArchivoSalida, "wb");
 
@@ -178,12 +199,12 @@ DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida 
   indBit = 0; // Inidce del próximo bit a procesar
   buff = fgetc(archivoComprimido); // Primer byte del archivo
 
-  // Para cada pixel
+  //Comienzo de algoritmo
   avanzarPixel(img);
   for (int fila=1; fila <= altura; fila++) {
     for (int col=1; col <= ancho; col++) {
       determinarContexto(img, &a,&b,&c,&d);
-      // Nro de repeticiones no nulo
+
       if ( RUN ) {
         int n = decodificarGPO2(&buff, 3, &indBit, datosCompresion, archivoComprimido);
         for (int m=0; m<n; m++) {
@@ -204,6 +225,7 @@ DatosCompresion descomprimir( char* pathArchivoEntrada, char* pathArchivoSalida 
     }
   }
 
+  //Se libera memoria
   guardarDatos(datosCompresion);
   destruirExtractos(extractos);
   destruirImagen(img);

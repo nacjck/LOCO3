@@ -24,6 +24,7 @@ void actualizarDatosCompresion( DatosCompresion dtComp, int cantidadComprimida )
 
 void guardarDatos(DatosCompresion dtComp) {
     if (dtComp->cantidadPixeles > 0) {
+        // Se realiza la conversión de bit a byte para calcular tasa de compresión
         dtComp->tasaCompresion = ((float)dtComp->bitsComprimidos) / (dtComp->cantidadPixeles << 3);
     }
 }

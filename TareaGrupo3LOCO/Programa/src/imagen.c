@@ -7,11 +7,16 @@ struct _datosCabezal {
     int maxValue;
 };
 
+/*
+ * Arreglo que contiene las últimas dos filas de la imagen manipulada.
+ * El índice 'filaSuperior' ayuda a acceder a la fila más antigua (superior)
+ * o la más reciente (1 - superior = !superior). 
+ */
 struct _imagen {
-    PIX * filas[2];             /* Ultimas dos filas de imagen             */
+    PIX * filas[2];        /* Ultimas dos filas de imagen             */
     DatosCabezal cabezal;
-    int pixelActual;                    /* Si se esta en el borde izquierdo vale 0 */
-    bool filaSuperior;                            /* 0 o 1                                   */
+    int pixelActual;       /* Si se esta en el borde izquierdo vale 0 */
+    bool filaSuperior;     /* 0 o 1                                   */
 };
 
 Imagen crearImagen( DatosCabezal dtCabezal ) {
@@ -134,6 +139,7 @@ int obtenerUltimoCaracter( Imagen img, FILE * archivoOriginal ) {
     return ultimoCaracter;
 }
 
+/* SOLO DESCOMPRESOR */
 void agregarCaracter( Imagen img, PIX nuevoCaracter ) {
     img->filas[!img->filaSuperior][img->pixelActual] = nuevoCaracter;
 }

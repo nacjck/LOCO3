@@ -10,21 +10,24 @@
  * main.c
  *
  * Para correr el archivo 'main.c' desde la consola, usar:
- * ./main -d/[c modalidad] -r/n -[s valorS] inputFile outputFile
+ * ./main -d inputFile outputFile
+ * ./main -c [modalidad] [-s valorS] [-m] inputFile outputFile
  * 
- * Ejemplos:
- *   ./main -c 1 -s 10 "imagen.pgm" "imagen.bin"
- *   ./main -d -s 10 "imagen.bin" "imagen.pgm"
- *
  * Donde:
  * -c <number> habilita la compresión,
  * si recibe 1 comprime en modo de run,
- * si recibe un 0 lo hace en modo normal.
+ * si recibe un 0 o nada lo hace en modo normal.
  * -d habilita la compresión
- * -s <number>: parámetro s del sesgo
- * -n habilita la compr
+ * -s <number>: parámetro s del sesgo 
+ * si no hay parámetro se tomara el valor DEFAULT_S
+ * -m silencia el output de la consola (excepto para errores)
  * inputFile: archivo de entrada
  * outputFile: archivo de salida
+ * 
+ * Ejemplos:
+ *   ./main -c 1 -s 10 "imagen.pgm" "imagen.bin"
+ *   ./main -d "imagen.bin" "imagen.pgm"
+ *
  */
 
 #include "include/descompresor.h"
@@ -38,34 +41,39 @@
     #define bool char
 #endif
 
+#define DEFAULT_S 6
+
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
 
 typedef struct {
     char            *archivoEntrada;
     char            *archivoSalida;
-    int             s;                  /* 0 <= s <= 10 */
+    int             s;                  /* 0 <= s <= 10                      */
     bool            run;
+    bool            mute;               /* El programa imprime en la consola */
 } Parametros;
 
-/*
- * Declaraciones para rutinas locales
- */
+// Declaraciones para rutinas locales
 void abortar( char* mensaje );
 
 int main( int argc, char* argv[] ) {
     /*
      * Por defecto los parámetros del programa son los siguientes:
-     *     (funcionalidad,s,run) = (Comprimir,0,false)
+     *     (funcionalidad,s,run,mute) = (Comprimir,0,false,false)
      * En caso de no presentarse nombres de archivos ya sean
      * de entrada como de salida se devolverá error.
      */
     Funcionalidad funcionalidad = COMPRIMIR;
-    Parametros parametros = {NULL,NULL,0,0};
+    Parametros parametros = {NULL,NULL,0,DEFAULT_S,0};
     
     int i = 1;
     while( i < argc ) {
         if ( argv[i][0] == '-' ) {
             switch ( argv[i][1] ) {
+                case 'm':
+                    parametros.mute = 1;
+                    i++;
+                    break;
                 case 's':
                     i++;
                     if ( sscanf(argv[i], "%d", &(parametros.s)) != 1 ) {
@@ -110,9 +118,7 @@ int main( int argc, char* argv[] ) {
         }
     }
     
-    /*
-     * Control de precondiciones
-     */
+    // Control de precondiciones
     if( parametros.archivoEntrada == NULL ) {
         abortar("Ubicacion de archivo de entrada no especificada.");
     }
@@ -130,12 +136,9 @@ int main( int argc, char* argv[] ) {
         abortar("el parametro 's' debe estar entre 0 y 10.");
     }
     
-    /*
-     * Inicio de compresión/descompresión
-     */
-    
+    // Inicio de compresión/descompresión
     DatosCompresion datosCompresion;
-    puts("\nIniciando programa...");
+    if (!parametros.mute) { puts("\nIniciando programa..."); }
     if (funcionalidad == COMPRIMIR) {
         datosCompresion = comprimir(parametros.archivoEntrada,
             parametros.archivoSalida,parametros.s,parametros.run);
@@ -144,27 +147,28 @@ int main( int argc, char* argv[] ) {
         datosCompresion = descomprimir(parametros.archivoEntrada,
             parametros.archivoSalida);
     }
-    long cantidadPixeles = obtenerCantidadPixeles(datosCompresion);
-    long cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
-    float tasaCompresion = obtenerTasaCompresion(datosCompresion);
 
-    puts("Ejecucion finalizada.\n");
-    puts("-------------------------------------------------");
-    puts("Resumen:");
-    printf("Cantidad de pixeles en archivo original: %ld\n",cantidadPixeles);
-    printf("Cantidad de bytes en archivo comprimido: %ld\n",cantidadComprimida >> 3);
-    printf("Tasa de compresion: %f\n",tasaCompresion);
-    puts("-------------------------------------------------");
-    puts("");
+    // Impresion de informacion en caso de no haberse silenciado
+    if (!parametros.mute) {
+        long cantidadPixeles = obtenerCantidadPixeles(datosCompresion);
+        long cantidadComprimida = obtenerBitsComprimidos(datosCompresion);
+        float tasaCompresion = obtenerTasaCompresion(datosCompresion);
 
+        puts("Ejecucion finalizada.\n");
+        puts("-------------------------------------------------");
+        puts("Resumen:");
+        printf("Cantidad de pixeles en archivo original: %ld\n",cantidadPixeles);
+        printf("Cantidad de bytes en archivo comprimido: %ld\n",cantidadComprimida >> 3);
+        printf("Tasa de compresion: %f\n",tasaCompresion);
+        puts("-------------------------------------------------");
+        puts("");
+    }
     destruirDatosCompresion(datosCompresion);
 
     return EXIT_SUCCESS;
 }
 
-/*
- * Rutina para errores
-*/
+// Rutina para errores
 void abortar( char *mensaje ) {
     puts("Error: ");
     puts(mensaje);

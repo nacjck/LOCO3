@@ -17,11 +17,15 @@
   #define PIX unsigned char
 #endif
 
+/*
+ * Estructura de los valores A y N de los extractos
+ * junto con una colección para los mismos.
+ */
 typedef struct _extracto *Extracto;
 typedef struct _extractos *Extractos;
 
 /*
- * Inicializa los extractos correspondientes a cada caracter con N=1 y A=8.
+ * Reserva memoria para los extractos
  */
 Extractos crearExtractos( int s );
 
@@ -31,22 +35,30 @@ Extractos crearExtractos( int s );
 PIX predecirX( PIX a, PIX b, PIX c );
 
 /*
- * Retorna el extracto correspondiente al x predicho dado
- * el contexto (a,b,c)
+ * Retorna el indice del extracto correspondiente al x predicho dado
+ * el contexto (a,b,c) y a 's'
  */
 int determinarIndiceExtracto( PIX xPrediccion, PIX a, PIX b, PIX c, int s );
 
+/*
+ * Dado el indice fC y un conjunto de extractos, obtiene los datos
+ * correspondientes al mismo
+ */
 Extracto determinarExtracto( Extractos extractos, int fC );
+
 /*
  * Retorna el parámetro k de Golomb dado un extracto
  */
 int determinarGolombK( Extracto extracto );
 
 /*
- * Actualiza las variables A y N del extracto
+ * Actualiza los valores del extracto
  */
 void actualizarExtracto( Extracto extracto, int errorPrediccion );
 
+/*
+ * Libera la memoria de los extractos
+ */
 void destruirExtractos(Extractos extractos);
 
 #endif

@@ -13,6 +13,9 @@ struct _extracto {
     int N;
 };
 
+/*
+ * Arreglo de extractos
+ */
 struct _extractos {
     Extracto * extractos;
     int cantidadExtractos;  
@@ -40,9 +43,6 @@ Extractos crearExtractos( int s ) {
     return extractos;
 }
 
-/*
- * Retorna el valor predicho para x dado el contexto (a,b,c)
- */
 PIX predecirX( PIX a, PIX b, PIX c ) {
     /* Calcula la predicción del pixel dado su contexto */
     PIX maxAB, minAB;
@@ -72,10 +72,6 @@ PIX predecirX( PIX a, PIX b, PIX c ) {
     return hatX;
 }
 
-/*
- * Retorna el extracto correspondiente al x predicho dado
- * el contexto (a,b,c)
- */
 int determinarIndiceExtracto( PIX xPrediccion, PIX a, PIX b, PIX c , int s) {
     // Devuelve el extracto f(C)
     // Máximo s+3 bits
@@ -104,9 +100,6 @@ Extracto determinarExtracto( Extractos extractos, int fC ) {
   return extractos->extractos[fC];
 }
 
-/*
- * Retorna el parámetro k de Golomb dado un extracto
- */
 int determinarGolombK( Extracto extracto ) {
     // Calcula el parámetro k del código Golomb PO2
 
@@ -117,9 +110,6 @@ int determinarGolombK( Extracto extracto ) {
     return k;
 }
 
-/*
- * Actualiza las variables A y N del extracto
- */
 void actualizarExtracto( Extracto extracto, int error ) {
     if (extracto->N == R) {
         extracto->N >>= 1;
