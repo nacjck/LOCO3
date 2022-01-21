@@ -26,8 +26,10 @@ for filename in ${CARPETA_IMAGENES}/*.pgm; do
         echo "RUN = ${i}" >> ${ARCHIVO_TEST}
         echo "$filename" >> ${ARCHIVO_TEST}
         if cmp ${filename} ${ARCHIVO_DESCOMPRIMIDO}; then
+            echo "Aprobado"
             echo "Aprobado" >> ${ARCHIVO_TEST}
         else
+            echo "Desaprobado"
             echo "Desaprobado" >> ${ARCHIVO_TEST}
         fi
         echo "" >> ${ARCHIVO_TEST}
