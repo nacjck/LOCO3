@@ -31,7 +31,9 @@ fi
 
 #include
 for filename in programa/modif/*.h; do
-    cp "$filename" programa/main/include
+    if [ $filename != programa/modif/*.h ]; then
+        cp "$filename" programa/main/include
+    fi
 done
 echo "Archivos de prueba sustituidos"
 
@@ -49,3 +51,6 @@ done
 
 #Se corre compresor
 ./${MAIN} "${ARCHIVO_IMAGENES}" "${DIRECTORIO_CSV}"
+
+#Se borran archivos temporales
+rm -r ./*

@@ -31,8 +31,10 @@ for filename in ${CARPETA_IMAGENES}/*.pgm; do
             echo "Desaprobado" >> ${ARCHIVO_TEST}
         fi
         echo "" >> ${ARCHIVO_TEST}
+        rm $ARCHIVO_COMPRIMIDO
+        rm $ARCHIVO_DESCOMPRIMIDO
     done
 done
-
+echo "Test finalizado"
 
 
