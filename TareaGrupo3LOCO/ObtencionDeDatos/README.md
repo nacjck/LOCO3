@@ -17,7 +17,9 @@ Además, se encuentran los siguientes scripts para realizar pruebas:
 -datos.sh:
 Crea un archivo .csv conteniendo la tasa de compresión de cada imagen 
 ubicada en 'imagenes' en función de 's' y si se está en modo de run.
+
 ¿Cómo?
+
 El script copia el programa principal en la carpeta 'programa/main' (por lo que
 es importante asegurarse de no tener archivos pesados en la ubicación del mismo 
 ['../Programa']).
@@ -32,7 +34,9 @@ copiado a ellas, el cual es ejecutado para escribir los resultados.
 Comprueba que la imagen examinada sea idéntica a la comprimida y descomprimida
 (incluyendo cabezal pgm). Posteriormente, se podrá encontrar en la carpeta 'resultados'
 un archivo de texto que explicite si dichas imagenes "aprobaron el test".
+
 ¿Cómo?
+
 Se comprime y descomprime cada imagen en el programa principal, donde 
 se utiliza el comando 'cmp' de Linux para verificar la igualdad de
 la imagen descomprimida y original.
