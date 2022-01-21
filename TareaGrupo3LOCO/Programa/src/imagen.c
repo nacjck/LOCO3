@@ -44,7 +44,7 @@ DatosCabezal escribirCabezalPGM( FILE * archivoInput, FILE * archivoOutput ) {
         puts("Tipo de imagen no soportado.");
         exit(1);
     }
-    fprintf(archivoInput, "%s", tipo);
+    fprintf(archivoOutput, "%s", tipo);
 
     do {
         c = getc(archivoInput);

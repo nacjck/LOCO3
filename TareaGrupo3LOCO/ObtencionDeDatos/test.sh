@@ -18,10 +18,11 @@ if [ -f ${ARCHIVO_TEST} ]; then
 fi
 
 touch ${ARCHIVO_TEST}
+echo "Ejecutando test..."
 for filename in ${CARPETA_IMAGENES}/*.pgm; do
     for i in 0 1; do
-        ./${MAIN} -c ${i} -s ${S} "${filename}" "${ARCHIVO_COMPRIMIDO}"
-        ./${MAIN} -d "${ARCHIVO_COMPRIMIDO}" "${ARCHIVO_DESCOMPRIMIDO}"
+        ./${MAIN} -c ${i} -s ${S} -m "${filename}" "${ARCHIVO_COMPRIMIDO}"
+        ./${MAIN} -d -m "${ARCHIVO_COMPRIMIDO}" "${ARCHIVO_DESCOMPRIMIDO}"
         echo "RUN = ${i}" >> ${ARCHIVO_TEST}
         echo "$filename" >> ${ARCHIVO_TEST}
         if cmp ${filename} ${ARCHIVO_DESCOMPRIMIDO}; then
