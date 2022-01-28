@@ -9,7 +9,7 @@
    si recibe 1 comprime en modo de run,  
    si recibe un 0 o nada lo hace en modo normal.  
    -d habilita la compresión  
-   -s <number>: parámetro s del sesgo   
+   -s <number>: valor del parámetro s 
    si no hay parámetro se tomara el valor DEFAULT_S  
    -m silencia el output de la consola (excepto para errores)  
    inputFile: archivo de entrada  
