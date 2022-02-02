@@ -1,5 +1,5 @@
  Para correr el archivo 'main.c' desde la consola, usar:  
-  ./main -d inputFile outputFile  (al descomprimir)
+  ./main -d inputFile outputFile (al descomprimir)  
   ./main -c [modalidad] [-s valorS] [-m] inputFile outputFile  (al comprimir)
  
  (Valores encerrados entre '[]' son opcionales)
