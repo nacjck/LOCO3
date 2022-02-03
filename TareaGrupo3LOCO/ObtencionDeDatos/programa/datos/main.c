@@ -67,6 +67,9 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
         fprintf(archivoResultados,"%f ",promedioTasaCompresion[s]);
     }
     
+    //Elimina archivo de prueba
+    remove("prueba.bin");
+    
 }
 
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
