@@ -13,18 +13,19 @@ cd programa/datos
 
 make
 echo "Programa creado"
-
-echo "Obteniendo datos"
-echo "Esto podrìa tardar unos segundos..."
 echo ""
 
 touch ${ARCHIVO_IMAGENES}
 for filename in ../../imagenes/*.pgm; do
-    echo "Comprimiendo: ${filename}"
     echo "$filename" >> ${ARCHIVO_IMAGENES}
 done
 
 echo "Imagenes leidas"
+echo ""
+
+echo "Obteniendo datos"
+echo "Esto podrìa tardar unos segundos..."
+echo ""
 
 #Se corre compresor
 ./${MAIN} "${ARCHIVO_IMAGENES}" "${DIRECTORIO_MAIN_A_CSV}"

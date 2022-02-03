@@ -1,72 +1,72 @@
 RUN = 0
 ../../imagenes/baloons.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/baloons.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/barbara.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/barbara.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/bike.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/bike.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/faxballsL.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/faxballsL.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/kodim07.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/kodim07.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/kodim20.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/kodim20.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/kodim24.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/kodim24.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/tools.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/tools.pgm
-Desaprobado
+Aprobado
 
 RUN = 0
 ../../imagenes/womanc.pgm
-Desaprobado
+Aprobado
 
 RUN = 1
 ../../imagenes/womanc.pgm
-Desaprobado
+Aprobado
 

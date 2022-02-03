@@ -22,12 +22,17 @@ fi
 #Inicia test
 touch ${ARCHIVO_TEST}
 echo "Ejecutando test..."
+echo ""
+
 for filename in ${CARPETA_IMAGENES}/*.pgm; do
     for i in 0 1; do
         ./${MAIN} -c ${i} -s ${S} -m "${filename}" "${ARCHIVO_COMPRIMIDO}"
         ./${MAIN} -d -m "${ARCHIVO_COMPRIMIDO}" "${ARCHIVO_DESCOMPRIMIDO}"
         echo "RUN = ${i}" >> ${ARCHIVO_TEST}
+        echo "RUN = ${i}"
         echo "$filename" >> ${ARCHIVO_TEST}
+        echo "$filename"
+        
         if cmp ${filename} ${ARCHIVO_DESCOMPRIMIDO}; then
             echo "Aprobado"
             echo "Aprobado" >> ${ARCHIVO_TEST}
@@ -35,6 +40,7 @@ for filename in ${CARPETA_IMAGENES}/*.pgm; do
             echo "Desaprobado"
             echo "Desaprobado" >> ${ARCHIVO_TEST}
         fi
+        echo ""
         echo "" >> ${ARCHIVO_TEST}
         rm $ARCHIVO_COMPRIMIDO
         rm $ARCHIVO_DESCOMPRIMIDO
