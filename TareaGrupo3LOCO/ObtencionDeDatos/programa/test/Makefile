@@ -8,15 +8,15 @@ all: main
 .PHONY: all clean_bin entrega
 
 #directorios
-HDIR = include
-CPPDIR = src
+HDIR = ../../../Programa/include
+CPPDIR = ../../../Programa/src
 ODIR = obj
 
 #compilador
 CC = gcc
 CFLAGS = -Wall -Werror -I$(HDIR) -O3
 
-MODULOS = extractos compresor bufferCompresion imagen datosCompresion
+MODULOS = extractos compresor bufferCompresion descompresor imagen datosCompresion
 CONST_MODULES =
 
 #lista de archivos
