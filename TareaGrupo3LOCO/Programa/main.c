@@ -59,7 +59,7 @@ void abortar( char* mensaje );
 int main( int argc, char* argv[] ) {
     /*
      * Por defecto los parámetros del programa son los siguientes:
-     *     (funcionalidad,s,run,mute) = (Comprimir,0,false,false)
+     *     (funcionalidad,s,run,mute) = (Comprimir,DEFAULT_S,false,false)
      * En caso de no presentarse nombres de archivos ya sean
      * de entrada como de salida se devolverá error.
      */

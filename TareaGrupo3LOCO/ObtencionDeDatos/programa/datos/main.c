@@ -7,8 +7,8 @@
  */
 
 
-#include "include/compresor.h"
-#include "include/datosCompresion.h"
+#include "../../../Programa/include/compresor.h"
+#include "../../../Programa/include/datosCompresion.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,8 +23,6 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
     FILE * listadoImagenes   = fopen(direccionArchivoImagenes,"r");
     FILE * archivoResultados = fopen(direccionArchivoResultados,"w");
     char archivoImagen[100]  = {0};
-    
-    puts("Esto podria tardar un tiempo...");
     
     //Tasa de compresion variando s, archivo y modalidad
     int i,s;
@@ -113,10 +111,8 @@ int main( int argc, char* argv[] ) {
     /*
      * Inicio de compresión/descompresión
      */
-    puts("\nObteniendo datos...");
+    
     registrarDatosDePrueba(archivoDireccionImagenes, directorioParaResultados);
-    puts("Obtencion de datos finalizada.\n");
-    printf("Puede encontrar sus datos en: %s\n",directorioParaResultados);
     return EXIT_SUCCESS;
 }
 
