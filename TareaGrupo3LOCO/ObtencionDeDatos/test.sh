@@ -7,7 +7,7 @@ ARCHIVO_COMPRIMIDO=testEquivalencia.bin
 ARCHIVO_DESCOMPRIMIDO=testEquivalencia_r.pgm
 CARPETA_IMAGENES=../../imagenes
 
-S=6
+S=7
 
 #Directorio de instalacion
 cd programa/test

@@ -17,7 +17,7 @@
     #define bool char
 #endif
 
-#define DEFAULT_S 6
+#define DEFAULT_S 7
 
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
 
