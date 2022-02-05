@@ -46,6 +46,7 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
             for(s = 0; s <= 10; s++) {
                 DatosCompresion datosComprimidos = comprimir(archivoImagen,"prueba.bin",s,i);
                 tasaCompresion = obtenerTasaCompresion(datosComprimidos);
+                destruirDatosCompresion(datosComprimidos);
                 fprintf(archivoResultados,"%f ",tasaCompresion);
 
                 //Modo de run
@@ -61,11 +62,14 @@ void registrarDatosDePrueba( char * direccionArchivoImagenes, char * direccionAr
     }
 
     //Promedios de modo de run
-    fprintf(archivoResultados,"TasaCompresion ");
+    fprintf(archivoResultados,"TasaPromedio ");
     for(s = 0; s <= 10; s++) {
         if (cantidadImagenes > 0) promedioTasaCompresion[s] /= cantidadImagenes;
         fprintf(archivoResultados,"%f ",promedioTasaCompresion[s]);
     }
+    
+    fclose(listadoImagenes);
+    fclose(archivoResultados);
     
     //Elimina archivo de prueba
     remove("prueba.bin");
