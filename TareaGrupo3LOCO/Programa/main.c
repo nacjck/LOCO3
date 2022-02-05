@@ -159,7 +159,7 @@ int main( int argc, char* argv[] ) {
         puts("Resumen:");
         printf("Cantidad de pixeles en archivo original: %ld\n",cantidadPixeles);
         printf("Cantidad de bytes en archivo comprimido: %ld\n",cantidadComprimida >> 3);
-        printf("Tasa de compresion: %f\n",tasaCompresion);
+        printf("Tasa de compresion (bytes/pixeles): %f\n",tasaCompresion);
         puts("-------------------------------------------------");
         puts("");
     }
