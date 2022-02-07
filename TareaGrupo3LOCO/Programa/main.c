@@ -64,7 +64,7 @@ int main( int argc, char* argv[] ) {
      * de entrada como de salida se devolverá error.
      */
     Funcionalidad funcionalidad = COMPRIMIR;
-    Parametros parametros = {NULL,NULL,0,DEFAULT_S,0};
+    Parametros parametros = {NULL,NULL,DEFAULT_S,0,0};
     
     int i = 1;
     while( i < argc ) {
