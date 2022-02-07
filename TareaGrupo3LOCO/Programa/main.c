@@ -42,6 +42,7 @@
 #endif
 
 #define DEFAULT_S 8
+#define DEFAULT_MODE 1 //Modo de run activado
 
 typedef enum { COMPRIMIR, DESCOMPRIMIR } Funcionalidad;
 
@@ -64,7 +65,7 @@ int main( int argc, char* argv[] ) {
      * de entrada como de salida se devolverá error.
      */
     Funcionalidad funcionalidad = COMPRIMIR;
-    Parametros parametros = {NULL,NULL,DEFAULT_S,1,0};
+    Parametros parametros = {NULL,NULL,DEFAULT_S,DEFAULT_MODE,0};
     
     int i = 1;
     while( i < argc ) {
@@ -86,7 +87,7 @@ int main( int argc, char* argv[] ) {
                     i++;
                     int run;
                     if ( sscanf(argv[i], "%d", &(run)) != 1 ) {
-                        parametros.run = 0;
+                        parametros.run = DEFAULT_MODE;
                         i--;
                     }
                     else if (run != 0 && run != 1) {
