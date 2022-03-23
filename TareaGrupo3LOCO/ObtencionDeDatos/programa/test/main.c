@@ -43,6 +43,8 @@ int main( int argc, char* argv[] ) {
     Funcionalidad funcionalidad = COMPRIMIR;
     Parametros parametros = {NULL,NULL,DEFAULT_S,DEFAULT_MODE,0};
     
+    if (argc < 4) abortar("Numero de parametros insuficiente");
+
     int i = 1;
     while( i < argc ) {
         if ( argv[i][0] == '-' ) {
